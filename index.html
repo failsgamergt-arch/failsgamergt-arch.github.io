@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Hub | Shark Murcia - DJ Pool World - Wild Sounds</title>
+    <meta name="description" content="Tu portal de musica: remixes, electronica, latina, EDM, hardstyle y mas. Shark Murcia Music, DJ Pool World y Wild Sounds Music.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cyan: #00f0ff;
+            --magenta: #ff00e5;
+            --gold: #ffd700;
+            --green: #00ff88;
+            --red: #ff1744;
+            --dark: #0a0a0f;
+            --darker: #050508;
+        }
+
+        body {
+            background: var(--darker);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ---- Particle Canvas ---- */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* ---- Hero ---- */
+        .hero {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 6vw, 5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta), var(--cyan));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease infinite;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+        }
+
+        .hero-line {
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
+            margin-bottom: 4rem;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* ---- Cards Grid ---- */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            max-width: 1200px;
+            width: 100%;
+            padding: 0 1rem;
+        }
+
+        .card {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 380px;
+            padding: 2.5rem 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--accent1), transparent 40%, transparent 60%, var(--accent2));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Card themes */
+        .card--shark {
+            --accent1: var(--cyan);
+            --accent2: #0066ff;
+        }
+        .card--shark:hover {
+            box-shadow: 0 20px 60px rgba(0, 240, 255, 0.15);
+        }
+
+        .card--djpool {
+            --accent1: var(--green);
+            --accent2: var(--gold);
+        }
+        .card--djpool:hover {
+            box-shadow: 0 20px 60px rgba(0, 255, 136, 0.15);
+        }
+
+        .card--wild {
+            --accent1: var(--magenta);
+            --accent2: var(--red);
+        }
+        .card--wild:hover {
+            box-shadow: 0 20px 60px rgba(255, 0, 229, 0.15);
+        }
+
+        /* Card icon */
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 20px var(--accent1));
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.15);
+        }
+
+        .card-icon svg {
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Card text */
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .card-desc {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.6;
+            text-align: center;
+            max-width: 280px;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: 1px solid;
+        }
+
+        .card--shark .tag {
+            border-color: rgba(0, 240, 255, 0.3);
+            color: var(--cyan);
+        }
+        .card--djpool .tag {
+            border-color: rgba(0, 255, 136, 0.3);
+            color: var(--green);
+        }
+        .card--wild .tag {
+            border-color: rgba(255, 0, 229, 0.3);
+            color: var(--magenta);
+        }
+
+        .card-cta {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.7rem 2rem;
+            border-radius: 50px;
+            border: 1px solid var(--accent1);
+            color: var(--accent1);
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover .card-cta {
+            background: var(--accent1);
+            color: var(--darker);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+        }
+
+        /* ---- Equalizer animation ---- */
+        .equalizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 40px;
+            margin-bottom: 1.5rem;
+        }
+
+        .eq-bar {
+            width: 4px;
+            border-radius: 2px;
+            animation: eqBounce 1.2s ease-in-out infinite;
+        }
+
+        .card--shark .eq-bar { background: var(--cyan); }
+        .card--djpool .eq-bar { background: var(--green); }
+        .card--wild .eq-bar { background: var(--magenta); }
+
+        .eq-bar:nth-child(1) { animation-delay: 0s; height: 60%; }
+        .eq-bar:nth-child(2) { animation-delay: 0.15s; height: 80%; }
+        .eq-bar:nth-child(3) { animation-delay: 0.3s; height: 40%; }
+        .eq-bar:nth-child(4) { animation-delay: 0.45s; height: 90%; }
+        .eq-bar:nth-child(5) { animation-delay: 0.6s; height: 50%; }
+        .eq-bar:nth-child(6) { animation-delay: 0.2s; height: 70%; }
+        .eq-bar:nth-child(7) { animation-delay: 0.35s; height: 55%; }
+
+        @keyframes eqBounce {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+
+        /* ---- Footer ---- */
+        .footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 768px) {
+            .cards {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .card {
+                min-height: 300px;
+            }
+        }
+
+        /* ---- Entry animation ---- */
+        .card {
+            opacity: 0;
+            transform: translateY(40px);
+            animation: cardIn 0.8s ease forwards;
+        }
+        .card:nth-child(1) { animation-delay: 0.2s; }
+        .card:nth-child(2) { animation-delay: 0.4s; }
+        .card:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes cardIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<section class="hero">
+    <h1 class="hero-title">Music Hub</h1>
+    <p class="hero-subtitle">Remixes &middot; EDM &middot; Hardstyle &middot; Latin &middot; Epic</p>
+    <div class="hero-line"></div>
+
+    <div class="cards">
+
+        <!-- SHARK MURCIA MUSIC -->
+        <a href="https://www.sharkmurciamusic.com" target="_blank" rel="noopener" class="card card--shark">
+            <div class="equalizer">
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+            </div>
+            <div class="card-icon">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <path d="M50 10 C20 10 5 35 5 55 C5 75 20 90 50 90 C80 90 95 75 95 55 C95 35 80 10 50 10Z" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+                    <path d="M50 15 L45 40 L55 40 Z" fill="var(--cyan)" opacity="0.8"/>
+                    <path d="M30 50 L50 45 L70 50 L50 55 Z" fill="var(--cyan)" opacity="0.6"/>
+                    <circle cx="38" cy="42" r="3" fill="#fff"/>
+                    <circle cx="62" cy="42" r="3" fill="#fff"/>
+                    <path d="M35 60 Q50 70 65 60" stroke="#fff" stroke-width="2" fill="none"/>
+                    <path d="M35 62 L38 58 L41 62 L44 58 L47 62 L50 58 L53 62 L56 58 L59 62 L62 58 L65 62" stroke="#fff" stroke-width="1.5" fill="none"/>
+                </svg>
+            </div>
+            <h2 class="card-title">Shark Murcia</h2>
+            <p class="card-desc">El depredador del remix. Sonidos que muerden fuerte desde Murcia.</p>
+            <div class="card-tags">
+                <span class="tag">Remixes</span>
+                <span class="tag">EDM</span>
+                <span class="tag">Hardstyle</span>
+            </div>
+            <span class="card-cta">Entrar</span>
+        </a>
+
+        <!-- DJ POOL WORLD -->
+        <a href="https://djpoolworld.blogspot.com/" target="_blank" rel="noopener" class="card card--djpool">
+            <div class="equalizer">
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+            </div>
+            <div class="card-icon">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--green)" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="28" fill="none" stroke="var(--green)" stroke-width="1.5" opacity="0.6"/>
+                    <circle cx="50" cy="50" r="15" fill="none" stroke="var(--green)" stroke-width="1" opacity="0.4"/>
+                    <circle cx="50" cy="50" r="5" fill="var(--green)"/>
+                    <path d="M50 10 L50 22" stroke="var(--green)" stroke-width="2"/>
+                    <path d="M50 78 L50 90" stroke="var(--green)" stroke-width="2"/>
+                    <path d="M10 50 L22 50" stroke="var(--green)" stroke-width="2"/>
+                    <path d="M78 50 L90 50" stroke="var(--green)" stroke-width="2"/>
+                    <path d="M22 22 L30 30" stroke="var(--green)" stroke-width="1.5" opacity="0.7"/>
+                    <path d="M70 70 L78 78" stroke="var(--green)" stroke-width="1.5" opacity="0.7"/>
+                    <path d="M78 22 L70 30" stroke="var(--green)" stroke-width="1.5" opacity="0.7"/>
+                    <path d="M30 70 L22 78" stroke="var(--green)" stroke-width="1.5" opacity="0.7"/>
+                </svg>
+            </div>
+            <h2 class="card-title">DJ Pool World</h2>
+            <p class="card-desc">El templo del DJ. Pools, packs y recursos para sesiones legendarias.</p>
+            <div class="card-tags">
+                <span class="tag">Latin Remix</span>
+                <span class="tag">Pools</span>
+                <span class="tag">Packs</span>
+            </div>
+            <span class="card-cta">Entrar</span>
+        </a>
+
+        <!-- WILD SOUNDS MUSIC -->
+        <a href="https://soundcloud.com/wildsoundsmusic" target="_blank" rel="noopener" class="card card--wild">
+            <div class="equalizer">
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+            </div>
+            <div class="card-icon">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <path d="M50 5 L53 20 L65 8 L60 23 L75 18 L65 30 L82 30 L68 38 L85 45 L68 48 L80 58 L65 55 L72 70 L58 60 L58 78 L50 62 L42 78 L42 60 L28 70 L35 55 L20 58 L32 48 L15 45 L32 38 L18 30 L35 30 L25 18 L40 23 L35 8 L47 20 Z" fill="none" stroke="var(--magenta)" stroke-width="1.5"/>
+                    <circle cx="50" cy="45" r="12" fill="none" stroke="var(--magenta)" stroke-width="2"/>
+                    <path d="M5 75 Q25 65 50 75 Q75 85 95 75" stroke="var(--magenta)" stroke-width="1.5" opacity="0.5"/>
+                    <path d="M5 82 Q25 72 50 82 Q75 92 95 82" stroke="var(--magenta)" stroke-width="1" opacity="0.3"/>
+                </svg>
+            </div>
+            <h2 class="card-title">Wild Sounds</h2>
+            <p class="card-desc">Sonidos salvajes de la selva cosmica. Sets, tracks y energia pura.</p>
+            <div class="card-tags">
+                <span class="tag">SoundCloud</span>
+                <span class="tag">Sets</span>
+                <span class="tag">Epica</span>
+            </div>
+            <span class="card-cta">Entrar</span>
+        </a>
+
+    </div>
+</section>
+
+<footer class="footer">
+    Music Hub &copy; 2024 &mdash; All rights reserved
+</footer>
+
+<script>
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let w, h, particles;
+
+    function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+    }
+
+    function createParticles() {
+        const count = Math.floor((w * h) / 8000);
+        particles = [];
+        for (let i = 0; i < count; i++) {
+            particles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                r: Math.random() * 1.5 + 0.5,
+                dx: (Math.random() - 0.5) * 0.3,
+                dy: (Math.random() - 0.5) * 0.3,
+                alpha: Math.random() * 0.6 + 0.2,
+                color: ['#00f0ff', '#ff00e5', '#00ff88', '#ffd700'][Math.floor(Math.random() * 4)]
+            });
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, w, h);
+
+        for (const p of particles) {
+            p.x += p.dx;
+            p.y += p.dy;
+
+            if (p.x < 0) p.x = w;
+            if (p.x > w) p.x = 0;
+            if (p.y < 0) p.y = h;
+            if (p.y > h) p.y = 0;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.alpha;
+            ctx.fill();
+        }
+
+        ctx.globalAlpha = 0.08;
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = dx * dx + dy * dy;
+                if (dist < 8000) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = particles[i].color;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => {
+        resize();
+        createParticles();
+    });
+
+    resize();
+    createParticles();
+    draw();
+</script>
+
+</body>
+</html>
