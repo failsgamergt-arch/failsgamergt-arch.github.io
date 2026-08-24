@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="dark" lang="en" style="background:#0f0e0f"><head>
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>SHARK UNIVERSE - Gateway to Sound</title>
@@ -239,7 +239,8 @@
 <section class="reveal relative min-h-[80vh] flex items-center justify-center overflow-hidden px-margin-desktop md:px-margin-desktop px-margin-mobile hero-bg">
 <!-- Background Image -->
 <div class="absolute inset-0 z-0">
-<div class="w-full h-full bg-cover bg-center opacity-40 mix-blend-screen" data-alt="A vast, cinematic cosmic nebula blending deep purples, vibrant cyan, and dark void blacks. Pulsating energy waves and distant stars create a high-octane, immersive deep space atmosphere. The lighting is intense and glowing, perfect for a high-energy music festival aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBEwlC9iJrYvQKwVGoPsdSE_vxmTJNGZr3Qo3fdaUir5takU3JVXzW1JGyauLr1OhWk0K_Q14NSKtU9CTIE7-14CRMenh6PF8D7pMiSMEoexFv7tgGD1ey0WkgUwySUxehXe7WxoFvgfsa79dFjlFoD-hRNoYZ5FBuY9KzldTPSmSIJIpo2kHqdAx-VbCVHTkzI8-lw4ljMAeBXYjhMvQi1HQ_nS4otKCyleRXdJ4W-n_tK-AN17JidVQ');"></div>
+<div class="w-full h-full bg-cover bg-center opacity-50 mix-blend-screen" style="background-image: url('nebula-bg.jpg');"></div>
+<div class="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#1a1520] via-[#1a1520]/80 to-transparent"></div>
 </div>
 <!-- Content -->
 <div class="reveal relative z-10 text-center flex flex-col items-center gap-8 max-w-4xl mx-auto mt-16">
@@ -259,7 +260,7 @@
 </div>
 </section>
 <!-- Portals Grid Section -->
-<section class="py-24 px-margin-desktop md:px-margin-desktop px-margin-mobile relative z-10">
+<section class="py-24 px-margin-desktop md:px-margin-desktop px-margin-mobile relative z-10" style="background: linear-gradient(to bottom, #1a1520, #0f0e0f 40%)">
 <div class="max-w-container-max mx-auto">
 <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
 <!-- Shark Murcia Portal -->
@@ -330,18 +331,14 @@
 
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.classList.add('loaded');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.15 });
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-});
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 </body></html>
