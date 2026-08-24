@@ -181,6 +181,15 @@
             z-index: 10;
         }
 
+        /* Page fade-in */
+        body {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+        body.loaded {
+            opacity: 1;
+        }
+
         /* Scroll reveal */
         .reveal {
             opacity: 0;
@@ -200,7 +209,7 @@
 <body class="antialiased">
 <div class="scanlines"></div>
 <!-- TopNavBar (From Shared Components) -->
-<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+<nav class="reveal fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
 <div class="flex justify-between items-center px-margin-desktop md:px-margin-desktop px-margin-mobile h-20 w-full max-w-container-max mx-auto">
 <!-- Brand -->
 <div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary bg-clip-text drop-shadow-[0_0_15px_rgba(71,214,255,0.5)]">
@@ -227,7 +236,7 @@
 <!-- Main Content -->
 <main class="relative pt-20">
 <!-- Hero Section -->
-<section class="relative min-h-[80vh] flex items-center justify-center overflow-hidden px-margin-desktop md:px-margin-desktop px-margin-mobile hero-bg">
+<section class="reveal relative min-h-[80vh] flex items-center justify-center overflow-hidden px-margin-desktop md:px-margin-desktop px-margin-mobile hero-bg">
 <!-- Background Image -->
 <div class="absolute inset-0 z-0">
 <div class="w-full h-full bg-cover bg-center opacity-40 mix-blend-screen" data-alt="A vast, cinematic cosmic nebula blending deep purples, vibrant cyan, and dark void blacks. Pulsating energy waves and distant stars create a high-octane, immersive deep space atmosphere. The lighting is intense and glowing, perfect for a high-energy music festival aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBEwlC9iJrYvQKwVGoPsdSE_vxmTJNGZr3Qo3fdaUir5takU3JVXzW1JGyauLr1OhWk0K_Q14NSKtU9CTIE7-14CRMenh6PF8D7pMiSMEoexFv7tgGD1ey0WkgUwySUxehXe7WxoFvgfsa79dFjlFoD-hRNoYZ5FBuY9KzldTPSmSIJIpo2kHqdAx-VbCVHTkzI8-lw4ljMAeBXYjhMvQi1HQ_nS4otKCyleRXdJ4W-n_tK-AN17JidVQ');"></div>
@@ -321,14 +330,18 @@
 
 
 <script>
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-        }
-    });
-}, { threshold: 0.15 });
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add('loaded');
 
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+});
 </script>
 </body></html>
