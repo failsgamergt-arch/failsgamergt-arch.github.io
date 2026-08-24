@@ -1,522 +1,311 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Hub | Shark Murcia - DJ Pool World - Wild Sounds</title>
-    <meta name="description" content="Tu portal de musica: remixes, electronica, latina, EDM, hardstyle y mas. Shark Murcia Music, DJ Pool World y Wild Sounds Music.">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap');
 
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WILD UNIVERSE - Gateway to Sound</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Hanken+Grotesk:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#680eac",
+                    "on-surface-variant": "#bbc9cf",
+                    "tertiary-fixed": "#f1dbff",
+                    "surface-container-lowest": "#0f0e0f",
+                    "on-tertiary-fixed": "#2d0050",
+                    "surface": "#141314",
+                    "outline": "#859399",
+                    "secondary-fixed-dim": "#abd600",
+                    "surface-bright": "#3a393a",
+                    "primary": "#a5e7ff",
+                    "surface-container-high": "#2b292b",
+                    "secondary-fixed": "#c3f400",
+                    "surface-container-highest": "#363435",
+                    "on-primary-fixed-variant": "#004e60",
+                    "tertiary": "#edd3ff",
+                    "on-secondary-fixed-variant": "#3c4d00",
+                    "on-primary-fixed": "#001f28",
+                    "jungle-deep": "#0A2F1F",
+                    "surface-container": "#201f20",
+                    "primary-container": "#00d2ff",
+                    "nebula-purple": "#240046",
+                    "on-secondary": "#283500",
+                    "on-background": "#e6e1e2",
+                    "on-error": "#690005",
+                    "on-secondary-fixed": "#161e00",
+                    "surface-dim": "#141314",
+                    "surface-variant": "#363435",
+                    "on-primary": "#003543",
+                    "inverse-on-surface": "#323031",
+                    "primary-fixed": "#b6ebff",
+                    "inverse-primary": "#00677f",
+                    "error-container": "#93000a",
+                    "surface-container-low": "#1c1b1c",
+                    "outline-variant": "#3c494e",
+                    "primary-fixed-dim": "#47d6ff",
+                    "on-surface": "#e6e1e2",
+                    "error": "#ffb4ab",
+                    "on-tertiary": "#4a007f",
+                    "shark-grey": "#4A5568",
+                    "on-error-container": "#ffdad6",
+                    "inverse-surface": "#e6e1e2",
+                    "surface-tint": "#47d6ff",
+                    "secondary-container": "#c3f400",
+                    "starlight-white": "#FFFFFF",
+                    "tertiary-fixed-dim": "#deb7ff",
+                    "tertiary-container": "#dab0ff",
+                    "on-tertiary-container": "#711eb5",
+                    "background": "#141314",
+                    "on-secondary-container": "#556d00",
+                    "on-primary-container": "#00566a",
+                    "secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "margin-desktop": "64px",
+                    "unit": "8px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Sora"],
+                    "display-xl": ["Sora"],
+                    "stats-lg": ["Sora"],
+                    "label-caps": ["JetBrains Mono"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Sora"],
+                    "headline-md": ["Sora"],
+                    "body-md": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-xl": ["80px", {"lineHeight": "88px", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                    "stats-lg": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
         }
-
-        :root {
-            --cyan: #00f0ff;
-            --magenta: #ff00e5;
-            --gold: #ffd700;
-            --green: #00ff88;
-            --red: #ff1744;
-            --dark: #0a0a0f;
-            --darker: #050508;
-        }
-
+      }
+    </script>
+<style>
         body {
-            background: var(--darker);
-            color: #fff;
-            font-family: 'Rajdhani', sans-serif;
+            background-color: theme('colors.surface-container-lowest');
+            color: theme('colors.on-surface');
             overflow-x: hidden;
-            min-height: 100vh;
         }
 
-        /* ---- Particle Canvas ---- */
-        #particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+        .glass-panel {
+            background: rgba(36, 0, 70, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* ---- Hero ---- */
-        .hero {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 2rem;
-            text-align: center;
+        .glow-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .hero-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 6vw, 5rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            background: linear-gradient(135deg, var(--cyan), var(--magenta), var(--cyan));
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 4s ease infinite;
-            margin-bottom: 0.5rem;
+        .glow-hover:hover {
+            box-shadow: 0 0 40px rgba(165, 231, 255, 0.3);
+            transform: translateY(-4px) scale(1.02);
+            border-color: rgba(165, 231, 255, 0.5);
         }
 
-        .hero-subtitle {
-            font-size: clamp(1rem, 2.5vw, 1.5rem);
-            color: rgba(255, 255, 255, 0.6);
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            margin-bottom: 3rem;
+        .glow-hover-cyan:hover {
+             box-shadow: 0 0 50px rgba(0, 210, 255, 0.4);
+             border-color: theme('colors.primary-container');
         }
 
-        .hero-line {
-            width: 120px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
-            margin-bottom: 4rem;
+        .glow-hover-green:hover {
+             box-shadow: 0 0 50px rgba(195, 244, 0, 0.4);
+             border-color: theme('colors.secondary-fixed');
         }
 
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        .glow-hover-purple:hover {
+             box-shadow: 0 0 50px rgba(218, 176, 255, 0.4);
+             border-color: theme('colors.tertiary-container');
         }
 
-        /* ---- Cards Grid ---- */
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            max-width: 1200px;
-            width: 100%;
-            padding: 0 1rem;
+        .text-glow {
+            text-shadow: 0 0 20px rgba(165, 231, 255, 0.6);
         }
 
-        .card {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: pointer;
-            text-decoration: none;
-            color: #fff;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 380px;
-            padding: 2.5rem 2rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(10px);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            padding: 2px;
-            background: linear-gradient(135deg, var(--accent1), transparent 40%, transparent 60%, var(--accent2));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Card themes */
-        .card--shark {
-            --accent1: var(--cyan);
-            --accent2: #0066ff;
-        }
-        .card--shark:hover {
-            box-shadow: 0 20px 60px rgba(0, 240, 255, 0.15);
-        }
-
-        .card--djpool {
-            --accent1: var(--green);
-            --accent2: var(--gold);
-        }
-        .card--djpool:hover {
-            box-shadow: 0 20px 60px rgba(0, 255, 136, 0.15);
-        }
-
-        .card--wild {
-            --accent1: var(--magenta);
-            --accent2: var(--red);
-        }
-        .card--wild:hover {
-            box-shadow: 0 20px 60px rgba(255, 0, 229, 0.15);
-        }
-
-        /* Card icon */
-        .card-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            filter: drop-shadow(0 0 20px var(--accent1));
-            transition: transform 0.4s ease;
-        }
-
-        .card:hover .card-icon {
-            transform: scale(1.15);
-        }
-
-        .card-icon svg {
-            width: 80px;
-            height: 80px;
-        }
-
-        /* Card text */
-        .card-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.75rem;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-        }
-
-        .card-desc {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.5);
-            line-height: 1.6;
-            text-align: center;
-            max-width: 280px;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .tag {
-            padding: 0.25rem 0.75rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            border: 1px solid;
-        }
-
-        .card--shark .tag {
-            border-color: rgba(0, 240, 255, 0.3);
-            color: var(--cyan);
-        }
-        .card--djpool .tag {
-            border-color: rgba(0, 255, 136, 0.3);
-            color: var(--green);
-        }
-        .card--wild .tag {
-            border-color: rgba(255, 0, 229, 0.3);
-            color: var(--magenta);
-        }
-
-        .card-cta {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            padding: 0.7rem 2rem;
-            border-radius: 50px;
-            border: 1px solid var(--accent1);
-            color: var(--accent1);
-            background: transparent;
+        .btn-primary {
+            background-color: theme('colors.primary');
+            color: theme('colors.surface-container-lowest');
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
             transition: all 0.3s ease;
         }
 
-        .card:hover .card-cta {
-            background: var(--accent1);
-            color: var(--darker);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+        .btn-primary:hover {
+            box-shadow: 0 0 25px theme('colors.primary');
+            transform: scale(1.05);
         }
 
-        /* ---- Equalizer animation ---- */
-        .equalizer {
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            height: 40px;
-            margin-bottom: 1.5rem;
+        .chip {
+            background-color: theme('colors.nebula-purple');
+            color: theme('colors.starlight-white');
+            clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
         }
 
-        .eq-bar {
-            width: 4px;
-            border-radius: 2px;
-            animation: eqBounce 1.2s ease-in-out infinite;
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.1)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
         }
 
-        .card--shark .eq-bar { background: var(--cyan); }
-        .card--djpool .eq-bar { background: var(--green); }
-        .card--wild .eq-bar { background: var(--magenta); }
-
-        .eq-bar:nth-child(1) { animation-delay: 0s; height: 60%; }
-        .eq-bar:nth-child(2) { animation-delay: 0.15s; height: 80%; }
-        .eq-bar:nth-child(3) { animation-delay: 0.3s; height: 40%; }
-        .eq-bar:nth-child(4) { animation-delay: 0.45s; height: 90%; }
-        .eq-bar:nth-child(5) { animation-delay: 0.6s; height: 50%; }
-        .eq-bar:nth-child(6) { animation-delay: 0.2s; height: 70%; }
-        .eq-bar:nth-child(7) { animation-delay: 0.35s; height: 55%; }
-
-        @keyframes eqBounce {
-            0%, 100% { transform: scaleY(0.3); }
-            50% { transform: scaleY(1); }
-        }
-
-        /* ---- Footer ---- */
-        .footer {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            padding: 3rem 1rem;
-            color: rgba(255, 255, 255, 0.25);
-            font-size: 0.85rem;
-            letter-spacing: 0.1em;
-        }
-
-        /* ---- Responsive ---- */
-        @media (max-width: 768px) {
-            .cards {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            .card {
-                min-height: 300px;
-            }
-        }
-
-        /* ---- Entry animation ---- */
-        .card {
-            opacity: 0;
-            transform: translateY(40px);
-            animation: cardIn 0.8s ease forwards;
-        }
-        .card:nth-child(1) { animation-delay: 0.2s; }
-        .card:nth-child(2) { animation-delay: 0.4s; }
-        .card:nth-child(3) { animation-delay: 0.6s; }
-
-        @keyframes cardIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .hero-bg {
+             background: radial-gradient(circle at 50% 50%, rgba(36, 0, 70, 0.8) 0%, rgba(15, 14, 15, 1) 100%);
         }
     </style>
 </head>
-<body>
-
-<canvas id="particles"></canvas>
-
-<section class="hero">
-    <h1 class="hero-title">Music Hub</h1>
-    <p class="hero-subtitle">Remixes &middot; EDM &middot; Hardstyle &middot; Latin &middot; Epic</p>
-    <div class="hero-line"></div>
-
-    <div class="cards">
-
-        <!-- SHARK MURCIA MUSIC -->
-        <a href="https://www.sharkmurciamusic.com" target="_blank" rel="noopener" class="card card--shark">
-            <div class="equalizer">
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
+<body class="antialiased">
+<div class="scanlines"></div>
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+<div class="flex justify-between items-center px-margin-desktop md:px-margin-desktop px-margin-mobile h-20 w-full max-w-container-max mx-auto">
+<!-- Brand -->
+<div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary bg-clip-text drop-shadow-[0_0_15px_rgba(71,214,255,0.5)]">
+                WILD UNIVERSE
             </div>
-            <div class="card-icon">
-                <svg viewBox="0 0 100 100" fill="none">
-                    <path d="M50 10 C20 10 5 35 5 55 C5 75 20 90 50 90 C80 90 95 75 95 55 C95 35 80 10 50 10Z" fill="none" stroke="var(--cyan)" stroke-width="2"/>
-                    <path d="M50 15 L45 40 L55 40 Z" fill="var(--cyan)" opacity="0.8"/>
-                    <path d="M30 50 L50 45 L70 50 L50 55 Z" fill="var(--cyan)" opacity="0.6"/>
-                    <circle cx="38" cy="42" r="3" fill="#fff"/>
-                    <circle cx="62" cy="42" r="3" fill="#fff"/>
-                    <path d="M35 60 Q50 70 65 60" stroke="#fff" stroke-width="2" fill="none"/>
-                    <path d="M35 62 L38 58 L41 62 L44 58 L47 62 L50 58 L53 62 L56 58 L59 62 L62 58 L65 62" stroke="#fff" stroke-width="1.5" fill="none"/>
-                </svg>
-            </div>
-            <h2 class="card-title">Shark Murcia</h2>
-            <p class="card-desc">El depredador del remix. Sonidos que muerden fuerte desde Murcia.</p>
-            <div class="card-tags">
-                <span class="tag">Remixes</span>
-                <span class="tag">EDM</span>
-                <span class="tag">Hardstyle</span>
-            </div>
-            <span class="card-cta">Entrar</span>
-        </a>
-
-        <!-- DJ POOL WORLD -->
-        <a href="https://djpoolworld.blogspot.com/" target="_blank" rel="noopener" class="card card--djpool">
-            <div class="equalizer">
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-            </div>
-            <div class="card-icon">
-                <svg viewBox="0 0 100 100" fill="none">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--green)" stroke-width="2"/>
-                    <circle cx="50" cy="50" r="28" fill="none" stroke="var(--green)" stroke-width="1.5" opacity="0.6"/>
-                    <circle cx="50" cy="50" r="15" fill="none" stroke="var(--green)" stroke-width="1" opacity="0.4"/>
-                    <circle cx="50" cy="50" r="5" fill="var(--green)"/>
-                    <path d="M50 10 L50 22" stroke="var(--green)" stroke-width="2"/>
-                    <path d="M50 78 L50 90" stroke="var(--green)" stroke-width="2"/>
-                    <path d="M10 50 L22 50" stroke="var(--green)" stroke-width="2"/>
-                    <path d="M78 50 L90 50" stroke="var(--green)" stroke-width="2"/>
-                    <path d="M22 22 L30 30" stroke="var(--green)" stroke-width="1.5" opacity="0.7"/>
-                    <path d="M70 70 L78 78" stroke="var(--green)" stroke-width="1.5" opacity="0.7"/>
-                    <path d="M78 22 L70 30" stroke="var(--green)" stroke-width="1.5" opacity="0.7"/>
-                    <path d="M30 70 L22 78" stroke="var(--green)" stroke-width="1.5" opacity="0.7"/>
-                </svg>
-            </div>
-            <h2 class="card-title">DJ Pool World</h2>
-            <p class="card-desc">El templo del DJ. Pools, packs y recursos para sesiones legendarias.</p>
-            <div class="card-tags">
-                <span class="tag">Latin Remix</span>
-                <span class="tag">Pools</span>
-                <span class="tag">Packs</span>
-            </div>
-            <span class="card-cta">Entrar</span>
-        </a>
-
-        <!-- WILD SOUNDS MUSIC -->
-        <a href="https://soundcloud.com/wildsoundsmusic" target="_blank" rel="noopener" class="card card--wild">
-            <div class="equalizer">
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-            </div>
-            <div class="card-icon">
-                <svg viewBox="0 0 100 100" fill="none">
-                    <path d="M50 5 L53 20 L65 8 L60 23 L75 18 L65 30 L82 30 L68 38 L85 45 L68 48 L80 58 L65 55 L72 70 L58 60 L58 78 L50 62 L42 78 L42 60 L28 70 L35 55 L20 58 L32 48 L15 45 L32 38 L18 30 L35 30 L25 18 L40 23 L35 8 L47 20 Z" fill="none" stroke="var(--magenta)" stroke-width="1.5"/>
-                    <circle cx="50" cy="45" r="12" fill="none" stroke="var(--magenta)" stroke-width="2"/>
-                    <path d="M5 75 Q25 65 50 75 Q75 85 95 75" stroke="var(--magenta)" stroke-width="1.5" opacity="0.5"/>
-                    <path d="M5 82 Q25 72 50 82 Q75 92 95 82" stroke="var(--magenta)" stroke-width="1" opacity="0.3"/>
-                </svg>
-            </div>
-            <h2 class="card-title">Wild Sounds</h2>
-            <p class="card-desc">Sonidos salvajes de la selva cosmica. Sets, tracks y energia pura.</p>
-            <div class="card-tags">
-                <span class="tag">SoundCloud</span>
-                <span class="tag">Sets</span>
-                <span class="tag">Epica</span>
-            </div>
-            <span class="card-cta">Entrar</span>
-        </a>
-
-    </div>
+<!-- Navigation Links (Hidden on mobile) -->
+<div class="hidden md:flex items-center gap-8 font-headline-md text-headline-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300 hover:bg-white/5 px-4 py-2 rounded-lg" href="#shark">Shark Murcia</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300 hover:bg-white/5 px-4 py-2 rounded-lg" href="#pool">Dj Pool World</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300 hover:bg-white/5 px-4 py-2 rounded-lg" href="#wild">Wild Sounds</a>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-4 text-primary font-headline-md text-headline-md">
+<button class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full active:scale-95">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+<button class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full active:scale-95">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="relative pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[819px] flex items-center justify-center overflow-hidden px-margin-desktop md:px-margin-desktop px-margin-mobile hero-bg">
+<!-- Background Image -->
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center opacity-40 mix-blend-screen" data-alt="A vast, cinematic cosmic nebula blending deep purples, vibrant cyan, and dark void blacks. Pulsating energy waves and distant stars create a high-octane, immersive deep space atmosphere. The lighting is intense and glowing, perfect for a high-energy music festival aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBEwlC9iJrYvQKwVGoPsdSE_vxmTJNGZr3Qo3fdaUir5takU3JVXzW1JGyauLr1OhWk0K_Q14NSKtU9CTIE7-14CRMenh6PF8D7pMiSMEoexFv7tgGD1ey0WkgUwySUxehXe7WxoFvgfsa79dFjlFoD-hRNoYZ5FBuY9KzldTPSmSIJIpo2kHqdAx-VbCVHTkzI8-lw4ljMAeBXYjhMvQi1HQ_nS4otKCyleRXdJ4W-n_tK-AN17JidVQ')"></div>
+</div>
+<!-- Content -->
+<div class="relative z-10 text-center flex flex-col items-center gap-8 max-w-4xl mx-auto mt-16">
+<div class="flex flex-wrap justify-center gap-4 mb-4">
+<span class="chip font-label-caps text-label-caps px-4 py-2">HARDSTYLE</span>
+<span class="chip font-label-caps text-label-caps px-4 py-2">EDM</span>
+<span class="chip font-label-caps text-label-caps px-4 py-2">LATIN REMIX</span>
+<span class="chip font-label-caps text-label-caps px-4 py-2">EPICA</span>
+</div>
+<h1 class="font-display-xl text-display-xl text-starlight-white text-glow">
+                    GATEWAY TO SOUND
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                    Immerse yourself in a wild universe of high-octane beats, primal rhythms, and cosmic frequencies. Choose your destination and enter the void.
+                </p>
+<div class="w-24 h-1 bg-gradient-to-r from-primary to-nebula-purple rounded-full mt-4"></div>
+</div>
 </section>
-
-<footer class="footer">
-    Music Hub &copy; 2024 &mdash; All rights reserved
+<!-- Portals Grid Section -->
+<section class="py-24 px-margin-desktop md:px-margin-desktop px-margin-mobile relative z-10">
+<div class="max-w-container-max mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Shark Murcia Portal -->
+<a class="group relative block h-[500px] rounded-xl overflow-hidden glass-panel glow-hover glow-hover-cyan" href="https://www.sharkmurciamusic.com" target="_blank">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" data-alt="A majestic great white shark swimming aggressively through deep cyan waters. Neon laser beams cut through the water. High contrast, cinematic underwater lighting with glowing accents. Dark, mysterious, and powerful aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBd5e3w4cF9fj71O4BlT9szT2DBKiYAgId6qecGJkA_JupNZKa04k0jyRgDflSz2tP8_FLsV7NGlDp7X4cQHrH_f8BnvSsVnup1OKJ-DcadEf1Sns5P3fZsHF_ZNjzYNVztYOc1i0c1cE609BXdG7IGd96ny4yJepxRgXWNEBFykrthiqzfrs8E9HOLOK-zL3LRLqJbHs4rS63XHRZrdClEv_Qu1oS4iWVYaIi_YWEcCdYJ9jlebnWc4Q')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#0f0e0f] via-transparent to-transparent opacity-90"></div>
+</div>
+<div class="absolute inset-0 p-8 flex flex-col justify-end z-10">
+<h2 class="font-headline-lg text-headline-lg text-starlight-white mb-2">Shark Murcia</h2>
+<p class="font-body-md text-body-md text-primary mb-6">Deep Water Hardstyle</p>
+<button class="btn-primary font-label-caps text-label-caps px-6 py-4 self-start w-auto flex items-center gap-2">
+                                Enter the Abyss
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
+</button>
+</div>
+</a>
+<!-- Dj Pool World Portal -->
+<a class="group relative block h-[500px] rounded-xl overflow-hidden glass-panel glow-hover glow-hover-purple mt-0 md:mt-12" href="https://djpoolworld.blogspot.com/" target="_blank">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" data-alt="A futuristic outdoor pool party scene set against a vast cosmic nebula sky. Blinding laser lights in magenta and cyan slice through the air above a massive, glowing swimming pool. High energy, euphoric festival atmosphere, cinematic dark mode." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBjnuz9SONrbRQ_sVmURoHRkcdcwnB3-cQRrtsPn5W8ybdlLomflGt1PFCDafioLVdPBDC0rOIdxB9zRaUmAvdXGkWZc3st08GEHlx8BGeDjv54AA60Jxs2nxB4YscVs9UxekFMXn1tjiD9QhiSn3iN0xv2gv0w5mL8ybokKxFI6KSerr7h-Km85GAzSxjD3YNn9vlG7Gg2Ji5HT1fgDe6NRKoJp19M9OTe1qzOr2Wav6l8HM5ERYz3Kg')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#0f0e0f] via-transparent to-transparent opacity-90"></div>
+</div>
+<div class="absolute inset-0 p-8 flex flex-col justify-end z-10">
+<h2 class="font-headline-lg text-headline-lg text-starlight-white mb-2">Dj Pool World</h2>
+<p class="font-body-md text-body-md text-tertiary-container mb-6">Cosmic EDM &amp; Remixes</p>
+<button class="btn-primary font-label-caps text-label-caps px-6 py-4 self-start w-auto flex items-center gap-2 bg-tertiary-container text-on-tertiary-container hover:shadow-[0_0_25px_theme('colors.tertiary-container')]">
+                                Join the Rhythm
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
+</button>
+</div>
+</a>
+<!-- Wild Sounds Music Portal -->
+<a class="group relative block h-[500px] rounded-xl overflow-hidden glass-panel glow-hover glow-hover-green mt-0 md:mt-24" href="https://soundcloud.com/wildsoundsmusic" target="_blank">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" data-alt="A dense, primal tropical jungle at midnight. bioluminescent plants emitting toxic lime green and cyan glows. The sky above is filled with a bright, dense starfield. High-contrast, cinematic, mysterious dark jungle aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCbXkFJrage3xgBUkQf3TKqr3ALrljvQXZzBCzfgfsQQB7JH7QKf9kHN5MVhYW-HnJPE6_accmeqviXM0ggtA0zYyEAbBmuMplJmmWQblVK6JlH8cQLaLZjT9L79GvBew_pfjYfDq7UsYTwk3_bOVjkHEZSt1AO9VG6txPukf_AwWMRCKYANCAfKEy23bv1Xvt8OV3yt7x5nvX_eE4EW3fNJKCT0I7QgbeyaxnHqcD9Ghd_wQbmOVIE7g')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#0f0e0f] via-transparent to-transparent opacity-90"></div>
+</div>
+<div class="absolute inset-0 p-8 flex flex-col justify-end z-10">
+<h2 class="font-headline-lg text-headline-lg text-starlight-white mb-2">Wild Sounds</h2>
+<p class="font-body-md text-body-md text-secondary-fixed mb-6">Primal Latin Beats</p>
+<button class="btn-primary font-label-caps text-label-caps px-6 py-4 self-start w-auto flex items-center gap-2 bg-secondary-fixed text-on-secondary-fixed hover:shadow-[0_0_25px_theme('colors.secondary-fixed')]">
+                                Venture into the Wild
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
+</button>
+</div>
+</a>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-margin-desktop bg-surface-container-lowest border-t border-white/5 relative z-20">
+<div class="max-w-container-max mx-auto flex flex-col items-center gap-8">
+<div class="font-headline-md text-headline-md text-starlight-white">
+                WILD UNIVERSE
+            </div>
+<div class="flex flex-wrap justify-center gap-6 font-body-md text-body-md">
+<a class="text-on-surface-variant hover:text-secondary hover:opacity-80 transition-opacity" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-secondary hover:opacity-80 transition-opacity" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-secondary hover:opacity-80 transition-opacity" href="#">Artist Portal</a>
+<a class="text-on-surface-variant hover:text-secondary hover:opacity-80 transition-opacity" href="#">Support</a>
+</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant opacity-50 mt-8">
+                &copy; 2024 WILD UNIVERSE - APEX AUDIO NETWORK
+            </div>
+</div>
 </footer>
-
-<script>
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
-    let w, h, particles;
-
-    function resize() {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-    }
-
-    function createParticles() {
-        const count = Math.floor((w * h) / 8000);
-        particles = [];
-        for (let i = 0; i < count; i++) {
-            particles.push({
-                x: Math.random() * w,
-                y: Math.random() * h,
-                r: Math.random() * 1.5 + 0.5,
-                dx: (Math.random() - 0.5) * 0.3,
-                dy: (Math.random() - 0.5) * 0.3,
-                alpha: Math.random() * 0.6 + 0.2,
-                color: ['#00f0ff', '#ff00e5', '#00ff88', '#ffd700'][Math.floor(Math.random() * 4)]
-            });
-        }
-    }
-
-    function draw() {
-        ctx.clearRect(0, 0, w, h);
-
-        for (const p of particles) {
-            p.x += p.dx;
-            p.y += p.dy;
-
-            if (p.x < 0) p.x = w;
-            if (p.x > w) p.x = 0;
-            if (p.y < 0) p.y = h;
-            if (p.y > h) p.y = 0;
-
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = p.color;
-            ctx.globalAlpha = p.alpha;
-            ctx.fill();
-        }
-
-        ctx.globalAlpha = 0.08;
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const dist = dx * dx + dy * dy;
-                if (dist < 8000) {
-                    ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.strokeStyle = particles[i].color;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                }
-            }
-        }
-
-        ctx.globalAlpha = 1;
-        requestAnimationFrame(draw);
-    }
-
-    window.addEventListener('resize', () => {
-        resize();
-        createParticles();
-    });
-
-    resize();
-    createParticles();
-    draw();
-</script>
-
-</body>
-</html>
+</body></html>
