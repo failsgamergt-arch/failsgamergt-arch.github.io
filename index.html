@@ -203,6 +203,51 @@
             opacity: 1;
         }
 
+        /* Equalizer bars */
+        .equalizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 32px;
+        }
+        .eq-bar {
+            width: 4px;
+            border-radius: 2px;
+            animation: eqBounce 1.2s ease-in-out infinite;
+        }
+        .eq-bar:nth-child(1) { animation-delay: 0s; height: 50%; }
+        .eq-bar:nth-child(2) { animation-delay: 0.15s; height: 80%; }
+        .eq-bar:nth-child(3) { animation-delay: 0.3s; height: 35%; }
+        .eq-bar:nth-child(4) { animation-delay: 0.45s; height: 90%; }
+        .eq-bar:nth-child(5) { animation-delay: 0.6s; height: 45%; }
+        .eq-bar:nth-child(6) { animation-delay: 0.2s; height: 70%; }
+        .eq-bar:nth-child(7) { animation-delay: 0.5s; height: 55%; }
+        @keyframes eqBounce {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+
+        /* Waveform */
+        .waveform {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            height: 24px;
+        }
+        .wave-bar {
+            width: 3px;
+            border-radius: 1px;
+            animation: wavePulse 1.5s ease-in-out infinite;
+        }
+        .wave-bar:nth-child(odd) { animation-delay: 0s; height: 30%; }
+        .wave-bar:nth-child(even) { animation-delay: 0.2s; height: 70%; }
+        .wave-bar:nth-child(3n) { animation-delay: 0.4s; height: 100%; }
+        .wave-bar:nth-child(4n) { animation-delay: 0.1s; height: 50%; }
+        @keyframes wavePulse {
+            0%, 100% { transform: scaleY(0.4); opacity: 0.6; }
+            50% { transform: scaleY(1); opacity: 1; }
+        }
+
         /* Scroll reveal */
         .reveal {
             opacity: 0;
@@ -267,7 +312,7 @@
                     GATEWAY TO SOUND
                 </h1>
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-                    Immerse yourself in a wild universe of high-octane beats, primal rhythms, and cosmic frequencies. Choose your destination and enter the void.
+                    The finest mixes and remixes to enjoy the best music. Handpicked tracks, curated sets, and pure energy for those who live for the beat.
                 </p>
 <div class="w-24 h-1 bg-gradient-to-r from-primary to-nebula-purple rounded-full mt-4"></div>
 </div>
@@ -282,9 +327,35 @@
 <div class="w-full h-full flex items-center justify-center bg-surface-container-lowest transition-transform duration-700 group-hover:scale-110"><div class="relative flex flex-col items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrSGTPAt3EmRcYkNCxJpdT0fykaZqmpe347wtsLChXwZNU0sFy-lTrGNEYvBsVwsNw7C2Wo986yCdBkb_VB3Tjsulj5qV0wXJEgry5JsTuOl3kYghVlQ5GSp3hkY1GvI75QT0AtW16Auj5ymVrDFeXf4twX41W__noRoDeN4TIkuSbMICi00uR2_9BzT3O_xlflhyojHoa6ZVX0hvasp-_VLkLW_8lKhAx8jyCi4gFI8Z63hE7RGcOGg" alt="Shark Murcia Logo" class="w-64 h-64 object-contain drop-shadow-[0_0_30px_rgba(0,210,255,0.5)]"><span class="font-label-caps text-label-caps text-primary mt-2 tracking-widest opacity-90">SHARK MUSIC</span></div></div>
 <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e0f] via-[#0f0e0f]/40 to-transparent opacity-90"></div>
 </div>
+<div class="absolute top-4 right-4 z-10">
+<div class="equalizer">
+<div class="eq-bar" style="background:#00d2ff"></div>
+<div class="eq-bar" style="background:#00d2ff"></div>
+<div class="eq-bar" style="background:#00d2ff"></div>
+<div class="eq-bar" style="background:#00d2ff"></div>
+<div class="eq-bar" style="background:#00d2ff"></div>
+<div class="eq-bar" style="background:#00d2ff"></div>
+<div class="eq-bar" style="background:#00d2ff"></div>
+</div>
+</div>
 <div class="absolute inset-0 p-8 flex flex-col justify-end z-10">
-<h2 class="font-headline-lg text-headline-lg text-starlight-white mb-2">Shark Murcia</h2>
-<p class="font-body-md text-body-md text-primary mb-6">Deep Hardstyle Mix</p>
+<div class="flex items-center gap-3 mb-2">
+<h2 class="font-headline-lg text-headline-lg text-starlight-white">Shark Murcia</h2>
+<span class="material-symbols-outlined text-primary opacity-80" style="font-size:28px; font-variation-settings: 'FILL' 1;">music_note</span>
+</div>
+<div class="flex items-center gap-3 mb-6">
+<p class="font-body-md text-body-md text-primary">Deep Hardstyle Mix</p>
+<div class="waveform">
+<div class="wave-bar" style="background:#00d2ff"></div>
+<div class="wave-bar" style="background:#00d2ff"></div>
+<div class="wave-bar" style="background:#00d2ff"></div>
+<div class="wave-bar" style="background:#00d2ff"></div>
+<div class="wave-bar" style="background:#00d2ff"></div>
+<div class="wave-bar" style="background:#00d2ff"></div>
+<div class="wave-bar" style="background:#00d2ff"></div>
+<div class="wave-bar" style="background:#00d2ff"></div>
+</div>
+</div>
 <button class="btn-primary font-label-caps text-label-caps px-6 py-4 self-start w-auto flex items-center gap-2 bg-primary-container text-on-primary-container hover:shadow-[0_0_25px_theme('colors.primary-container')]">
                                 Enter the Abyss
                                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
@@ -297,9 +368,35 @@
 <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" data-alt="A futuristic outdoor pool party scene set against a vast cosmic nebula sky. Blinding laser lights in magenta and cyan slice through the air above a massive, glowing swimming pool. High energy, euphoric festival atmosphere, cinematic dark mode." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBjnuz9SONrbRQ_sVmURoHRkcdcwnB3-cQRrtsPn5W8ybdlLomflGt1PFCDafioLVdPBDC0rOIdxB9zRaUmAvdXGkWZc3st08GEHlx8BGeDjv54AA60Jxs2nxB4YscVs9UxekFMXn1tjiD9QhiSn3iN0xv2gv0w5mL8ybokKxFI6KSerr7h-Km85GAzSxjD3YNn9vlG7Gg2Ji5HT1fgDe6NRKoJp19M9OTe1qzOr2Wav6l8HM5ERYz3Kg');"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e0f] via-transparent to-transparent opacity-90"></div>
 </div>
+<div class="absolute top-4 right-4 z-10">
+<div class="equalizer">
+<div class="eq-bar" style="background:#dab0ff"></div>
+<div class="eq-bar" style="background:#dab0ff"></div>
+<div class="eq-bar" style="background:#dab0ff"></div>
+<div class="eq-bar" style="background:#dab0ff"></div>
+<div class="eq-bar" style="background:#dab0ff"></div>
+<div class="eq-bar" style="background:#dab0ff"></div>
+<div class="eq-bar" style="background:#dab0ff"></div>
+</div>
+</div>
 <div class="absolute inset-0 p-8 flex flex-col justify-end z-10">
-<h2 class="font-headline-lg text-headline-lg text-starlight-white mb-2">Dj Pool World</h2>
-<p class="font-body-md text-body-md text-tertiary-container mb-6">Cosmic EDM &amp; Remixes</p>
+<div class="flex items-center gap-3 mb-2">
+<h2 class="font-headline-lg text-headline-lg text-starlight-white">Dj Pool World</h2>
+<span class="material-symbols-outlined text-tertiary-container opacity-80" style="font-size:28px; font-variation-settings: 'FILL' 1;">headphones</span>
+</div>
+<div class="flex items-center gap-3 mb-6">
+<p class="font-body-md text-body-md text-tertiary-container">Cosmic EDM &amp; Remixes</p>
+<div class="waveform">
+<div class="wave-bar" style="background:#dab0ff"></div>
+<div class="wave-bar" style="background:#dab0ff"></div>
+<div class="wave-bar" style="background:#dab0ff"></div>
+<div class="wave-bar" style="background:#dab0ff"></div>
+<div class="wave-bar" style="background:#dab0ff"></div>
+<div class="wave-bar" style="background:#dab0ff"></div>
+<div class="wave-bar" style="background:#dab0ff"></div>
+<div class="wave-bar" style="background:#dab0ff"></div>
+</div>
+</div>
 <button class="btn-primary font-label-caps text-label-caps px-6 py-4 self-start w-auto flex items-center gap-2 bg-[#b388ff] text-[#1a0033] hover:shadow-[0_0_25px_#b388ff]">
                                 Join the Rhythm
                                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
@@ -312,9 +409,35 @@
 <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" data-alt="A dense, primal tropical jungle at midnight. bioluminescent plants emitting toxic lime green and cyan glows. The sky above is filled with a bright, dense starfield. High-contrast, cinematic, mysterious dark jungle aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCbXkFJrage3xgBUkQf3TKqr3ALrljvQXZzBCzfgfsQQB7JH7QKf9kHN5MVhYW-HnJPE6_accmeqviXM0ggtA0zYyEAbBmuMplJmmWQblVK6JlH8cQLaLZjT9L79GvBew_pfjYfDq7UsYTwk3_bOVjkHEZSt1AO9VG6txPukf_AwWMRCKYANCAfKEy23bv1Xvt8OV3yt7x5nvX_eE4EW3fNJKCT0I7QgbeyaxnHqcD9Ghd_wQbmOVIE7g');"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e0f] via-transparent to-transparent opacity-90"></div>
 </div>
+<div class="absolute top-4 right-4 z-10">
+<div class="equalizer">
+<div class="eq-bar" style="background:#c3f400"></div>
+<div class="eq-bar" style="background:#c3f400"></div>
+<div class="eq-bar" style="background:#c3f400"></div>
+<div class="eq-bar" style="background:#c3f400"></div>
+<div class="eq-bar" style="background:#c3f400"></div>
+<div class="eq-bar" style="background:#c3f400"></div>
+<div class="eq-bar" style="background:#c3f400"></div>
+</div>
+</div>
 <div class="absolute inset-0 p-8 flex flex-col justify-end z-10">
-<h2 class="font-headline-lg text-headline-lg text-starlight-white mb-2">Wild Sounds</h2>
-<p class="font-body-md text-body-md text-secondary-fixed mb-6">Primal Latin Beats</p>
+<div class="flex items-center gap-3 mb-2">
+<h2 class="font-headline-lg text-headline-lg text-starlight-white">Wild Sounds</h2>
+<span class="material-symbols-outlined text-secondary-fixed opacity-80" style="font-size:28px; font-variation-settings: 'FILL' 1;">graphic_eq</span>
+</div>
+<div class="flex items-center gap-3 mb-6">
+<p class="font-body-md text-body-md text-secondary-fixed">Primal Latin Beats</p>
+<div class="waveform">
+<div class="wave-bar" style="background:#c3f400"></div>
+<div class="wave-bar" style="background:#c3f400"></div>
+<div class="wave-bar" style="background:#c3f400"></div>
+<div class="wave-bar" style="background:#c3f400"></div>
+<div class="wave-bar" style="background:#c3f400"></div>
+<div class="wave-bar" style="background:#c3f400"></div>
+<div class="wave-bar" style="background:#c3f400"></div>
+<div class="wave-bar" style="background:#c3f400"></div>
+</div>
+</div>
 <button class="btn-primary font-label-caps text-label-caps px-6 py-4 self-start w-auto flex items-center gap-2 bg-secondary-fixed text-on-secondary-fixed hover:shadow-[0_0_25px_theme('colors.secondary-fixed')]">
                                 Venture into the Wild
                                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
