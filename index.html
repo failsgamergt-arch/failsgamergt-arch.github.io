@@ -249,6 +249,15 @@
             50% { transform: scaleY(1); opacity: 1; }
         }
 
+        /* Footer glow pulse */
+        .footer-glow {
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+        @keyframes glowPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(65, 105, 225, 0.3), 0 0 30px rgba(65, 105, 225, 0.1); }
+            50% { text-shadow: 0 0 20px rgba(65, 105, 225, 0.6), 0 0 50px rgba(65, 105, 225, 0.3), 0 0 80px rgba(65, 105, 225, 0.1); }
+        }
+
         /* Scroll reveal */
         .reveal {
             opacity: 0;
@@ -271,9 +280,10 @@
 <nav class="reveal fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
 <div class="flex justify-between items-center px-margin-desktop md:px-margin-desktop px-margin-mobile h-20 w-full max-w-container-max mx-auto">
 <!-- Brand -->
-<div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary bg-clip-text drop-shadow-[0_0_15px_rgba(71,214,255,0.5)]">
-                SHARK UNIVERSE
-            </div>
+<div class="flex items-center gap-3">
+<img src="favicon.jpg" alt="Shark Universe" class="w-10 h-10 rounded-lg object-cover">
+<span class="font-headline-md text-headline-md font-bold tracking-tighter text-primary drop-shadow-[0_0_15px_rgba(71,214,255,0.5)]">SHARK UNIVERSE</span>
+</div>
 <!-- Navigation Links (Hidden on mobile) -->
 <div class="hidden md:flex items-center gap-8 font-headline-md text-headline-md">
 <!-- Intent mapping: Home/Landing doesn't directly map to a specific artist portal, so all inactive to highlight canvas, or none active if no direct match. Let's make none active to focus on the portals below as requested by intent fallback logic for a landing page. -->
@@ -311,7 +321,7 @@
 <div class="max-w-container-max mx-auto">
 <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
 <!-- Shark Murcia Portal -->
-<a class="reveal group relative block h-[500px] rounded-xl overflow-hidden glass-panel glow-hover glow-hover-cyan" href="https://www.sharkmurciamusic.com" target="_blank">
+<a id="shark" class="reveal group relative block h-[500px] rounded-xl overflow-hidden glass-panel glow-hover glow-hover-cyan" href="https://sharkmurcia-suscripciones.blogspot.com/p/suscripciones.html" target="_blank">
 <div class="absolute inset-0 z-0">
 <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" style="background-image: url('favicon.jpg');"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e0f] via-[#0f0e0f]/40 to-transparent opacity-90"></div>
@@ -341,7 +351,7 @@
 </div>
 </a>
 <!-- Dj Pool World Portal -->
-<a class="reveal group relative block h-[500px] rounded-xl overflow-hidden glass-panel glow-hover glow-hover-purple mt-0 md:mt-12" href="https://djpoolworld.blogspot.com/" target="_blank">
+<a id="pool" class="reveal group relative block h-[500px] rounded-xl overflow-hidden glass-panel glow-hover glow-hover-purple mt-0 md:mt-12" href="https://djpoolworld.blogspot.com/" target="_blank">
 <div class="absolute inset-0 z-0">
 <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" data-alt="A futuristic outdoor pool party scene set against a vast cosmic nebula sky. Blinding laser lights in magenta and cyan slice through the air above a massive, glowing swimming pool. High energy, euphoric festival atmosphere, cinematic dark mode." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBjnuz9SONrbRQ_sVmURoHRkcdcwnB3-cQRrtsPn5W8ybdlLomflGt1PFCDafioLVdPBDC0rOIdxB9zRaUmAvdXGkWZc3st08GEHlx8BGeDjv54AA60Jxs2nxB4YscVs9UxekFMXn1tjiD9QhiSn3iN0xv2gv0w5mL8ybokKxFI6KSerr7h-Km85GAzSxjD3YNn9vlG7Gg2Ji5HT1fgDe6NRKoJp19M9OTe1qzOr2Wav6l8HM5ERYz3Kg');"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e0f] via-transparent to-transparent opacity-90"></div>
@@ -371,7 +381,7 @@
 </div>
 </a>
 <!-- Wild Sounds Music Portal -->
-<a class="reveal group relative block h-[500px] rounded-xl overflow-hidden glass-panel glow-hover glow-hover-green mt-0 md:mt-24" href="https://soundcloud.com/wildsoundsmusic" target="_blank">
+<a id="wild" class="reveal group relative block h-[500px] rounded-xl overflow-hidden glass-panel glow-hover glow-hover-green mt-0 md:mt-24" href="https://soundcloud.com/wildsoundsmusic" target="_blank">
 <div class="absolute inset-0 z-0">
 <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" data-alt="A dense, primal tropical jungle at midnight. bioluminescent plants emitting toxic lime green and cyan glows. The sky above is filled with a bright, dense starfield. High-contrast, cinematic, mysterious dark jungle aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCbXkFJrage3xgBUkQf3TKqr3ALrljvQXZzBCzfgfsQQB7JH7QKf9kHN5MVhYW-HnJPE6_accmeqviXM0ggtA0zYyEAbBmuMplJmmWQblVK6JlH8cQLaLZjT9L79GvBew_pfjYfDq7UsYTwk3_bOVjkHEZSt1AO9VG6txPukf_AwWMRCKYANCAfKEy23bv1Xvt8OV3yt7x5nvX_eE4EW3fNJKCT0I7QgbeyaxnHqcD9Ghd_wQbmOVIE7g');"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e0f] via-transparent to-transparent opacity-90"></div>
@@ -407,7 +417,7 @@
 <!-- Footer (From Shared Components) -->
 <footer class="reveal w-full py-12 px-margin-desktop bg-surface-container-lowest border-t border-white/5 relative z-20">
 <div class="max-w-container-max mx-auto flex flex-col items-center gap-8">
-<div class="font-headline-md text-headline-md text-starlight-white">
+<div class="font-headline-md text-headline-md text-starlight-white footer-glow">
                 SHARK MURCIA MUSIC
             </div>
 <div class="flex flex-wrap justify-center gap-6 font-body-md text-body-md">
