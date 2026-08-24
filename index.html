@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="dark" lang="en" style="background:#0f0e0f"><head>
+<!DOCTYPE html><html class="dark" lang="en" style="background:#0f0e0f; scroll-behavior:smooth"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>SHARK UNIVERSE - Gateway to Sound</title>
@@ -249,6 +249,37 @@
             50% { transform: scaleY(1); opacity: 1; }
         }
 
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 50;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 1px solid rgba(65, 105, 225, 0.4);
+            background: rgba(15, 14, 15, 0.8);
+            backdrop-filter: blur(10px);
+            color: #4169E1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .scroll-top.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .scroll-top:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(65, 105, 225, 0.4);
+            border-color: #4169E1;
+        }
+
         /* Footer glow pulse */
         .footer-glow {
             animation: glowPulse 3s ease-in-out infinite;
@@ -305,7 +336,7 @@
 <!-- Content -->
 <div class="reveal relative z-10 text-center flex flex-col items-center gap-8 max-w-4xl mx-auto mt-16">
 <div class="flex flex-wrap justify-center gap-4 mb-4">
-<span class="chip font-label-caps text-label-caps px-4 py-2">SHARK UNIVERSE PRESENTS</span>
+<span class="chip px-5 py-2.5" style="font-family:'JetBrains Mono'; font-size:14px; font-weight:700; letter-spacing:0.1em; color:#e040fb;">SHARK UNIVERSE PRESENTS</span>
 </div>
 <h1 class="font-display-xl text-display-xl text-starlight-white text-glow">
                     GATEWAY TO SOUND
@@ -432,6 +463,10 @@
 </footer>
 
 
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0})">
+<span class="material-symbols-outlined">arrow_upward</span>
+</button>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('loaded');
@@ -445,6 +480,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    const scrollBtn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+            scrollBtn.classList.add('show');
+        } else {
+            scrollBtn.classList.remove('show');
+        }
+    });
 });
 </script>
 </body></html>
