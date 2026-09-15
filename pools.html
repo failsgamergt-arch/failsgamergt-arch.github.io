@@ -150,6 +150,35 @@ tailwind.config = {
 </div>
 </div>
 
+<!-- ========== ACCOUNT EDIT MODAL ========== -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="account-modal">
+<div class="modal-content bg-[#14141a] border border-zinc-700/80 rounded-2xl p-8 w-full max-w-sm mx-4 shadow-2xl relative">
+  <button onclick="hideAccountModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+  <h2 class="text-xl font-black text-brand-neon tracking-wider mb-6">MI CUENTA</h2>
+  <form onsubmit="saveAccount(event)">
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">USUARIO</label>
+        <input type="text" id="acc-user" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all">
+      </div>
+      <div>
+        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">NUEVA PASSWORD</label>
+        <input type="password" id="acc-pass" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" placeholder="********">
+      </div>
+      <div>
+        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">CONFIRMAR PASSWORD</label>
+        <input type="password" id="acc-pass2" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" placeholder="********">
+      </div>
+    </div>
+    <p class="text-red-500 text-xs mt-3 hidden" id="acc-error"></p>
+    <p class="text-emerald-400 text-xs mt-3 hidden" id="acc-success">Cuenta actualizada correctamente</p>
+    <button type="submit" class="mt-6 w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(223,255,0,.3)]">GUARDAR CAMBIOS</button>
+  </form>
+</div>
+</div>
+
 <!-- ========== MAIN ========== -->
 <main class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
 
@@ -380,6 +409,7 @@ function updateUserUI() {
         '<p class="text-sm font-black text-white">' + u.user.toUpperCase() + '</p>' +
         '<p class="text-[10px] text-zinc-500 font-bold tracking-widest mt-0.5">' + (isAdmin ? 'ADMINISTRADOR' : 'USUARIO') + '</p>' +
       '</div>' +
+      '<button onclick="showAccountModal()" class="' + itemClass + ' text-zinc-300 hover:bg-brand-neon hover:text-black">EDITAR MI CUENTA</button>' +
       (isAdmin ? '<a href="admin.html" class="' + itemClass + ' text-brand-neon hover:bg-brand-neon hover:text-black">PANEL ADMIN</a>' : '') +
       '<button onclick="logout()" class="' + itemClass + ' text-red-400 hover:bg-red-950 hover:text-red-300">CERRAR SESION</button>';
   } else {
@@ -406,6 +436,83 @@ function showLoginModal() {
 function hideLoginModal() {
   const m = document.getElementById('login-modal');
   m.classList.add('hidden'); m.classList.remove('flex');
+}
+
+// ============================================================
+// ACCOUNT MODAL
+// ============================================================
+function showAccountModal() {
+  const u = getCurrentUser();
+  if (!u) return;
+  const users = getUsers();
+  const full = users.find(x => x.user === u.user);
+  if (!full) return;
+  document.getElementById('acc-user').value = full.user;
+  document.getElementById('acc-pass').value = '';
+  document.getElementById('acc-pass2').value = '';
+  document.getElementById('acc-error').classList.add('hidden');
+  document.getElementById('acc-success').classList.add('hidden');
+  const m = document.getElementById('account-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+  document.getElementById('acc-user').focus();
+}
+function hideAccountModal() {
+  const m = document.getElementById('account-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+}
+function saveAccount(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('acc-error');
+  const okEl = document.getElementById('acc-success');
+  errEl.classList.add('hidden');
+  okEl.classList.add('hidden');
+
+  const u = getCurrentUser();
+  if (!u) return;
+
+  const newName = document.getElementById('acc-user').value.trim();
+  const newPass = document.getElementById('acc-pass').value;
+  const newPass2 = document.getElementById('acc-pass2').value;
+
+  if (!newName || newName.length < 3) {
+    errEl.textContent = 'El usuario debe tener al menos 3 caracteres';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (!newPass) {
+    errEl.textContent = 'Introduce una password';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (newPass !== newPass2) {
+    errEl.textContent = 'Las passwords no coinciden';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const users = getUsers();
+  if (newName !== u.user && users.some(x => x.user.toLowerCase() === newName.toLowerCase())) {
+    errEl.textContent = 'Ese nombre de usuario ya existe';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  // Mark old name as deleted if renamed (so defaults don't re-add)
+  const deleted = JSON.parse(localStorage.getItem('dpw_deleted') || '[]');
+  if (newName !== u.user && !deleted.includes(u.user)) {
+    deleted.push(u.user);
+    localStorage.setItem('dpw_deleted', JSON.stringify(deleted));
+  }
+
+  const updated = users.map(x => {
+    if (x.user !== u.user) return x;
+    return {...x, user: newName, pass: newPass};
+  });
+  localStorage.setItem('dpw_users', JSON.stringify(updated));
+  sessionStorage.setItem('dpw_session', JSON.stringify({user: newName, role: u.role}));
+  updateUserUI();
+  okEl.classList.remove('hidden');
+  setTimeout(() => hideAccountModal(), 1200);
 }
 
 // ============================================================
@@ -469,9 +576,10 @@ function hideDownloadModal() {
 document.addEventListener('click', (e) => {
   if (e.target.id === 'login-modal') hideLoginModal();
   if (e.target.id === 'download-modal') hideDownloadModal();
+  if (e.target.id === 'account-modal') hideAccountModal();
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { hideLoginModal(); hideDownloadModal(); }
+  if (e.key === 'Escape') { hideLoginModal(); hideDownloadModal(); hideAccountModal(); }
 });
 
 // ============================================================
