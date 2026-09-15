@@ -453,6 +453,13 @@ document.addEventListener('keydown', (e) => {
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+  if (window.location.search.includes('reset')) {
+    localStorage.removeItem('dpw_users');
+    localStorage.removeItem('dpw_deleted');
+    window.location.replace(window.location.pathname);
+    return;
+  }
+
   if (checkAccess()) {
     updateStats();
     renderTable();

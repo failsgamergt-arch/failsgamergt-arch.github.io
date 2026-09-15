@@ -598,6 +598,14 @@ window.addEventListener('scroll', () => {
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+  // ?reset limpia localStorage y recarga limpio
+  if (window.location.search.includes('reset')) {
+    localStorage.removeItem('dpw_users');
+    localStorage.removeItem('dpw_deleted');
+    window.location.replace(window.location.pathname);
+    return;
+  }
+
   getUsers();
   updateUserUI();
 
