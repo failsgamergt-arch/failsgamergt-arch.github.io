@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DJ POOL WORLD - Admin</title>
+<link rel="icon" href="favicon.jpg" type="image/jpeg">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        brand: { black:'#0a0a0c', card:'#121216', surface:'#18181f', neon:'#dfff00', neonHover:'#f0ff40', neonMuted:'#9eb500', border:'#23232b' }
+      },
+      fontFamily: { sans: ['Montserrat','Inter','system-ui','sans-serif'] }
+    }
+  }
+};
+</script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeScale{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.fade-up{animation:fadeUp .5s ease-out both}
+.fade-scale{animation:fadeScale .3s ease-out both}
+.modal-backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px);transition:opacity .3s ease}
+.modal-content{animation:fadeScale .3s ease-out}
+</style>
+</head>
+<body class="bg-[#0b0b0e] text-zinc-100 font-sans min-h-screen antialiased selection:bg-brand-neon selection:text-black">
+
+<!-- HEADER -->
+<header class="sticky top-0 z-50 bg-[#0c0c0f]/95 backdrop-blur-md border-b border-zinc-900/80">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+  <a class="flex items-center gap-3 group" href="pools.html">
+    <div class="flex items-center gap-1">
+      <span class="w-1.5 h-6 bg-brand-neon rounded-full inline-block"></span>
+      <span class="w-1.5 h-4 bg-white/70 rounded-full inline-block"></span>
+      <span class="w-1.5 h-7 bg-brand-neon rounded-full inline-block"></span>
+    </div>
+    <span class="text-lg font-black text-white tracking-wider">DJ POOL <span class="text-brand-neon">WORLD</span></span>
+  </a>
+  <div class="flex items-center gap-4">
+    <span class="text-xs font-bold tracking-wider text-zinc-400" id="admin-user"></span>
+    <a href="pools.html" class="text-xs font-bold tracking-widest text-zinc-400 hover:text-brand-neon transition-colors">VOLVER</a>
+    <button onclick="logout()" class="text-xs font-bold tracking-widest text-red-500 hover:text-red-400 transition-colors">SALIR</button>
+  </div>
+</div>
+</header>
+
+<!-- ACCESS DENIED (shown if not admin) -->
+<div id="access-denied" class="hidden max-w-md mx-auto mt-32 text-center px-6">
+  <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+  <h2 class="text-2xl font-black text-red-500 tracking-wider mb-3">ACCESO DENEGADO</h2>
+  <p class="text-zinc-400 text-sm mb-6">Necesitas permisos de administrador.</p>
+  <a href="pools.html" class="inline-flex px-6 py-2.5 rounded-lg bg-brand-neon text-black font-black tracking-widest text-xs hover:bg-brand-neonHover transition-all">IR A POOLS</a>
+</div>
+
+<!-- MAIN (shown if admin) -->
+<main id="admin-panel" class="hidden max-w-[1200px] mx-auto px-4 sm:px-6 py-8 space-y-8">
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 fade-up">
+    <div class="bg-[#14141a] border border-zinc-800 rounded-xl p-5 text-center">
+      <p class="text-3xl font-black text-brand-neon" id="stat-total">0</p>
+      <p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">TOTAL USUARIOS</p>
+    </div>
+    <div class="bg-[#14141a] border border-zinc-800 rounded-xl p-5 text-center">
+      <p class="text-3xl font-black text-emerald-400" id="stat-active">0</p>
+      <p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">ACTIVOS</p>
+    </div>
+    <div class="bg-[#14141a] border border-zinc-800 rounded-xl p-5 text-center">
+      <p class="text-3xl font-black text-red-400" id="stat-inactive">0</p>
+      <p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">INACTIVOS</p>
+    </div>
+    <div class="bg-[#14141a] border border-zinc-800 rounded-xl p-5 text-center">
+      <p class="text-3xl font-black text-violet-400" id="stat-admins">0</p>
+      <p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">ADMINS</p>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <h1 class="text-xl font-black tracking-wider text-brand-neon uppercase">Gestion de Usuarios</h1>
+    <div class="flex items-center gap-3 w-full sm:w-auto">
+      <div class="relative flex-1 sm:flex-initial">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input type="text" id="search-input" placeholder="Buscar usuario..." class="w-full sm:w-56 bg-[#0c0c10] border border-zinc-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" oninput="renderTable()">
+      </div>
+      <button onclick="openModal()" class="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-neon text-black font-black tracking-widest text-xs hover:bg-brand-neonHover hover:shadow-[0_0_20px_rgba(223,255,0,.3)] transition-all duration-200">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        NUEVO
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-[#14141a] border border-zinc-800 rounded-xl overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-zinc-800 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+            <th class="text-left px-5 py-4">Usuario</th>
+            <th class="text-left px-5 py-4">Rol</th>
+            <th class="text-left px-5 py-4">Estado</th>
+            <th class="text-left px-5 py-4">Creado</th>
+            <th class="text-right px-5 py-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+    <div id="empty-state" class="hidden text-center py-12">
+      <svg class="w-12 h-12 text-zinc-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <p class="text-zinc-500 text-sm font-bold">No hay usuarios</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- USER MODAL -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="user-modal">
+<div class="modal-content bg-[#14141a] border border-zinc-700/80 rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl relative">
+  <button onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+  <h2 class="text-lg font-black text-brand-neon tracking-wider mb-6" id="modal-title">NUEVO USUARIO</h2>
+  <form onsubmit="saveUser(event)">
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">USUARIO</label>
+        <input type="text" id="m-user" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" placeholder="nombre de usuario">
+      </div>
+      <div>
+        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">PASSWORD</label>
+        <input type="text" id="m-pass" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" placeholder="password">
+      </div>
+      <div>
+        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">ROL</label>
+        <select id="m-role" class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all">
+          <option value="user">Usuario</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-3">
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="m-active" checked class="sr-only peer">
+          <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-neon"></div>
+        </label>
+        <span class="text-xs font-bold tracking-wider text-zinc-400">ACTIVO</span>
+      </div>
+    </div>
+    <p class="text-red-500 text-xs mt-3 hidden" id="modal-error"></p>
+    <div class="flex gap-3 mt-6">
+      <button type="submit" class="flex-1 py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(223,255,0,.3)]">GUARDAR</button>
+      <button type="button" onclick="closeModal()" class="px-6 py-3 rounded-lg border border-zinc-700 text-zinc-400 font-bold tracking-widest text-sm hover:border-zinc-500 hover:text-white transition-all duration-200">CANCELAR</button>
+    </div>
+  </form>
+</div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="delete-modal">
+<div class="modal-content bg-[#14141a] border border-red-900/50 rounded-2xl p-8 w-full max-w-sm mx-4 shadow-2xl text-center">
+  <svg class="w-14 h-14 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+  <h3 class="text-lg font-black text-red-500 tracking-wider mb-2">ELIMINAR USUARIO</h3>
+  <p class="text-zinc-400 text-sm mb-6">Eliminar a <strong class="text-white" id="delete-name"></strong>? Esta accion no se puede deshacer.</p>
+  <div class="flex gap-3">
+    <button onclick="confirmDelete()" class="flex-1 py-3 rounded-lg bg-red-600 text-white font-black tracking-widest text-sm hover:bg-red-500 transition-all">ELIMINAR</button>
+    <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-lg border border-zinc-700 text-zinc-400 font-bold tracking-widest text-sm hover:border-zinc-500 hover:text-white transition-all">CANCELAR</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ============================================================
+// AUTH
+// ============================================================
+const DEFAULT_USERS = [
+  {user:'admin', pass:'admin2026', role:'admin', active:true, created:'2026-01-01'},
+  {user:'sharkmusic', pass:'shark-music_2026', role:'admin', active:true, created:'2026-09-15'},
+  {user:'prueba1', pass:'prueba_1', role:'user', active:true, created:'2026-09-15'},
+  {user:'demo', pass:'demo123', role:'user', active:true, created:'2026-09-01'}
+];
+function getUsers() {
+  const d = localStorage.getItem('dpw_users');
+  const users = d ? JSON.parse(d) : [];
+  let changed = false;
+  DEFAULT_USERS.forEach(def => {
+    if (!users.some(u => u.user === def.user)) {
+      users.push(def);
+      changed = true;
+    }
+  });
+  if (changed || !d) localStorage.setItem('dpw_users', JSON.stringify(users));
+  return users;
+}
+function saveUsers(users) {
+  localStorage.setItem('dpw_users', JSON.stringify(users));
+}
+function getCurrentUser() {
+  const s = sessionStorage.getItem('dpw_session');
+  return s ? JSON.parse(s) : null;
+}
+function logout() {
+  sessionStorage.removeItem('dpw_session');
+  window.location.href = 'pools.html';
+}
+
+// ============================================================
+// ACCESS CHECK
+// ============================================================
+function checkAccess() {
+  const u = getCurrentUser();
+  if (!u || u.role !== 'admin') {
+    document.getElementById('access-denied').classList.remove('hidden');
+    document.getElementById('admin-panel').classList.add('hidden');
+    return false;
+  }
+  document.getElementById('access-denied').classList.add('hidden');
+  document.getElementById('admin-panel').classList.remove('hidden');
+  document.getElementById('admin-user').textContent = u.user.toUpperCase();
+  return true;
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function updateStats() {
+  const users = getUsers();
+  document.getElementById('stat-total').textContent = users.length;
+  document.getElementById('stat-active').textContent = users.filter(u => u.active).length;
+  document.getElementById('stat-inactive').textContent = users.filter(u => !u.active).length;
+  document.getElementById('stat-admins').textContent = users.filter(u => u.role === 'admin').length;
+}
+
+// ============================================================
+// TABLE
+// ============================================================
+function renderTable() {
+  const users = getUsers();
+  const search = (document.getElementById('search-input').value || '').toLowerCase();
+  const filtered = search ? users.filter(u => u.user.toLowerCase().includes(search)) : users;
+  const tbody = document.getElementById('users-tbody');
+  const empty = document.getElementById('empty-state');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+
+  tbody.innerHTML = filtered.map((u, i) => `
+    <tr class="border-b border-zinc-800/50 hover:bg-zinc-900/30 transition-colors" style="animation:fadeUp .3s ease-out ${i*40}ms both">
+      <td class="px-5 py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full ${u.role === 'admin' ? 'bg-brand-neon/20 text-brand-neon' : 'bg-zinc-800 text-zinc-400'} flex items-center justify-center text-xs font-black uppercase">${u.user.charAt(0)}</div>
+          <div>
+            <p class="font-bold text-white">${u.user}</p>
+            <p class="text-[10px] text-zinc-600 font-mono">${u.pass}</p>
+          </div>
+        </div>
+      </td>
+      <td class="px-5 py-4">
+        <span class="inline-flex px-2.5 py-1 rounded text-[10px] font-black tracking-widest uppercase ${u.role === 'admin' ? 'bg-brand-neon/10 text-brand-neon border border-brand-neon/30' : 'bg-zinc-800 text-zinc-400 border border-zinc-700'}">${u.role}</span>
+      </td>
+      <td class="px-5 py-4">
+        <span class="inline-flex items-center gap-1.5 text-xs font-bold">
+          <span class="w-2 h-2 rounded-full ${u.active ? 'bg-emerald-400' : 'bg-red-500'}"></span>
+          <span class="${u.active ? 'text-emerald-400' : 'text-red-400'}">${u.active ? 'Activo' : 'Inactivo'}</span>
+        </span>
+      </td>
+      <td class="px-5 py-4 text-zinc-500 text-xs font-mono">${u.created || '-'}</td>
+      <td class="px-5 py-4">
+        <div class="flex items-center justify-end gap-2">
+          <button onclick="toggleActive('${u.user}')" title="${u.active ? 'Desactivar' : 'Activar'}" class="p-2 rounded-lg hover:bg-zinc-800 transition-colors ${u.active ? 'text-emerald-400 hover:text-emerald-300' : 'text-red-400 hover:text-red-300'}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${u.active ? 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'}"/></svg>
+          </button>
+          <button onclick="editUser('${u.user}')" title="Editar" class="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-brand-neon transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </button>
+          <button onclick="deleteUser('${u.user}')" title="Eliminar" class="p-2 rounded-lg text-zinc-400 hover:bg-red-950 hover:text-red-400 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+let editingUser = null;
+let deletingUser = null;
+
+function toggleActive(username) {
+  const users = getUsers();
+  const current = getCurrentUser();
+  if (username === current.user) return;
+  const updated = users.map(u => u.user === username ? {...u, active: !u.active} : u);
+  saveUsers(updated);
+  renderTable();
+  updateStats();
+}
+
+function openModal(username) {
+  editingUser = username || null;
+  const modal = document.getElementById('user-modal');
+  const title = document.getElementById('modal-title');
+  const errEl = document.getElementById('modal-error');
+  errEl.classList.add('hidden');
+
+  if (editingUser) {
+    const users = getUsers();
+    const u = users.find(x => x.user === editingUser);
+    if (!u) return;
+    title.textContent = 'EDITAR USUARIO';
+    document.getElementById('m-user').value = u.user;
+    document.getElementById('m-user').readOnly = true;
+    document.getElementById('m-pass').value = u.pass;
+    document.getElementById('m-role').value = u.role;
+    document.getElementById('m-active').checked = u.active;
+  } else {
+    title.textContent = 'NUEVO USUARIO';
+    document.getElementById('m-user').value = '';
+    document.getElementById('m-user').readOnly = false;
+    document.getElementById('m-pass').value = '';
+    document.getElementById('m-role').value = 'user';
+    document.getElementById('m-active').checked = true;
+  }
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeModal() {
+  const modal = document.getElementById('user-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  editingUser = null;
+}
+
+function saveUser(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('modal-error');
+  const username = document.getElementById('m-user').value.trim();
+  const pass = document.getElementById('m-pass').value;
+  const role = document.getElementById('m-role').value;
+  const active = document.getElementById('m-active').checked;
+
+  if (!username || !pass) {
+    errEl.textContent = 'Todos los campos son obligatorios';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (username.length < 3) {
+    errEl.textContent = 'El usuario debe tener al menos 3 caracteres';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const users = getUsers();
+
+  if (editingUser) {
+    const current = getCurrentUser();
+    const updated = users.map(u => {
+      if (u.user !== editingUser) return u;
+      const newRole = (editingUser === current.user) ? u.role : role;
+      const newActive = (editingUser === current.user) ? true : active;
+      return {...u, pass, role: newRole, active: newActive};
+    });
+    saveUsers(updated);
+  } else {
+    if (users.some(u => u.user.toLowerCase() === username.toLowerCase())) {
+      errEl.textContent = 'El usuario ya existe';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    const today = new Date().toISOString().split('T')[0];
+    saveUsers([...users, {user: username, pass, role, active, created: today}]);
+  }
+
+  closeModal();
+  renderTable();
+  updateStats();
+}
+
+function editUser(username) {
+  openModal(username);
+}
+
+function deleteUser(username) {
+  const current = getCurrentUser();
+  if (username === current.user) return;
+  deletingUser = username;
+  document.getElementById('delete-name').textContent = username;
+  const m = document.getElementById('delete-modal');
+  m.classList.remove('hidden');
+  m.classList.add('flex');
+}
+
+function closeDeleteModal() {
+  const m = document.getElementById('delete-modal');
+  m.classList.add('hidden');
+  m.classList.remove('flex');
+  deletingUser = null;
+}
+
+function confirmDelete() {
+  if (!deletingUser) return;
+  const users = getUsers().filter(u => u.user !== deletingUser);
+  saveUsers(users);
+  closeDeleteModal();
+  renderTable();
+  updateStats();
+}
+
+// Close modals on backdrop/escape
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'user-modal') closeModal();
+  if (e.target.id === 'delete-modal') closeDeleteModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closeModal(); closeDeleteModal(); }
+});
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  if (checkAccess()) {
+    updateStats();
+    renderTable();
+  }
+});
+</script>
+</body>
+</html>

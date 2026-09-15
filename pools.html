@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DJ POOL WORLD - Pools</title>
+<link rel="icon" href="favicon.jpg" type="image/jpeg">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        brand: { black:'#0a0a0c', card:'#121216', surface:'#18181f', neon:'#dfff00', neonHover:'#f0ff40', neonMuted:'#9eb500', border:'#23232b' }
+      },
+      fontFamily: { sans: ['Montserrat','Inter','system-ui','sans-serif'] }
+    }
+  }
+};
+</script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box}
+.no-scrollbar::-webkit-scrollbar{display:none}
+.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeScale{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseNeon{0%,100%{box-shadow:0 0 15px rgba(223,255,0,.15)}50%{box-shadow:0 0 30px rgba(223,255,0,.3)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+.fade-up{animation:fadeUp .5s ease-out both}
+.fade-scale{animation:fadeScale .3s ease-out both}
+.slide-down{animation:slideDown .25s ease-out both}
+.pulse-neon{animation:pulseNeon 3s ease-in-out infinite}
+
+/* Staggered reveals */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* Hover effects */
+.card-hover{transition:all .35s cubic-bezier(.4,0,.2,1)}
+.card-hover:hover{transform:translateY(-4px);box-shadow:0 0 25px rgba(223,255,0,.2)}
+
+.tab-glow{transition:all .2s ease}
+.tab-glow:hover{text-shadow:0 0 8px rgba(223,255,0,.4)}
+
+.download-btn{
+  position:relative;overflow:hidden;
+  transition:all .3s ease;
+}
+.download-btn::before{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(223,255,0,.1),transparent);
+  transition:left .5s ease;
+}
+.download-btn:hover::before{left:100%}
+.download-btn:hover{
+  background:rgba(223,255,0,.1);
+  box-shadow:0 0 20px rgba(223,255,0,.2);
+}
+
+/* Pool card flip */
+.pool-card-wrapper{perspective:600px}
+.pool-card-inner{transition:transform .5s ease,opacity .3s ease}
+
+/* Neon line separator */
+.neon-line{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(223,255,0,.4) 30%,rgba(223,255,0,.4) 70%,transparent);
+}
+
+/* Modal */
+.modal-backdrop{
+  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+  transition:opacity .3s ease;
+}
+.modal-content{animation:fadeScale .3s ease-out}
+
+/* Skeleton shimmer */
+.skeleton{
+  background:linear-gradient(90deg,#1a1a22 25%,#252530 50%,#1a1a22 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+}
+</style>
+</head>
+<body class="bg-[#0b0b0e] text-zinc-100 font-sans min-h-screen antialiased selection:bg-brand-neon selection:text-black">
+
+<!-- ========== HEADER ========== -->
+<header class="sticky top-0 z-50 bg-[#0c0c0f]/95 backdrop-blur-md border-b border-zinc-900/80 transition-shadow duration-300" id="main-header">
+<div class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+  <a class="flex items-center gap-3 group" href="index.html">
+    <div class="flex items-center gap-1">
+      <span class="w-1.5 h-6 bg-brand-neon rounded-full inline-block group-hover:scale-y-125 transition-transform duration-300"></span>
+      <span class="w-1.5 h-4 bg-white/70 rounded-full inline-block group-hover:h-5 transition-all duration-300"></span>
+      <span class="w-1.5 h-7 bg-brand-neon rounded-full inline-block group-hover:scale-y-110 transition-transform duration-300"></span>
+    </div>
+    <div class="flex items-baseline tracking-tight">
+      <span class="text-xl sm:text-2xl font-black text-white tracking-wider group-hover:text-zinc-200 transition-colors">DJ POOL</span>
+      <span class="text-xl sm:text-2xl font-black text-brand-neon ml-1 group-hover:text-brand-neonHover transition-colors">WORLD</span>
+    </div>
+  </a>
+
+  <nav class="hidden xl:flex items-center gap-7 text-[13px] font-bold tracking-widest text-zinc-300">
+    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="index.html">INICIO</a>
+    <div class="relative group">
+      <button class="flex items-center gap-1.5 text-brand-neon hover:text-brand-neonHover transition-colors py-2" type="button">
+        <span>POOLS</span>
+        <svg class="w-3.5 h-3.5 fill-current transition-transform duration-300 group-hover:rotate-180" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" fill-rule="evenodd"/></svg>
+      </button>
+      <div class="absolute left-0 top-full mt-1 w-56 rounded-md bg-[#16161b] border border-zinc-700/80 shadow-2xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 translate-y-1 group-hover:translate-y-0" id="pools-dropdown"></div>
+    </div>
+    <div class="relative group">
+      <button class="flex items-center gap-1.5 hover:text-white transition-colors py-2" type="button">
+        <span>CATALOGO</span>
+        <svg class="w-3.5 h-3.5 fill-current transition-transform duration-300 group-hover:rotate-180" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" fill-rule="evenodd"/></svg>
+      </button>
+      <div class="absolute left-0 top-full mt-1 w-48 rounded-md bg-[#16161b] border border-zinc-700/80 shadow-2xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 translate-y-1 group-hover:translate-y-0">
+        <a class="block px-4 py-2.5 text-xs tracking-wider text-zinc-300 hover:bg-brand-neon hover:text-black font-extrabold transition-all duration-150" href="#">LATIN REMIX</a>
+        <a class="block px-4 py-2.5 text-xs tracking-wider text-zinc-300 hover:bg-brand-neon hover:text-black font-extrabold transition-all duration-150" href="#">EDM / DANCE</a>
+        <a class="block px-4 py-2.5 text-xs tracking-wider text-zinc-300 hover:bg-brand-neon hover:text-black font-extrabold transition-all duration-150" href="#">URBAN</a>
+      </div>
+    </div>
+    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="#">ELECTRONICA</a>
+    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="#">RECURSOS</a>
+    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="#">PLANES</a>
+    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="#">SOPORTE</a>
+  </nav>
+
+  <div class="flex items-center gap-4 sm:gap-6">
+    <a class="flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wider text-zinc-200 hover:text-brand-neon transition-colors duration-200" href="#" id="btn-login" onclick="showLoginModal(); return false;">
+      <svg class="w-5 h-5 text-brand-neon fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      <span class="hidden sm:inline" id="user-display">MI CUENTA</span>
+    </a>
+    <a class="inline-flex items-center justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-black tracking-widest uppercase bg-brand-neon text-black hover:bg-brand-neonHover shadow-[0_0_15px_rgba(223,255,0,0.3)] hover:shadow-[0_0_25px_rgba(223,255,0,0.5)] transition-all duration-300 hover:scale-105" href="#">SUSCRIBIRSE</a>
+  </div>
+</div>
+<!-- Mobile -->
+<div class="xl:hidden px-4 pb-2 flex justify-end">
+  <button onclick="document.getElementById('mobile-nav').classList.toggle('hidden')" class="text-zinc-400 hover:text-white p-2 transition-colors">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</div>
+<div id="mobile-nav" class="hidden xl:hidden px-6 pb-4 space-y-1 border-t border-zinc-800/50 slide-down">
+  <a href="index.html" class="block py-2.5 text-xs font-bold tracking-widest text-zinc-300 hover:text-brand-neon transition-colors">INICIO</a>
+  <div id="mobile-pools-links"></div>
+</div>
+</header>
+
+<!-- ========== LOGIN MODAL ========== -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="login-modal">
+<div class="modal-content bg-[#14141a] border border-zinc-700/80 rounded-2xl p-8 w-full max-w-sm mx-4 shadow-2xl relative">
+  <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+  <h2 class="text-xl font-black text-brand-neon tracking-wider mb-6">INICIAR SESION</h2>
+  <form onsubmit="handleLogin(event)">
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">USUARIO</label>
+        <input type="text" id="login-user" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" placeholder="tu usuario">
+      </div>
+      <div>
+        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">PASSWORD</label>
+        <input type="password" id="login-pass" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" placeholder="********">
+      </div>
+    </div>
+    <p class="text-red-500 text-xs mt-3 hidden" id="login-error">Usuario o password incorrectos</p>
+    <button type="submit" class="mt-6 w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(223,255,0,.3)]">ENTRAR</button>
+  </form>
+</div>
+</div>
+
+<!-- ========== DOWNLOAD MODAL ========== -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="download-modal">
+<div class="modal-content bg-[#14141a] border border-zinc-700/80 rounded-2xl p-8 w-full max-w-lg mx-4 shadow-2xl relative max-h-[80vh] overflow-y-auto">
+  <button onclick="hideDownloadModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors z-10">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+  <h2 class="text-lg font-black text-brand-neon tracking-wider mb-2" id="dl-modal-title">DESCARGAS</h2>
+  <p class="text-xs text-zinc-500 mb-5" id="dl-modal-sub"></p>
+  <div id="dl-modal-links" class="space-y-2"></div>
+  <div id="dl-modal-noauth" class="hidden text-center py-8">
+    <svg class="w-12 h-12 text-zinc-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+    <p class="text-zinc-400 font-bold text-sm mb-4">Inicia sesion para descargar</p>
+    <button onclick="hideDownloadModal(); showLoginModal();" class="px-6 py-2.5 rounded-lg bg-brand-neon text-black font-black tracking-widest text-xs hover:bg-brand-neonHover transition-all">INICIAR SESION</button>
+  </div>
+</div>
+</div>
+
+<!-- ========== MAIN ========== -->
+<main class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+  <!-- Hero -->
+  <section class="reveal border border-zinc-800/80 bg-gradient-to-b from-[#14141a] to-[#0e0e12] rounded-2xl p-6 sm:p-8 lg:p-10 relative overflow-hidden card-hover">
+    <div class="absolute -right-20 -top-20 w-96 h-96 bg-brand-neon/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -left-40 bottom-0 w-80 h-80 bg-brand-neon/3 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="relative z-10 max-w-4xl">
+      <div class="flex items-center gap-2 mb-2">
+        <svg class="w-5 h-5 text-brand-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span class="text-xs sm:text-sm font-black tracking-[0.25em] text-brand-neon uppercase">EL MEJOR CATALOGO</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black uppercase text-brand-neon tracking-tight mb-3" id="hero-title">SEPTIEMBRE | POOLS</h1>
+      <p class="text-zinc-400 text-sm sm:text-base font-medium leading-relaxed">Las ultimas actualizaciones de las mejores pools listas para descargar en un solo lugar.</p>
+      <div class="flex items-center gap-4 mt-5">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-neon/10 border border-brand-neon/30 text-brand-neon text-[11px] font-bold tracking-wider" id="hero-stats">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+          365 ARCHIVOS
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-800/50 border border-zinc-700/50 text-zinc-400 text-[11px] font-bold tracking-wider" id="hero-pools-count">
+          28 POOLS
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sections -->
+  <div id="sections-container" class="space-y-14"></div>
+
+</main>
+
+<!-- ========== SCROLL TO TOP ========== -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-brand-neon text-black flex items-center justify-center shadow-[0_0_20px_rgba(223,255,0,.3)] hover:shadow-[0_0_30px_rgba(223,255,0,.5)] hover:scale-110 transition-all duration-300 opacity-0 invisible translate-y-4">
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+</button>
+
+<!-- ========== FOOTER ========== -->
+<footer class="mt-20 border-t border-zinc-900 bg-[#09090b] py-10 text-center text-xs text-zinc-500">
+<div class="max-w-[1560px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+  <div class="flex items-center gap-2">
+    <span class="font-bold text-zinc-300 uppercase tracking-widest">DJ POOL WORLD</span>
+    <span>&copy; 2026</span>
+  </div>
+  <div class="flex items-center gap-6 text-zinc-400 font-semibold uppercase tracking-wider text-[11px]">
+    <a class="hover:text-brand-neon transition-colors duration-200" href="https://djpoolworld.blogspot.com/" target="_blank">Blog</a>
+    <a class="hover:text-brand-neon transition-colors duration-200" href="#">Privacidad</a>
+    <a class="hover:text-brand-neon transition-colors duration-200" href="#">DMCA</a>
+    <a class="hover:text-brand-neon transition-colors duration-200" href="admin.html">Admin</a>
+  </div>
+</div>
+</footer>
+
+<!-- ========== MEGA LINKS DATA ========== -->
+<script src="pools-links.js"></script>
+
+<script>
+// ============================================================
+// POOL VISUAL CARDS
+// ============================================================
+const POOL_CARDS = {
+  'BPM SUPREME': { bg:'bg-[#e11d48] text-white', html:'<div class="text-center font-black"><span class="text-4xl sm:text-5xl tracking-tight leading-none block">bpm</span><span class="text-xs sm:text-sm font-bold tracking-widest lowercase opacity-90 block mt-0.5">supreme</span></div>' },
+  'BPM LATINO': { bg:'bg-gradient-to-tr from-orange-600 to-amber-500 text-white', html:'<div class="text-center font-black"><span class="text-4xl uppercase tracking-tight block">BPM</span><span class="text-xs uppercase tracking-widest block bg-white/20 px-2 py-0.5 mt-1 rounded">LATINO</span></div>' },
+  'CLUB KILLERS': { bg:'bg-zinc-950 text-white border-2 border-red-600', html:'<div class="text-center font-black"><span class="text-2xl sm:text-3xl text-red-600 uppercase tracking-wider block">CLUB</span><span class="text-lg sm:text-xl text-white uppercase tracking-widest block">KILLERS</span></div>' },
+  'DIGITAL MUSIC': { bg:'bg-white text-zinc-900', html:'<div class="text-center"><div class="border-[3px] border-cyan-700 px-4 py-3 rounded"><span class="text-4xl sm:text-5xl font-black tracking-tighter text-cyan-800">DMP</span></div><p class="text-[9px] sm:text-[10px] tracking-widest text-zinc-600 font-bold uppercase mt-2">DIGITAL MUSIC POOL</p></div>' },
+  'DJ CITY': { bg:'bg-[#111] text-white border-2 border-white', html:'<div class="text-center font-black"><span class="text-3xl sm:text-4xl tracking-tighter block">DJ<span class="text-brand-neon">CITY</span></span><span class="text-[9px] tracking-widest text-zinc-400 block mt-1 uppercase">RECORD POOL</span></div>' },
+  'DJ CITY LATINO': { bg:'bg-[#111] text-white border-2 border-amber-500', html:'<div class="text-center font-black"><span class="text-3xl tracking-tighter block">DJ<span class="text-amber-400">CITY</span></span><span class="text-[9px] tracking-widest text-amber-400 block mt-1 uppercase">LATINO</span></div>' },
+  'CRACK 4 DJS': { bg:'bg-gradient-to-b from-zinc-900 to-zinc-950 border border-orange-500 text-white', html:'<div class="text-center font-black"><span class="text-2xl text-orange-500 uppercase tracking-wider block">CRACK</span><span class="text-lg text-white uppercase tracking-widest block">4 DJS</span></div>' },
+  'CROOKLYN CLAN': { bg:'bg-gradient-to-b from-green-900 to-zinc-950 border border-green-500 text-white', html:'<div class="text-center font-black"><span class="text-xl text-green-400 uppercase tracking-wider block">CROOKLYN</span><span class="text-sm text-white uppercase tracking-widest block">CLAN</span></div>' },
+  'DA ZONE': { bg:'bg-gradient-to-b from-pink-900 to-zinc-950 border border-pink-500 text-white', html:'<div class="text-center font-black"><span class="text-3xl text-pink-400 uppercase tracking-wider block">DA</span><span class="text-2xl text-white uppercase tracking-widest block">ZONE</span></div>' },
+  'LATIN REMIXES': { bg:'bg-purple-900 text-white border border-purple-400', html:'<div class="text-center font-black"><span class="text-2xl uppercase tracking-wider block text-brand-neon">LATIN</span><span class="text-xs uppercase tracking-widest block text-zinc-300">REMIXES</span></div>' },
+  'LATIN BOX': { bg:'bg-gradient-to-r from-emerald-600 to-teal-800 text-white', html:'<div class="text-center font-black"><span class="text-3xl uppercase tracking-wider block">LATIN</span><span class="text-sm uppercase tracking-widest block bg-emerald-950 px-2 py-0.5 mt-1 rounded">BOX</span></div>' },
+  'REMIX PLANET': { bg:'bg-gradient-to-b from-indigo-900 to-black border border-indigo-500 text-white', html:'<div class="text-center font-black"><span class="text-2xl sm:text-3xl uppercase tracking-tight block text-indigo-300">REMIX</span><span class="text-xs uppercase tracking-widest block text-brand-neon">PLANET</span></div>' },
+  'HEADLINER': { bg:'bg-gradient-to-b from-rose-900 to-zinc-950 border border-rose-500 text-white', html:'<div class="text-center font-black"><span class="text-xl text-rose-400 uppercase tracking-wider block">HEADLINER</span><span class="text-[9px] text-zinc-400 uppercase tracking-widest block mt-1">MUSIC CLUB</span></div>' },
+  'ROMPE DISCOTECA': { bg:'bg-gradient-to-b from-red-900 to-zinc-950 border border-red-600 text-white', html:'<div class="text-center font-black"><span class="text-lg text-red-500 uppercase tracking-wider block">ROMPE</span><span class="text-sm text-white uppercase tracking-widest block">DISCOTECA</span></div>' },
+  'THEMASHUP': { bg:'bg-gradient-to-b from-emerald-900 to-zinc-950 border border-emerald-500 text-white', html:'<div class="text-center font-black"><span class="text-xl text-emerald-400 uppercase tracking-tight block">THE</span><span class="text-xl text-white uppercase tracking-widest block">MASHUP</span></div>' },
+  'BEATFREAKZ': { bg:'bg-gradient-to-b from-yellow-800 to-zinc-950 border border-yellow-500 text-white', html:'<div class="text-center font-black"><span class="text-xl text-yellow-400 uppercase tracking-wider block">THE</span><span class="text-lg text-white uppercase tracking-widest block">BEATFREAKZ</span></div>' },
+  'BEEZO BEEHIVE': { bg:'bg-amber-400 text-black', html:'<div class="text-center font-black"><span class="text-3xl uppercase tracking-tighter block">BEEZO</span><span class="text-xs uppercase tracking-widest block bg-black text-amber-400 px-2 py-0.5 mt-1 rounded">BEEHIVE</span></div>' },
+  'EUROPA REMIX': { bg:'bg-sky-900 text-white border border-sky-400', html:'<div class="text-center font-black"><span class="text-2xl uppercase tracking-widest block text-yellow-300">EUROPA</span><span class="text-xs uppercase tracking-widest block text-white">REMIX</span></div>' },
+  'PRO LATIN': { bg:'bg-gradient-to-r from-rose-700 to-amber-700 text-white', html:'<div class="text-center font-black"><span class="text-3xl uppercase tracking-wider block">PRO</span><span class="text-sm uppercase tracking-widest block bg-black/40 px-2 py-0.5 mt-1 rounded">LATIN</span></div>' },
+  'MP3 MIXES POOL': { bg:'bg-gradient-to-b from-lime-900 to-zinc-950 border border-lime-500 text-white', html:'<div class="text-center font-black"><span class="text-xl text-lime-400 uppercase tracking-wider block">MP3</span><span class="text-sm text-white uppercase tracking-widest block">MIXES POOL</span></div>' },
+  'UNLIMITED LATIN': { bg:'bg-red-950 text-white border border-red-500', html:'<div class="text-center font-black"><span class="text-xl uppercase tracking-wider block text-red-500">UNLIMITED</span><span class="text-2xl uppercase tracking-widest block text-white">LATIN</span></div>' },
+  'URBAN ZONE': { bg:'bg-neutral-900 text-brand-neon border-2 border-brand-neon', html:'<div class="text-center font-black"><span class="text-2xl uppercase tracking-widest block text-white">URBAN</span><span class="text-2xl uppercase tracking-widest block text-brand-neon">ZONE</span></div>' },
+  'DIRTY SOUNDS': { bg:'bg-gradient-to-b from-zinc-800 to-zinc-950 border border-zinc-500 text-white', html:'<div class="text-center font-black"><span class="text-xl text-zinc-300 uppercase tracking-wider block">DIRTY</span><span class="text-xl text-brand-neon uppercase tracking-widest block">SOUNDS</span></div>' },
+  'ELITE REMIX': { bg:'bg-gradient-to-b from-violet-900 to-zinc-950 border border-violet-500 text-white', html:'<div class="text-center font-black"><span class="text-2xl text-violet-400 uppercase tracking-wider block">ELITE</span><span class="text-sm text-white uppercase tracking-widest block">REMIX</span></div>' },
+  'DALE MAS BAJO': { bg:'bg-gradient-to-r from-orange-700 to-red-800 text-white', html:'<div class="text-center font-black"><span class="text-lg uppercase tracking-wider block">DALE MAS</span><span class="text-2xl uppercase tracking-widest block text-brand-neon">BAJO</span></div>' },
+  'EXTENDED LATINO': { bg:'bg-gradient-to-r from-teal-700 to-cyan-900 text-white', html:'<div class="text-center font-black"><span class="text-lg uppercase tracking-wider block">EXTENDED</span><span class="text-xl uppercase tracking-widest block text-brand-neon">LATINO</span></div>' },
+  'CUBA REMIXES': { bg:'bg-blue-700 text-white', html:'<div class="text-center font-black"><span class="text-3xl uppercase tracking-widest block text-red-400">CUBA</span><span class="text-xs uppercase tracking-wider block bg-black/40 px-2 py-0.5 mt-1">REMIXES</span></div>' },
+  'JUST PLAY': { bg:'bg-zinc-800 text-brand-neon border border-zinc-600', html:'<div class="text-center font-black"><span class="text-2xl uppercase tracking-tight block text-white">JUST</span><span class="text-3xl uppercase tracking-widest block text-brand-neon">PLAY</span></div>' },
+  'AREYOUKIDY': { bg:'bg-gradient-to-b from-cyan-800 to-zinc-950 border border-cyan-400 text-white', html:'<div class="text-center font-black"><span class="text-lg text-cyan-400 uppercase tracking-wider block">ARE YOU</span><span class="text-xl text-white uppercase tracking-widest block">KIDY</span></div>' },
+};
+
+// ============================================================
+// MONTHS DATA (same as before)
+// ============================================================
+const MONTHS_DATA = {
+  septiembre: { title:'SEPTIEMBRE', dates:[
+    {day:'05',month:'SEPTIEMBRE',year:'26',m:'09',pools:['BPM SUPREME','CLUB KILLERS','DALE MAS BAJO','DIGITAL MUSIC','DJ CITY','EXTENDED LATINO','LATIN BOX','ROMPE DISCOTECA','UNLIMITED LATIN','URBAN ZONE']},
+    {day:'04',month:'SEPTIEMBRE',year:'26',m:'09',pools:['BPM LATINO','CUBA REMIXES','LATIN REMIXES']},
+    {day:'03',month:'SEPTIEMBRE',year:'26',m:'09',pools:['BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','HEADLINER','LATIN REMIXES','REMIX PLANET']},
+    {day:'01',month:'SEPTIEMBRE',year:'26',m:'09',pools:['BPM LATINO','DJ CITY LATINO','LATIN BOX','LATIN REMIXES','THEMASHUP','UNLIMITED LATIN']},
+  ]},
+  agosto: { title:'AGOSTO', dates:[
+    {day:'31',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN BOX','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','THEMASHUP']},
+    {day:'29',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN BOX','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','ROMPE DISCOTECA','THEMASHUP']},
+    {day:'28',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
+    {day:'27',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
+    {day:'26',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','DA ZONE','DIGITAL MUSIC','DJ CITY','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
+    {day:'25',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','DJ CITY LATINO','MP3 MIXES POOL','THEMASHUP']},
+    {day:'24',month:'AGOSTO',year:'26',m:'08',pools:['BEEZO BEEHIVE','BPM LATINO','BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CUBA REMIXES','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','ELITE REMIX','HEADLINER','LATIN BOX','LATIN REMIXES','REMIX PLANET','THEMASHUP','UNLIMITED LATIN','URBAN ZONE']},
+    {day:'22',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','EUROPA REMIX','HEADLINER','LATIN REMIXES','PRO LATIN','REMIX PLANET','THEMASHUP']},
+    {day:'21',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','THEMASHUP']},
+    {day:'20',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
+    {day:'19',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
+    {day:'18',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
+    {day:'15',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DIRTY SOUNDS','DJ CITY','DJ CITY LATINO','EUROPA REMIX','HEADLINER','LATIN BOX','LATIN REMIXES','PRO LATIN','REMIX PLANET','THEMASHUP']},
+    {day:'14',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','ROMPE DISCOTECA','THEMASHUP']},
+    {day:'13',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','ROMPE DISCOTECA','THEMASHUP']},
+    {day:'12',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
+    {day:'11',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','REMIX PLANET','THEMASHUP']},
+    {day:'10',month:'AGOSTO',year:'26',m:'08',pools:['BEATFREAKZ','BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','ELITE REMIX','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP','UNLIMITED LATIN','URBAN ZONE']},
+    {day:'08',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','DJ CITY LATINO','LATIN BOX','LATIN REMIXES','THEMASHUP']},
+    {day:'07',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','THEMASHUP']},
+    {day:'06',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','EUROPA REMIX','LATIN REMIXES','REMIX PLANET','ROMPE DISCOTECA','THEMASHUP']},
+    {day:'05',month:'AGOSTO',year:'26',m:'08',pools:['CROOKLYN CLAN','ROMPE DISCOTECA','THEMASHUP']},
+    {day:'04',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','MP3 MIXES POOL','REMIX PLANET','ROMPE DISCOTECA','THEMASHUP']},
+    {day:'03',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','PRO LATIN','REMIX PLANET','THEMASHUP']},
+    {day:'01',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','DJ CITY LATINO','LATIN BOX','LATIN REMIXES','THEMASHUP']},
+  ]},
+  julio: { title:'JULIO', dates:[
+    {day:'31',month:'JULIO',year:'26',m:'07',pools:['BPM SUPREME','CLUB KILLERS','DIGITAL MUSIC','DJ CITY','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
+    {day:'28',month:'JULIO',year:'26',m:'07',pools:['BPM LATINO','BPM SUPREME','CLUB KILLERS','DA ZONE','DIGITAL MUSIC','HEADLINER','LATIN REMIXES']},
+  ]},
+  junio: { title:'JUNIO', dates:[
+    {day:'30',month:'JUNIO',year:'26',m:'06',pools:['BPM SUPREME','CLUB KILLERS','DIGITAL MUSIC','DJ CITY','LATIN REMIXES','THEMASHUP']},
+  ]}
+};
+
+// ============================================================
+// AUTH (localStorage)
+// ============================================================
+const DEFAULT_USERS = [
+  {user:'admin', pass:'admin2026', role:'admin', active:true, created:'2026-01-01'},
+  {user:'sharkmusic', pass:'shark-music_2026', role:'admin', active:true, created:'2026-09-15'},
+  {user:'prueba1', pass:'prueba_1', role:'user', active:true, created:'2026-09-15'},
+  {user:'demo', pass:'demo123', role:'user', active:true, created:'2026-09-01'}
+];
+function getUsers() {
+  const d = localStorage.getItem('dpw_users');
+  const users = d ? JSON.parse(d) : [];
+  let changed = false;
+  DEFAULT_USERS.forEach(def => {
+    if (!users.some(u => u.user === def.user)) {
+      users.push(def);
+      changed = true;
+    }
+  });
+  if (changed || !d) localStorage.setItem('dpw_users', JSON.stringify(users));
+  return users;
+}
+function getCurrentUser() {
+  const s = sessionStorage.getItem('dpw_session');
+  return s ? JSON.parse(s) : null;
+}
+function handleLogin(e) {
+  e.preventDefault();
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const users = getUsers();
+  const found = users.find(x => x.user === u && x.pass === p && x.active);
+  if (found) {
+    sessionStorage.setItem('dpw_session', JSON.stringify({user:found.user, role:found.role}));
+    hideLoginModal();
+    updateUserUI();
+  } else {
+    document.getElementById('login-error').classList.remove('hidden');
+  }
+}
+function logout() {
+  sessionStorage.removeItem('dpw_session');
+  updateUserUI();
+}
+function updateUserUI() {
+  const u = getCurrentUser();
+  const el = document.getElementById('user-display');
+  const btn = document.getElementById('btn-login');
+  if (u) {
+    el.textContent = u.user.toUpperCase();
+    btn.onclick = (e) => { e.preventDefault(); if(confirm('Cerrar sesion?')) logout(); };
+  } else {
+    el.textContent = 'MI CUENTA';
+    btn.onclick = (e) => { e.preventDefault(); showLoginModal(); };
+  }
+}
+function showLoginModal() {
+  document.getElementById('login-error').classList.add('hidden');
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  const m = document.getElementById('login-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+}
+function hideLoginModal() {
+  const m = document.getElementById('login-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+}
+
+// ============================================================
+// DOWNLOAD MODAL
+// ============================================================
+function showDownloadModal(poolName, day, monthNum) {
+  const user = getCurrentUser();
+  const linksEl = document.getElementById('dl-modal-links');
+  const noAuth = document.getElementById('dl-modal-noauth');
+
+  document.getElementById('dl-modal-title').textContent = poolName;
+  document.getElementById('dl-modal-sub').textContent = `${day}/${monthNum}/2026`;
+
+  if (!user) {
+    linksEl.classList.add('hidden');
+    noAuth.classList.remove('hidden');
+  } else {
+    linksEl.classList.remove('hidden');
+    noAuth.classList.add('hidden');
+
+    const dateKey = `${day}_${monthNum}`;
+    const megaData = (typeof MEGA_LINKS !== 'undefined') ? MEGA_LINKS[dateKey] : null;
+    const poolFiles = megaData ? megaData[poolName] : null;
+
+    if (poolFiles && poolFiles.length > 0) {
+      linksEl.innerHTML = poolFiles.map((f, i) => `
+        <a href="${f.url}" target="_blank" rel="noopener" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#0c0c10] border border-zinc-800 hover:border-brand-neon/50 hover:bg-brand-neon/5 transition-all duration-200 group" style="animation-delay:${i*50}ms">
+          <svg class="w-5 h-5 text-brand-neon flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/></svg>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-zinc-200 truncate group-hover:text-brand-neon transition-colors">${f.name}</p>
+            <p class="text-[10px] text-zinc-600 truncate">mega.nz</p>
+          </div>
+          <svg class="w-4 h-4 text-zinc-600 group-hover:text-brand-neon group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+      `).join('');
+    } else {
+      linksEl.innerHTML = '<p class="text-zinc-500 text-sm text-center py-6">No hay enlaces disponibles para esta fecha.</p>';
+    }
+  }
+
+  const m = document.getElementById('download-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+}
+function hideDownloadModal() {
+  const m = document.getElementById('download-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+}
+
+// Close modals on backdrop click
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'login-modal') hideLoginModal();
+  if (e.target.id === 'download-modal') hideDownloadModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { hideLoginModal(); hideDownloadModal(); }
+});
+
+// ============================================================
+// RENDERING
+// ============================================================
+let currentMonth = 'septiembre';
+
+function switchMonth(month) {
+  currentMonth = month;
+  const data = MONTHS_DATA[month];
+  if (!data) return;
+  document.getElementById('hero-title').textContent = data.title + ' | POOLS';
+  renderDropdown(month);
+  renderSections(data);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderDropdown(active) {
+  const dd = document.getElementById('pools-dropdown');
+  const mob = document.getElementById('mobile-pools-links');
+  const months = Object.keys(MONTHS_DATA);
+  dd.innerHTML = months.map(m => {
+    const d = MONTHS_DATA[m];
+    const a = m === active;
+    return `<a class="block px-4 py-2.5 text-xs tracking-wider ${a ? 'text-brand-neon bg-black/40 border-l-2 border-brand-neon' : 'text-zinc-300 hover:bg-brand-neon hover:text-black'} font-extrabold transition-all duration-150 cursor-pointer" href="#" onclick="switchMonth('${m}');return false;">${d.title} | POOLS</a>`;
+  }).join('');
+  mob.innerHTML = months.map(m => {
+    const d = MONTHS_DATA[m];
+    return `<a href="#" onclick="switchMonth('${m}');return false;" class="block py-2.5 text-xs font-bold tracking-widest ${m===active?'text-brand-neon':'text-zinc-400'} hover:text-brand-neon transition-colors">${d.title} | POOLS</a>`;
+  }).join('');
+}
+
+function renderSections(data) {
+  const c = document.getElementById('sections-container');
+  c.innerHTML = '';
+
+  data.dates.forEach((dt, idx) => {
+    const first = dt.pools[0];
+    const card = POOL_CARDS[first] || {bg:'bg-zinc-800 text-white',html:`<span class="font-black text-lg">${first}</span>`};
+
+    const tabs = dt.pools.map((p,i) => {
+      const cls = i===0
+        ? 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-brand-neon border border-brand-neon rounded bg-brand-neon/5 tab-glow transition-all duration-200'
+        : 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-zinc-400 hover:text-white rounded border border-transparent tab-glow transition-all duration-200';
+      return `<button class="${cls}" data-pool="${p}" data-idx="${idx}" data-day="${dt.day}" data-month="${dt.m}" type="button">${p}</button>`;
+    }).join('');
+
+    c.insertAdjacentHTML('beforeend', `
+    <section class="space-y-4 reveal" data-delay="${idx*80}">
+      <div class="neon-line"></div>
+      <div class="flex items-center justify-center py-2">
+        <div class="inline-flex items-center justify-center px-6 py-1.5 text-sm sm:text-base font-extrabold tracking-widest text-zinc-100">
+          <span>${dt.day}</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>${dt.month}</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>${dt.year}</span>
+        </div>
+      </div>
+      <div class="relative rounded-3xl border border-brand-neon bg-[#0c0c10] p-3 sm:p-5 lg:p-6 shadow-[0_0_20px_rgba(223,255,0,0.08)] card-hover">
+        <div class="overflow-x-auto no-scrollbar border-b border-zinc-800/80 pb-3">
+          <div class="flex items-stretch gap-1.5 min-w-max" id="tabs-${idx}">${tabs}</div>
+        </div>
+        <div class="mt-4 rounded-2xl border border-brand-neon/60 bg-[#101014] py-14 px-6 flex flex-col items-center justify-center min-h-[340px]" id="display-${idx}">
+          <div class="pool-card-wrapper">
+            <div class="w-48 h-48 sm:w-56 sm:h-56 ${card.bg} rounded-lg shadow-2xl flex flex-col items-center justify-center p-4 pool-card-inner hover:scale-105 transition-transform duration-300 fade-scale" id="card-${idx}">${card.html}</div>
+          </div>
+          <div class="mt-7">
+            <button onclick="showDownloadModal('${first}','${dt.day}','${dt.m}')" class="download-btn inline-flex items-center gap-2.5 text-sm sm:text-base font-black tracking-widest uppercase text-white px-6 py-3 rounded-lg border border-zinc-700 hover:border-brand-neon/50 group transition-all duration-300" id="dlbtn-${idx}" data-pool="${first}" data-day="${dt.day}" data-month="${dt.m}">
+              <span>DESCARGAR</span>
+              <svg class="w-4 h-4 text-brand-neon group-hover:translate-y-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>`);
+  });
+
+  // Tab listeners
+  document.querySelectorAll('.pool-tab').forEach(t => t.addEventListener('click', handleTab));
+
+  // Scroll reveal
+  requestAnimationFrame(observeReveals);
+}
+
+function handleTab(e) {
+  const tab = e.currentTarget;
+  const idx = tab.dataset.idx;
+  const pool = tab.dataset.pool;
+  const day = tab.dataset.day;
+  const monthNum = tab.dataset.month;
+
+  // Toggle tabs
+  document.querySelectorAll(`button[data-idx="${idx}"]`).forEach(t => {
+    t.className = 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-zinc-400 hover:text-white rounded border border-transparent tab-glow transition-all duration-200';
+  });
+  tab.className = 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-brand-neon border border-brand-neon rounded bg-brand-neon/5 tab-glow transition-all duration-200';
+
+  // Animate card
+  const cardEl = document.getElementById(`card-${idx}`);
+  const data = POOL_CARDS[pool] || {bg:'bg-zinc-800 text-white',html:`<span class="font-black text-lg">${pool}</span>`};
+
+  cardEl.style.opacity = '0';
+  cardEl.style.transform = 'scale(0.88) rotateY(8deg)';
+
+  setTimeout(() => {
+    cardEl.className = `w-48 h-48 sm:w-56 sm:h-56 ${data.bg} rounded-lg shadow-2xl flex flex-col items-center justify-center p-4 pool-card-inner hover:scale-105 transition-transform duration-300`;
+    cardEl.innerHTML = data.html;
+    cardEl.style.opacity = '1';
+    cardEl.style.transform = 'scale(1) rotateY(0)';
+  }, 150);
+
+  // Update download btn
+  const dlBtn = document.getElementById(`dlbtn-${idx}`);
+  dlBtn.dataset.pool = pool;
+  dlBtn.onclick = () => showDownloadModal(pool, day, monthNum);
+}
+
+// ============================================================
+// SCROLL EFFECTS
+// ============================================================
+function observeReveals() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const delay = entry.target.dataset.delay || 0;
+        setTimeout(() => entry.target.classList.add('visible'), delay);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+// Header shadow on scroll
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const header = document.getElementById('main-header');
+  const scrollTop = document.getElementById('scroll-top');
+  const y = window.scrollY;
+
+  // Header shadow
+  if (y > 20) {
+    header.classList.add('shadow-[0_4px_20px_rgba(0,0,0,.5)]');
+  } else {
+    header.classList.remove('shadow-[0_4px_20px_rgba(0,0,0,.5)]');
+  }
+
+  // Scroll to top button
+  if (y > 400) {
+    scrollTop.classList.remove('opacity-0','invisible','translate-y-4');
+    scrollTop.classList.add('opacity-100','visible','translate-y-0');
+  } else {
+    scrollTop.classList.add('opacity-0','invisible','translate-y-4');
+    scrollTop.classList.remove('opacity-100','visible','translate-y-0');
+  }
+  lastScroll = y;
+}, {passive:true});
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  getUsers(); // Ensure defaults
+  updateUserUI();
+  switchMonth('septiembre');
+});
+</script>
+</body>
+</html>
