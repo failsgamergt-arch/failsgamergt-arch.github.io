@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>DJ POOL WORLD - Pools</title>
+<title>DJ POOL WORLD - Descargas</title>
 <link rel="icon" href="favicon.jpg" type="image/jpeg">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script>
@@ -26,68 +26,30 @@ tailwind.config = {
 *{box-sizing:border-box}
 .no-scrollbar::-webkit-scrollbar{display:none}
 .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
-
-/* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeScale{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulseNeon{0%,100%{box-shadow:0 0 15px rgba(223,255,0,.15)}50%{box-shadow:0 0 30px rgba(223,255,0,.3)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-
 .fade-up{animation:fadeUp .5s ease-out both}
 .fade-scale{animation:fadeScale .3s ease-out both}
 .slide-down{animation:slideDown .25s ease-out both}
 .pulse-neon{animation:pulseNeon 3s ease-in-out infinite}
-
-/* Staggered reveals */
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
-
-/* Hover effects */
 .card-hover{transition:all .35s cubic-bezier(.4,0,.2,1)}
 .card-hover:hover{transform:translateY(-4px);box-shadow:0 0 25px rgba(223,255,0,.2)}
-
 .tab-glow{transition:all .2s ease}
 .tab-glow:hover{text-shadow:0 0 8px rgba(223,255,0,.4)}
-
-.download-btn{
-  position:relative;overflow:hidden;
-  transition:all .3s ease;
-}
-.download-btn::before{
-  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(223,255,0,.1),transparent);
-  transition:left .5s ease;
-}
+.download-btn{position:relative;overflow:hidden;transition:all .3s ease}
+.download-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(223,255,0,.1),transparent);transition:left .5s ease}
 .download-btn:hover::before{left:100%}
-.download-btn:hover{
-  background:rgba(223,255,0,.1);
-  box-shadow:0 0 20px rgba(223,255,0,.2);
-}
-
-/* Pool card flip */
+.download-btn:hover{background:rgba(223,255,0,.1);box-shadow:0 0 20px rgba(223,255,0,.2)}
 .pool-card-wrapper{perspective:600px}
 .pool-card-inner{transition:transform .5s ease,opacity .3s ease}
-
-/* Neon line separator */
-.neon-line{
-  height:1px;
-  background:linear-gradient(90deg,transparent,rgba(223,255,0,.4) 30%,rgba(223,255,0,.4) 70%,transparent);
-}
-
-/* Modal */
-.modal-backdrop{
-  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
-  transition:opacity .3s ease;
-}
+.neon-line{height:1px;background:linear-gradient(90deg,transparent,rgba(223,255,0,.4) 30%,rgba(223,255,0,.4) 70%,transparent)}
+.modal-backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px);transition:opacity .3s ease}
 .modal-content{animation:fadeScale .3s ease-out}
-
-/* Skeleton shimmer */
-.skeleton{
-  background:linear-gradient(90deg,#1a1a22 25%,#252530 50%,#1a1a22 75%);
-  background-size:200% 100%;
-  animation:shimmer 1.5s infinite;
-}
 </style>
 </head>
 <body class="bg-[#0b0b0e] text-zinc-100 font-sans min-h-screen antialiased selection:bg-brand-neon selection:text-black">
@@ -95,7 +57,7 @@ tailwind.config = {
 <!-- ========== HEADER ========== -->
 <header class="sticky top-0 z-50 bg-[#0c0c0f]/95 backdrop-blur-md border-b border-zinc-900/80 transition-shadow duration-300" id="main-header">
 <div class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-  <a class="flex items-center gap-3 group" href="index.html">
+  <a class="flex items-center gap-3 group" href="pools.html">
     <div class="flex items-center gap-1">
       <span class="w-1.5 h-6 bg-brand-neon rounded-full inline-block group-hover:scale-y-125 transition-transform duration-300"></span>
       <span class="w-1.5 h-4 bg-white/70 rounded-full inline-block group-hover:h-5 transition-all duration-300"></span>
@@ -107,8 +69,7 @@ tailwind.config = {
     </div>
   </a>
 
-  <nav class="hidden xl:flex items-center gap-7 text-[13px] font-bold tracking-widest text-zinc-300">
-    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="index.html">INICIO</a>
+  <nav class="hidden lg:flex items-center gap-7 text-[13px] font-bold tracking-widest text-zinc-300">
     <div class="relative group">
       <button class="flex items-center gap-1.5 text-brand-neon hover:text-brand-neonHover transition-colors py-2" type="button">
         <span>POOLS</span>
@@ -116,40 +77,30 @@ tailwind.config = {
       </button>
       <div class="absolute left-0 top-full mt-1 w-56 rounded-md bg-[#16161b] border border-zinc-700/80 shadow-2xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 translate-y-1 group-hover:translate-y-0" id="pools-dropdown"></div>
     </div>
-    <div class="relative group">
-      <button class="flex items-center gap-1.5 hover:text-white transition-colors py-2" type="button">
-        <span>CATALOGO</span>
-        <svg class="w-3.5 h-3.5 fill-current transition-transform duration-300 group-hover:rotate-180" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" fill-rule="evenodd"/></svg>
-      </button>
-      <div class="absolute left-0 top-full mt-1 w-48 rounded-md bg-[#16161b] border border-zinc-700/80 shadow-2xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 translate-y-1 group-hover:translate-y-0">
-        <a class="block px-4 py-2.5 text-xs tracking-wider text-zinc-300 hover:bg-brand-neon hover:text-black font-extrabold transition-all duration-150" href="#">LATIN REMIX</a>
-        <a class="block px-4 py-2.5 text-xs tracking-wider text-zinc-300 hover:bg-brand-neon hover:text-black font-extrabold transition-all duration-150" href="#">EDM / DANCE</a>
-        <a class="block px-4 py-2.5 text-xs tracking-wider text-zinc-300 hover:bg-brand-neon hover:text-black font-extrabold transition-all duration-150" href="#">URBAN</a>
-      </div>
-    </div>
-    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="#">ELECTRONICA</a>
-    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="#">RECURSOS</a>
-    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="#">PLANES</a>
-    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="#">SOPORTE</a>
+    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="https://djpoolworld.blogspot.com/" target="_blank">BLOG</a>
+    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="https://soundcloud.com/wildsoundsmusic" target="_blank">WILD SOUNDS</a>
+    <a class="hover:text-white transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="https://sharkmurcia-suscripciones.blogspot.com/p/suscripciones.html" target="_blank">SHARK MURCIA</a>
+    <a class="hidden hover:text-brand-neon transition-colors duration-200 py-2 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-neon after:transition-all after:duration-300 hover:after:w-full" href="admin.html" id="nav-admin">ADMIN</a>
   </nav>
 
   <div class="flex items-center gap-4 sm:gap-6">
     <a class="flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wider text-zinc-200 hover:text-brand-neon transition-colors duration-200" href="#" id="btn-login" onclick="showLoginModal(); return false;">
       <svg class="w-5 h-5 text-brand-neon fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
       <span class="hidden sm:inline" id="user-display">MI CUENTA</span>
+      <span class="hidden px-1.5 py-0.5 rounded text-[9px] font-black bg-brand-neon text-black tracking-wider" id="admin-badge">ADMIN</span>
     </a>
-    <a class="inline-flex items-center justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-black tracking-widest uppercase bg-brand-neon text-black hover:bg-brand-neonHover shadow-[0_0_15px_rgba(223,255,0,0.3)] hover:shadow-[0_0_25px_rgba(223,255,0,0.5)] transition-all duration-300 hover:scale-105" href="#">SUSCRIBIRSE</a>
+    <!-- Mobile menu -->
+    <button onclick="document.getElementById('mobile-nav').classList.toggle('hidden')" class="lg:hidden text-zinc-400 hover:text-white p-2 transition-colors">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
   </div>
 </div>
-<!-- Mobile -->
-<div class="xl:hidden px-4 pb-2 flex justify-end">
-  <button onclick="document.getElementById('mobile-nav').classList.toggle('hidden')" class="text-zinc-400 hover:text-white p-2 transition-colors">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-  </button>
-</div>
-<div id="mobile-nav" class="hidden xl:hidden px-6 pb-4 space-y-1 border-t border-zinc-800/50 slide-down">
-  <a href="index.html" class="block py-2.5 text-xs font-bold tracking-widest text-zinc-300 hover:text-brand-neon transition-colors">INICIO</a>
+<div id="mobile-nav" class="hidden lg:hidden px-6 pb-4 space-y-1 border-t border-zinc-800/50 slide-down">
   <div id="mobile-pools-links"></div>
+  <a href="https://djpoolworld.blogspot.com/" target="_blank" class="block py-2.5 text-xs font-bold tracking-widest text-zinc-400 hover:text-brand-neon transition-colors">BLOG</a>
+  <a href="https://soundcloud.com/wildsoundsmusic" target="_blank" class="block py-2.5 text-xs font-bold tracking-widest text-zinc-400 hover:text-brand-neon transition-colors">WILD SOUNDS</a>
+  <a href="https://sharkmurcia-suscripciones.blogspot.com/p/suscripciones.html" target="_blank" class="block py-2.5 text-xs font-bold tracking-widest text-zinc-400 hover:text-brand-neon transition-colors">SHARK MURCIA</a>
+  <a href="admin.html" id="mobile-admin" class="hidden py-2.5 text-xs font-bold tracking-widest text-brand-neon hover:text-brand-neonHover transition-colors">ADMIN PANEL</a>
 </div>
 </header>
 
@@ -204,17 +155,20 @@ tailwind.config = {
     <div class="relative z-10 max-w-4xl">
       <div class="flex items-center gap-2 mb-2">
         <svg class="w-5 h-5 text-brand-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
-        <span class="text-xs sm:text-sm font-black tracking-[0.25em] text-brand-neon uppercase">EL MEJOR CATALOGO</span>
+        <span class="text-xs sm:text-sm font-black tracking-[0.25em] text-brand-neon uppercase">DJ POOL WORLD</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black uppercase text-brand-neon tracking-tight mb-3" id="hero-title">SEPTIEMBRE | POOLS</h1>
-      <p class="text-zinc-400 text-sm sm:text-base font-medium leading-relaxed">Las ultimas actualizaciones de las mejores pools listas para descargar en un solo lugar.</p>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black uppercase text-brand-neon tracking-tight mb-3" id="hero-title">AGOSTO 2026 | POOLS</h1>
+      <p class="text-zinc-400 text-sm sm:text-base font-medium leading-relaxed">Las ultimas actualizaciones de las mejores pools de DJ listas para descargar. Todos los packs en un solo lugar.</p>
       <div class="flex items-center gap-4 mt-5">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-neon/10 border border-brand-neon/30 text-brand-neon text-[11px] font-bold tracking-wider" id="hero-stats">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-          365 ARCHIVOS
+          <span id="stat-files">365</span> ARCHIVOS
         </span>
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-800/50 border border-zinc-700/50 text-zinc-400 text-[11px] font-bold tracking-wider" id="hero-pools-count">
-          28 POOLS
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-800/50 border border-zinc-700/50 text-zinc-400 text-[11px] font-bold tracking-wider">
+          <span id="stat-pools">26</span> POOLS
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-800/50 border border-zinc-700/50 text-zinc-400 text-[11px] font-bold tracking-wider">
+          <span id="stat-dates">26</span> FECHAS
         </span>
       </div>
     </div>
@@ -239,9 +193,9 @@ tailwind.config = {
   </div>
   <div class="flex items-center gap-6 text-zinc-400 font-semibold uppercase tracking-wider text-[11px]">
     <a class="hover:text-brand-neon transition-colors duration-200" href="https://djpoolworld.blogspot.com/" target="_blank">Blog</a>
-    <a class="hover:text-brand-neon transition-colors duration-200" href="#">Privacidad</a>
-    <a class="hover:text-brand-neon transition-colors duration-200" href="#">DMCA</a>
-    <a class="hover:text-brand-neon transition-colors duration-200" href="admin.html">Admin</a>
+    <a class="hover:text-brand-neon transition-colors duration-200" href="https://soundcloud.com/wildsoundsmusic" target="_blank">Wild Sounds</a>
+    <a class="hover:text-brand-neon transition-colors duration-200" href="https://sharkmurcia-suscripciones.blogspot.com/p/suscripciones.html" target="_blank">Shark Murcia</a>
+    <a class="hover:text-brand-neon transition-colors duration-200 hidden" href="admin.html" id="footer-admin">Admin</a>
   </div>
 </div>
 </footer>
@@ -250,6 +204,18 @@ tailwind.config = {
 <script src="pools-links.js"></script>
 
 <script>
+// ============================================================
+// POOL NAME ALIASES (MEGA_LINKS key -> display name)
+// ============================================================
+const POOL_ALIASES = {
+  'LATINREMIXES.COM': 'LATIN REMIXES',
+  'CUBA REMIXES': 'CUBA REMIXES'
+};
+
+function normalizePoolName(name) {
+  return POOL_ALIASES[name] || name;
+}
+
 // ============================================================
 // POOL VISUAL CARDS
 // ============================================================
@@ -286,50 +252,53 @@ const POOL_CARDS = {
 };
 
 // ============================================================
-// MONTHS DATA (same as before)
+// BUILD MONTHS FROM MEGA_LINKS (auto-sync)
 // ============================================================
-const MONTHS_DATA = {
-  septiembre: { title:'SEPTIEMBRE', dates:[
-    {day:'05',month:'SEPTIEMBRE',year:'26',m:'09',pools:['BPM SUPREME','CLUB KILLERS','DALE MAS BAJO','DIGITAL MUSIC','DJ CITY','EXTENDED LATINO','LATIN BOX','ROMPE DISCOTECA','UNLIMITED LATIN','URBAN ZONE']},
-    {day:'04',month:'SEPTIEMBRE',year:'26',m:'09',pools:['BPM LATINO','CUBA REMIXES','LATIN REMIXES']},
-    {day:'03',month:'SEPTIEMBRE',year:'26',m:'09',pools:['BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','HEADLINER','LATIN REMIXES','REMIX PLANET']},
-    {day:'01',month:'SEPTIEMBRE',year:'26',m:'09',pools:['BPM LATINO','DJ CITY LATINO','LATIN BOX','LATIN REMIXES','THEMASHUP','UNLIMITED LATIN']},
-  ]},
-  agosto: { title:'AGOSTO', dates:[
-    {day:'31',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN BOX','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','THEMASHUP']},
-    {day:'29',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN BOX','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','ROMPE DISCOTECA','THEMASHUP']},
-    {day:'28',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
-    {day:'27',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
-    {day:'26',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','DA ZONE','DIGITAL MUSIC','DJ CITY','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
-    {day:'25',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','DJ CITY LATINO','MP3 MIXES POOL','THEMASHUP']},
-    {day:'24',month:'AGOSTO',year:'26',m:'08',pools:['BEEZO BEEHIVE','BPM LATINO','BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CUBA REMIXES','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','ELITE REMIX','HEADLINER','LATIN BOX','LATIN REMIXES','REMIX PLANET','THEMASHUP','UNLIMITED LATIN','URBAN ZONE']},
-    {day:'22',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','EUROPA REMIX','HEADLINER','LATIN REMIXES','PRO LATIN','REMIX PLANET','THEMASHUP']},
-    {day:'21',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','THEMASHUP']},
-    {day:'20',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
-    {day:'19',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
-    {day:'18',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
-    {day:'15',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DIRTY SOUNDS','DJ CITY','DJ CITY LATINO','EUROPA REMIX','HEADLINER','LATIN BOX','LATIN REMIXES','PRO LATIN','REMIX PLANET','THEMASHUP']},
-    {day:'14',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','ROMPE DISCOTECA','THEMASHUP']},
-    {day:'13',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','ROMPE DISCOTECA','THEMASHUP']},
-    {day:'12',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
-    {day:'11',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','REMIX PLANET','THEMASHUP']},
-    {day:'10',month:'AGOSTO',year:'26',m:'08',pools:['BEATFREAKZ','BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','ELITE REMIX','HEADLINER','LATIN REMIXES','REMIX PLANET','THEMASHUP','UNLIMITED LATIN','URBAN ZONE']},
-    {day:'08',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','DJ CITY LATINO','LATIN BOX','LATIN REMIXES','THEMASHUP']},
-    {day:'07',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','MP3 MIXES POOL','REMIX PLANET','THEMASHUP']},
-    {day:'06',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','BEEZO BEEHIVE','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','EUROPA REMIX','LATIN REMIXES','REMIX PLANET','ROMPE DISCOTECA','THEMASHUP']},
-    {day:'05',month:'AGOSTO',year:'26',m:'08',pools:['CROOKLYN CLAN','ROMPE DISCOTECA','THEMASHUP']},
-    {day:'04',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','BPM SUPREME','BEATFREAKZ','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','MP3 MIXES POOL','REMIX PLANET','ROMPE DISCOTECA','THEMASHUP']},
-    {day:'03',month:'AGOSTO',year:'26',m:'08',pools:['BPM SUPREME','CLUB KILLERS','CRACK 4 DJS','CROOKLYN CLAN','DA ZONE','DIGITAL MUSIC','DJ CITY','DJ CITY LATINO','HEADLINER','LATIN REMIXES','PRO LATIN','REMIX PLANET','THEMASHUP']},
-    {day:'01',month:'AGOSTO',year:'26',m:'08',pools:['BPM LATINO','DJ CITY LATINO','LATIN BOX','LATIN REMIXES','THEMASHUP']},
-  ]},
-  julio: { title:'JULIO', dates:[
-    {day:'31',month:'JULIO',year:'26',m:'07',pools:['BPM SUPREME','CLUB KILLERS','DIGITAL MUSIC','DJ CITY','LATIN REMIXES','REMIX PLANET','THEMASHUP']},
-    {day:'28',month:'JULIO',year:'26',m:'07',pools:['BPM LATINO','BPM SUPREME','CLUB KILLERS','DA ZONE','DIGITAL MUSIC','HEADLINER','LATIN REMIXES']},
-  ]},
-  junio: { title:'JUNIO', dates:[
-    {day:'30',month:'JUNIO',year:'26',m:'06',pools:['BPM SUPREME','CLUB KILLERS','DIGITAL MUSIC','DJ CITY','LATIN REMIXES','THEMASHUP']},
-  ]}
-};
+const MONTH_NAMES = {'01':'ENERO','02':'FEBRERO','03':'MARZO','04':'ABRIL','05':'MAYO','06':'JUNIO','07':'JULIO','08':'AGOSTO','09':'SEPTIEMBRE','10':'OCTUBRE','11':'NOVIEMBRE','12':'DICIEMBRE'};
+const MONTH_KEYS  = {'01':'enero','02':'febrero','03':'marzo','04':'abril','05':'mayo','06':'junio','07':'julio','08':'agosto','09':'septiembre','10':'octubre','11':'noviembre','12':'diciembre'};
+
+function buildMonthsData() {
+  if (typeof MEGA_LINKS === 'undefined') return {};
+  const months = {};
+  let totalFiles = 0;
+  const allPools = new Set();
+
+  for (const dateKey of Object.keys(MEGA_LINKS)) {
+    const [day, month] = dateKey.split('_');
+    const mKey = MONTH_KEYS[month];
+    const mName = MONTH_NAMES[month];
+    if (!mKey) continue;
+
+    if (!months[mKey]) months[mKey] = { title: mName, dates: [] };
+
+    const rawPools = Object.keys(MEGA_LINKS[dateKey]);
+    const poolSet = new Set();
+    rawPools.forEach(p => {
+      const normalized = normalizePoolName(p);
+      poolSet.add(normalized);
+      allPools.add(normalized);
+    });
+    const pools = [...poolSet].sort();
+
+    rawPools.forEach(p => {
+      totalFiles += MEGA_LINKS[dateKey][p].length;
+    });
+
+    months[mKey].dates.push({
+      day: day.padStart(2,'0'),
+      month: mName,
+      year: '26',
+      m: month,
+      pools: pools
+    });
+  }
+
+  for (const mKey of Object.keys(months)) {
+    months[mKey].dates.sort((a, b) => parseInt(b.day) - parseInt(a.day));
+  }
+
+  return { months, totalFiles, totalPools: allPools.size, totalDates: Object.keys(MEGA_LINKS).length };
+}
 
 // ============================================================
 // AUTH (localStorage)
@@ -379,11 +348,31 @@ function updateUserUI() {
   const u = getCurrentUser();
   const el = document.getElementById('user-display');
   const btn = document.getElementById('btn-login');
+  const badge = document.getElementById('admin-badge');
+  const navAdmin = document.getElementById('nav-admin');
+  const mobileAdmin = document.getElementById('mobile-admin');
+  const footerAdmin = document.getElementById('footer-admin');
+
   if (u) {
     el.textContent = u.user.toUpperCase();
     btn.onclick = (e) => { e.preventDefault(); if(confirm('Cerrar sesion?')) logout(); };
+    if (u.role === 'admin') {
+      badge.classList.remove('hidden');
+      navAdmin.classList.remove('hidden');
+      mobileAdmin.classList.remove('hidden');
+      footerAdmin.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+      navAdmin.classList.add('hidden');
+      mobileAdmin.classList.add('hidden');
+      footerAdmin.classList.add('hidden');
+    }
   } else {
     el.textContent = 'MI CUENTA';
+    badge.classList.add('hidden');
+    navAdmin.classList.add('hidden');
+    mobileAdmin.classList.add('hidden');
+    footerAdmin.classList.add('hidden');
     btn.onclick = (e) => { e.preventDefault(); showLoginModal(); };
   }
 }
@@ -393,6 +382,7 @@ function showLoginModal() {
   document.getElementById('login-pass').value = '';
   const m = document.getElementById('login-modal');
   m.classList.remove('hidden'); m.classList.add('flex');
+  document.getElementById('login-user').focus();
 }
 function hideLoginModal() {
   const m = document.getElementById('login-modal');
@@ -402,13 +392,25 @@ function hideLoginModal() {
 // ============================================================
 // DOWNLOAD MODAL
 // ============================================================
+function getPoolFiles(poolName, dateKey) {
+  if (typeof MEGA_LINKS === 'undefined') return null;
+  const dateData = MEGA_LINKS[dateKey];
+  if (!dateData) return null;
+  // Try exact match
+  if (dateData[poolName]) return dateData[poolName];
+  // Try alias: LATIN REMIXES <-> LATINREMIXES.COM
+  if (poolName === 'LATIN REMIXES' && dateData['LATINREMIXES.COM']) return dateData['LATINREMIXES.COM'];
+  if (poolName === 'LATINREMIXES.COM' && dateData['LATIN REMIXES']) return dateData['LATIN REMIXES'];
+  return null;
+}
+
 function showDownloadModal(poolName, day, monthNum) {
   const user = getCurrentUser();
   const linksEl = document.getElementById('dl-modal-links');
   const noAuth = document.getElementById('dl-modal-noauth');
 
   document.getElementById('dl-modal-title').textContent = poolName;
-  document.getElementById('dl-modal-sub').textContent = `${day}/${monthNum}/2026`;
+  document.getElementById('dl-modal-sub').textContent = day + '/' + monthNum + '/2026';
 
   if (!user) {
     linksEl.classList.add('hidden');
@@ -417,21 +419,20 @@ function showDownloadModal(poolName, day, monthNum) {
     linksEl.classList.remove('hidden');
     noAuth.classList.add('hidden');
 
-    const dateKey = `${day}_${monthNum}`;
-    const megaData = (typeof MEGA_LINKS !== 'undefined') ? MEGA_LINKS[dateKey] : null;
-    const poolFiles = megaData ? megaData[poolName] : null;
+    const dateKey = day + '_' + monthNum;
+    const poolFiles = getPoolFiles(poolName, dateKey);
 
     if (poolFiles && poolFiles.length > 0) {
-      linksEl.innerHTML = poolFiles.map((f, i) => `
-        <a href="${f.url}" target="_blank" rel="noopener" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#0c0c10] border border-zinc-800 hover:border-brand-neon/50 hover:bg-brand-neon/5 transition-all duration-200 group" style="animation-delay:${i*50}ms">
-          <svg class="w-5 h-5 text-brand-neon flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/></svg>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-bold text-zinc-200 truncate group-hover:text-brand-neon transition-colors">${f.name}</p>
-            <p class="text-[10px] text-zinc-600 truncate">mega.nz</p>
-          </div>
-          <svg class="w-4 h-4 text-zinc-600 group-hover:text-brand-neon group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-        </a>
-      `).join('');
+      linksEl.innerHTML = poolFiles.map((f, i) =>
+        '<a href="' + f.url + '" target="_blank" rel="noopener" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#0c0c10] border border-zinc-800 hover:border-brand-neon/50 hover:bg-brand-neon/5 transition-all duration-200 group fade-up" style="animation-delay:' + (i*50) + 'ms">' +
+          '<svg class="w-5 h-5 text-brand-neon flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/></svg>' +
+          '<div class="flex-1 min-w-0">' +
+            '<p class="text-sm font-bold text-zinc-200 truncate group-hover:text-brand-neon transition-colors">' + f.name + '</p>' +
+            '<p class="text-[10px] text-zinc-600 truncate">mega.nz</p>' +
+          '</div>' +
+          '<svg class="w-4 h-4 text-zinc-600 group-hover:text-brand-neon group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>' +
+        '</a>'
+      ).join('');
     } else {
       linksEl.innerHTML = '<p class="text-zinc-500 text-sm text-center py-6">No hay enlaces disponibles para esta fecha.</p>';
     }
@@ -445,7 +446,7 @@ function hideDownloadModal() {
   m.classList.add('hidden'); m.classList.remove('flex');
 }
 
-// Close modals on backdrop click
+// Close modals
 document.addEventListener('click', (e) => {
   if (e.target.id === 'login-modal') hideLoginModal();
   if (e.target.id === 'download-modal') hideDownloadModal();
@@ -457,13 +458,14 @@ document.addEventListener('keydown', (e) => {
 // ============================================================
 // RENDERING
 // ============================================================
-let currentMonth = 'septiembre';
+let MONTHS_DATA = {};
+let currentMonth = '';
 
 function switchMonth(month) {
   currentMonth = month;
   const data = MONTHS_DATA[month];
   if (!data) return;
-  document.getElementById('hero-title').textContent = data.title + ' | POOLS';
+  document.getElementById('hero-title').textContent = data.title + ' 2026 | POOLS';
   renderDropdown(month);
   renderSections(data);
   window.scrollTo({top:0,behavior:'smooth'});
@@ -476,11 +478,11 @@ function renderDropdown(active) {
   dd.innerHTML = months.map(m => {
     const d = MONTHS_DATA[m];
     const a = m === active;
-    return `<a class="block px-4 py-2.5 text-xs tracking-wider ${a ? 'text-brand-neon bg-black/40 border-l-2 border-brand-neon' : 'text-zinc-300 hover:bg-brand-neon hover:text-black'} font-extrabold transition-all duration-150 cursor-pointer" href="#" onclick="switchMonth('${m}');return false;">${d.title} | POOLS</a>`;
+    return '<a class="block px-4 py-2.5 text-xs tracking-wider ' + (a ? 'text-brand-neon bg-black/40 border-l-2 border-brand-neon' : 'text-zinc-300 hover:bg-brand-neon hover:text-black') + ' font-extrabold transition-all duration-150 cursor-pointer" href="#" onclick="switchMonth(\'' + m + '\');return false;">' + d.title + ' 2026</a>';
   }).join('');
   mob.innerHTML = months.map(m => {
     const d = MONTHS_DATA[m];
-    return `<a href="#" onclick="switchMonth('${m}');return false;" class="block py-2.5 text-xs font-bold tracking-widest ${m===active?'text-brand-neon':'text-zinc-400'} hover:text-brand-neon transition-colors">${d.title} | POOLS</a>`;
+    return '<a href="#" onclick="switchMonth(\'' + m + '\');return false;" class="block py-2.5 text-xs font-bold tracking-widest ' + (m===active?'text-brand-neon':'text-zinc-400') + ' hover:text-brand-neon transition-colors">' + d.title + ' 2026</a>';
   }).join('');
 }
 
@@ -490,46 +492,43 @@ function renderSections(data) {
 
   data.dates.forEach((dt, idx) => {
     const first = dt.pools[0];
-    const card = POOL_CARDS[first] || {bg:'bg-zinc-800 text-white',html:`<span class="font-black text-lg">${first}</span>`};
+    const card = POOL_CARDS[first] || {bg:'bg-zinc-800 text-white',html:'<span class="font-black text-lg">' + first + '</span>'};
 
     const tabs = dt.pools.map((p,i) => {
       const cls = i===0
         ? 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-brand-neon border border-brand-neon rounded bg-brand-neon/5 tab-glow transition-all duration-200'
         : 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-zinc-400 hover:text-white rounded border border-transparent tab-glow transition-all duration-200';
-      return `<button class="${cls}" data-pool="${p}" data-idx="${idx}" data-day="${dt.day}" data-month="${dt.m}" type="button">${p}</button>`;
+      return '<button class="' + cls + '" data-pool="' + p + '" data-idx="' + idx + '" data-day="' + dt.day + '" data-month="' + dt.m + '" type="button">' + p + '</button>';
     }).join('');
 
-    c.insertAdjacentHTML('beforeend', `
-    <section class="space-y-4 reveal" data-delay="${idx*80}">
-      <div class="neon-line"></div>
-      <div class="flex items-center justify-center py-2">
-        <div class="inline-flex items-center justify-center px-6 py-1.5 text-sm sm:text-base font-extrabold tracking-widest text-zinc-100">
-          <span>${dt.day}</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>${dt.month}</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>${dt.year}</span>
-        </div>
-      </div>
-      <div class="relative rounded-3xl border border-brand-neon bg-[#0c0c10] p-3 sm:p-5 lg:p-6 shadow-[0_0_20px_rgba(223,255,0,0.08)] card-hover">
-        <div class="overflow-x-auto no-scrollbar border-b border-zinc-800/80 pb-3">
-          <div class="flex items-stretch gap-1.5 min-w-max" id="tabs-${idx}">${tabs}</div>
-        </div>
-        <div class="mt-4 rounded-2xl border border-brand-neon/60 bg-[#101014] py-14 px-6 flex flex-col items-center justify-center min-h-[340px]" id="display-${idx}">
-          <div class="pool-card-wrapper">
-            <div class="w-48 h-48 sm:w-56 sm:h-56 ${card.bg} rounded-lg shadow-2xl flex flex-col items-center justify-center p-4 pool-card-inner hover:scale-105 transition-transform duration-300 fade-scale" id="card-${idx}">${card.html}</div>
-          </div>
-          <div class="mt-7">
-            <button onclick="showDownloadModal('${first}','${dt.day}','${dt.m}')" class="download-btn inline-flex items-center gap-2.5 text-sm sm:text-base font-black tracking-widest uppercase text-white px-6 py-3 rounded-lg border border-zinc-700 hover:border-brand-neon/50 group transition-all duration-300" id="dlbtn-${idx}" data-pool="${first}" data-day="${dt.day}" data-month="${dt.m}">
-              <span>DESCARGAR</span>
-              <svg class="w-4 h-4 text-brand-neon group-hover:translate-y-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>`);
+    c.insertAdjacentHTML('beforeend',
+    '<section class="space-y-4 reveal" data-delay="' + (idx*80) + '">' +
+      '<div class="neon-line"></div>' +
+      '<div class="flex items-center justify-center py-2">' +
+        '<div class="inline-flex items-center justify-center px-6 py-1.5 text-sm sm:text-base font-extrabold tracking-widest text-zinc-100">' +
+          '<span>' + dt.day + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.month + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.year + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="relative rounded-3xl border border-brand-neon bg-[#0c0c10] p-3 sm:p-5 lg:p-6 shadow-[0_0_20px_rgba(223,255,0,0.08)] card-hover">' +
+        '<div class="overflow-x-auto no-scrollbar border-b border-zinc-800/80 pb-3">' +
+          '<div class="flex items-stretch gap-1.5 min-w-max" id="tabs-' + idx + '">' + tabs + '</div>' +
+        '</div>' +
+        '<div class="mt-4 rounded-2xl border border-brand-neon/60 bg-[#101014] py-14 px-6 flex flex-col items-center justify-center min-h-[340px]" id="display-' + idx + '">' +
+          '<div class="pool-card-wrapper">' +
+            '<div class="w-48 h-48 sm:w-56 sm:h-56 ' + card.bg + ' rounded-lg shadow-2xl flex flex-col items-center justify-center p-4 pool-card-inner hover:scale-105 transition-transform duration-300 fade-scale" id="card-' + idx + '">' + card.html + '</div>' +
+          '</div>' +
+          '<div class="mt-7">' +
+            '<button onclick="showDownloadModal(\'' + first.replace(/'/g,"\\'") + '\',\'' + dt.day + '\',\'' + dt.m + '\')" class="download-btn inline-flex items-center gap-2.5 text-sm sm:text-base font-black tracking-widest uppercase text-white px-6 py-3 rounded-lg border border-zinc-700 hover:border-brand-neon/50 group transition-all duration-300" id="dlbtn-' + idx + '" data-pool="' + first + '" data-day="' + dt.day + '" data-month="' + dt.m + '">' +
+              '<span>DESCARGAR</span>' +
+              '<svg class="w-4 h-4 text-brand-neon group-hover:translate-y-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</section>');
   });
 
-  // Tab listeners
   document.querySelectorAll('.pool-tab').forEach(t => t.addEventListener('click', handleTab));
-
-  // Scroll reveal
   requestAnimationFrame(observeReveals);
 }
 
@@ -540,28 +539,25 @@ function handleTab(e) {
   const day = tab.dataset.day;
   const monthNum = tab.dataset.month;
 
-  // Toggle tabs
-  document.querySelectorAll(`button[data-idx="${idx}"]`).forEach(t => {
+  document.querySelectorAll('button[data-idx="' + idx + '"]').forEach(t => {
     t.className = 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-zinc-400 hover:text-white rounded border border-transparent tab-glow transition-all duration-200';
   });
   tab.className = 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-brand-neon border border-brand-neon rounded bg-brand-neon/5 tab-glow transition-all duration-200';
 
-  // Animate card
-  const cardEl = document.getElementById(`card-${idx}`);
-  const data = POOL_CARDS[pool] || {bg:'bg-zinc-800 text-white',html:`<span class="font-black text-lg">${pool}</span>`};
+  const cardEl = document.getElementById('card-' + idx);
+  const data = POOL_CARDS[pool] || {bg:'bg-zinc-800 text-white',html:'<span class="font-black text-lg">' + pool + '</span>'};
 
   cardEl.style.opacity = '0';
   cardEl.style.transform = 'scale(0.88) rotateY(8deg)';
 
   setTimeout(() => {
-    cardEl.className = `w-48 h-48 sm:w-56 sm:h-56 ${data.bg} rounded-lg shadow-2xl flex flex-col items-center justify-center p-4 pool-card-inner hover:scale-105 transition-transform duration-300`;
+    cardEl.className = 'w-48 h-48 sm:w-56 sm:h-56 ' + data.bg + ' rounded-lg shadow-2xl flex flex-col items-center justify-center p-4 pool-card-inner hover:scale-105 transition-transform duration-300';
     cardEl.innerHTML = data.html;
     cardEl.style.opacity = '1';
     cardEl.style.transform = 'scale(1) rotateY(0)';
   }, 150);
 
-  // Update download btn
-  const dlBtn = document.getElementById(`dlbtn-${idx}`);
+  const dlBtn = document.getElementById('dlbtn-' + idx);
   dlBtn.dataset.pool = pool;
   dlBtn.onclick = () => showDownloadModal(pool, day, monthNum);
 }
@@ -579,25 +575,15 @@ function observeReveals() {
       }
     });
   }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
 
-// Header shadow on scroll
-let lastScroll = 0;
 window.addEventListener('scroll', () => {
   const header = document.getElementById('main-header');
   const scrollTop = document.getElementById('scroll-top');
   const y = window.scrollY;
-
-  // Header shadow
-  if (y > 20) {
-    header.classList.add('shadow-[0_4px_20px_rgba(0,0,0,.5)]');
-  } else {
-    header.classList.remove('shadow-[0_4px_20px_rgba(0,0,0,.5)]');
-  }
-
-  // Scroll to top button
+  if (y > 20) header.classList.add('shadow-[0_4px_20px_rgba(0,0,0,.5)]');
+  else header.classList.remove('shadow-[0_4px_20px_rgba(0,0,0,.5)]');
   if (y > 400) {
     scrollTop.classList.remove('opacity-0','invisible','translate-y-4');
     scrollTop.classList.add('opacity-100','visible','translate-y-0');
@@ -605,16 +591,28 @@ window.addEventListener('scroll', () => {
     scrollTop.classList.add('opacity-0','invisible','translate-y-4');
     scrollTop.classList.remove('opacity-100','visible','translate-y-0');
   }
-  lastScroll = y;
 }, {passive:true});
 
 // ============================================================
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  getUsers(); // Ensure defaults
+  getUsers();
   updateUserUI();
-  switchMonth('septiembre');
+
+  const result = buildMonthsData();
+  MONTHS_DATA = result.months;
+
+  // Update stats
+  document.getElementById('stat-files').textContent = result.totalFiles;
+  document.getElementById('stat-pools').textContent = result.totalPools;
+  document.getElementById('stat-dates').textContent = result.totalDates;
+
+  // Start with the most recent month
+  const monthOrder = Object.keys(MONTHS_DATA);
+  if (monthOrder.length > 0) {
+    switchMonth(monthOrder[0]);
+  }
 });
 </script>
 </body>
