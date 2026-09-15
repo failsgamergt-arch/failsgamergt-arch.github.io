@@ -393,6 +393,8 @@ function saveUser(e) {
       const newActive = isSelf ? true : active;
       return {...u, user: newUser, pass, role: newRole, active: newActive};
     });
+    // If renamed, mark old name as deleted so defaults don't re-add it
+    if (username !== editingUser) addDeletedUser(editingUser);
     saveUsers(updated);
   } else {
     if (users.some(u => u.user.toLowerCase() === username.toLowerCase())) {
