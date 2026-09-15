@@ -187,12 +187,24 @@ const DEFAULT_USERS = [
   {user:'prueba1', pass:'prueba_1', role:'user', active:true, created:'2026-09-15'},
   {user:'demo', pass:'demo123', role:'user', active:true, created:'2026-09-01'}
 ];
+function getDeletedUsers() {
+  const d = localStorage.getItem('dpw_deleted');
+  return d ? JSON.parse(d) : [];
+}
+function addDeletedUser(username) {
+  const deleted = getDeletedUsers();
+  if (!deleted.includes(username)) {
+    deleted.push(username);
+    localStorage.setItem('dpw_deleted', JSON.stringify(deleted));
+  }
+}
 function getUsers() {
   const d = localStorage.getItem('dpw_users');
   const users = d ? JSON.parse(d) : [];
+  const deleted = getDeletedUsers();
   let changed = false;
   DEFAULT_USERS.forEach(def => {
-    if (!users.some(u => u.user === def.user)) {
+    if (!deleted.includes(def.user) && !users.some(u => u.user === def.user)) {
       users.push(def);
       changed = true;
     }
@@ -323,14 +335,12 @@ function openModal(username) {
     if (!u) return;
     title.textContent = 'EDITAR USUARIO';
     document.getElementById('m-user').value = u.user;
-    document.getElementById('m-user').readOnly = true;
     document.getElementById('m-pass').value = u.pass;
     document.getElementById('m-role').value = u.role;
     document.getElementById('m-active').checked = u.active;
   } else {
     title.textContent = 'NUEVO USUARIO';
     document.getElementById('m-user').value = '';
-    document.getElementById('m-user').readOnly = false;
     document.getElementById('m-pass').value = '';
     document.getElementById('m-role').value = 'user';
     document.getElementById('m-active').checked = true;
@@ -369,11 +379,19 @@ function saveUser(e) {
 
   if (editingUser) {
     const current = getCurrentUser();
+    // Check if new username conflicts with another user
+    if (username !== editingUser && users.some(u => u.user.toLowerCase() === username.toLowerCase() && u.user !== editingUser)) {
+      errEl.textContent = 'Ese nombre de usuario ya existe';
+      errEl.classList.remove('hidden');
+      return;
+    }
     const updated = users.map(u => {
       if (u.user !== editingUser) return u;
-      const newRole = (editingUser === current.user) ? u.role : role;
-      const newActive = (editingUser === current.user) ? true : active;
-      return {...u, pass, role: newRole, active: newActive};
+      const isSelf = editingUser === current.user;
+      const newUser = isSelf ? u.user : username;
+      const newRole = isSelf ? u.role : role;
+      const newActive = isSelf ? true : active;
+      return {...u, user: newUser, pass, role: newRole, active: newActive};
     });
     saveUsers(updated);
   } else {
@@ -414,6 +432,7 @@ function closeDeleteModal() {
 
 function confirmDelete() {
   if (!deletingUser) return;
+  addDeletedUser(deletingUser);
   const users = getUsers().filter(u => u.user !== deletingUser);
   saveUsers(users);
   closeDeleteModal();

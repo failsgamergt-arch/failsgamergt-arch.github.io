@@ -312,9 +312,10 @@ const DEFAULT_USERS = [
 function getUsers() {
   const d = localStorage.getItem('dpw_users');
   const users = d ? JSON.parse(d) : [];
+  const deleted = JSON.parse(localStorage.getItem('dpw_deleted') || '[]');
   let changed = false;
   DEFAULT_USERS.forEach(def => {
-    if (!users.some(u => u.user === def.user)) {
+    if (!deleted.includes(def.user) && !users.some(u => u.user === def.user)) {
       users.push(def);
       changed = true;
     }
