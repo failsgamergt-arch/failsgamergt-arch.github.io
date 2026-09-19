@@ -26,9 +26,11 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 ## Estetica (pools.html)
 - Tema oscuro (fondo `#0b0b0e`)
 - Color neon amarillo (`#dfff00`) como acento principal
-- Fondo animado: gradiente CSS `gradientShift` (20s infinite, 4 colores oscuros)
-- Particulas flotantes: 8 circulos fijos (neon + azul) con animacion `float`, `z-index:-1`
-- Logo `logo-dpw.jpg` en: header (circular, borde azul, glow hover), hero (junto al titulo + fondo fantasma 8% opacidad)
+- Fondo animado: gradiente CSS `gradientShift` (25s infinite, 7 colores oscuros con tonos azul/violeta/teal)
+- 45 particulas flotantes generadas por JS (5 colores: neon, azul, violeta, cyan, rosa) con 3 trayectorias (`floatA/B/C`), tamaños y velocidades aleatorias
+- 5 blobs de aurora/nebula: circulos grandes (350-600px) con `blur(80px)`, animaciones lentas (22-35s), colores neon/azul/violeta/cyan
+- Neon sweep en separadores: linea de brillo recorre los `.neon-line` de izquierda a derecha (`neonSweep` 4s infinite)
+- Logo `logo-dpw.jpg` en: header (circular, borde azul, glow hover), hero (junto al titulo + decorativo grande a la derecha con borde y glow azul)
 - Cards de pool con colores unicos por pool (28 disenos en `POOL_CARDS`)
 - Animaciones: fadeUp, fadeScale, slideDown, pulseNeon, shimmer
 - Card flip 3D al cambiar tabs (perspective + rotateY, 150ms transicion)
