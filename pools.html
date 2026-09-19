@@ -67,6 +67,10 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
 .tracklist-toggle.open{transform:rotate(180deg)}
 .tracklist-content{max-height:0;overflow:hidden;transition:max-height .4s ease}
 .tracklist-content.open{max-height:600px;overflow-y:auto}
+
+/* Tab arrows */
+.tab-arrow{cursor:pointer}
+.tab-arrow:hover svg{filter:drop-shadow(0 0 6px rgba(223,255,0,.5))}
 </style>
 </head>
 <body class="bg-[#0b0b0e] text-zinc-100 font-sans min-h-screen antialiased selection:bg-brand-neon selection:text-black">
@@ -769,9 +773,17 @@ function renderSections(data) {
           '<span>' + dt.day + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.month + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.year + '</span>' +
         '</div>' +
       '</div>' +
-      '<div class="relative rounded-3xl border border-brand-neon bg-[#0c0c10] p-3 sm:p-5 lg:p-6 shadow-[0_0_20px_rgba(223,255,0,0.08)] card-hover">' +
-        '<div class="overflow-x-auto no-scrollbar border-b border-zinc-800/80 pb-3">' +
-          '<div class="flex items-stretch gap-1.5 min-w-max" id="tabs-' + idx + '">' + tabs + '</div>' +
+      '<div class="relative rounded-3xl border border-brand-neon bg-[#0c0c10] p-3 sm:p-5 lg:p-6 shadow-[0_0_20px_rgba(223,255,0,0.08)] card-hover overflow-hidden">' +
+        '<div class="relative group/tabs">' +
+          '<button onclick="scrollTabs(\'' + idx + '\',-1)" class="tab-arrow tab-arrow-left absolute left-0 top-0 bottom-0 z-10 w-10 flex items-center justify-center bg-gradient-to-r from-[#0c0c10] via-[#0c0c10]/90 to-transparent opacity-0 pointer-events-none transition-opacity duration-200" aria-label="Anterior">' +
+            '<svg class="w-5 h-5 text-brand-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>' +
+          '</button>' +
+          '<div class="overflow-x-auto no-scrollbar border-b border-zinc-800/80 pb-3" id="tabs-scroll-' + idx + '" onscroll="updateTabArrows(\'' + idx + '\')">' +
+            '<div class="flex items-stretch gap-1.5 min-w-max" id="tabs-' + idx + '">' + tabs + '</div>' +
+          '</div>' +
+          '<button onclick="scrollTabs(\'' + idx + '\',1)" class="tab-arrow tab-arrow-right absolute right-0 top-0 bottom-0 z-10 w-10 flex items-center justify-center bg-gradient-to-l from-[#0c0c10] via-[#0c0c10]/90 to-transparent opacity-0 pointer-events-none transition-opacity duration-200" aria-label="Siguiente">' +
+            '<svg class="w-5 h-5 text-brand-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>' +
+          '</button>' +
         '</div>' +
         '<div class="mt-4 rounded-2xl border border-brand-neon/60 bg-[#101014] py-14 px-6 flex flex-col items-center justify-center min-h-[340px]" id="display-' + idx + '">' +
           '<div class="pool-card-wrapper">' +
@@ -789,7 +801,35 @@ function renderSections(data) {
   });
 
   document.querySelectorAll('.pool-tab').forEach(t => t.addEventListener('click', handleTab));
-  requestAnimationFrame(observeReveals);
+  requestAnimationFrame(() => {
+    observeReveals();
+    data.dates.forEach((_, idx) => updateTabArrows(String(idx)));
+  });
+}
+
+function scrollTabs(idx, dir) {
+  const el = document.getElementById('tabs-scroll-' + idx);
+  if (!el) return;
+  el.scrollBy({ left: dir * 250, behavior: 'smooth' });
+}
+
+function updateTabArrows(idx) {
+  const el = document.getElementById('tabs-scroll-' + idx);
+  if (!el) return;
+  const parent = el.parentElement;
+  const leftArr = parent.querySelector('.tab-arrow-left');
+  const rightArr = parent.querySelector('.tab-arrow-right');
+  if (!leftArr || !rightArr) return;
+  const canLeft = el.scrollLeft > 4;
+  const canRight = el.scrollLeft < el.scrollWidth - el.clientWidth - 4;
+  leftArr.classList.toggle('opacity-0', !canLeft);
+  leftArr.classList.toggle('pointer-events-none', !canLeft);
+  leftArr.classList.toggle('opacity-100', canLeft);
+  leftArr.classList.toggle('pointer-events-auto', canLeft);
+  rightArr.classList.toggle('opacity-0', !canRight);
+  rightArr.classList.toggle('pointer-events-none', !canRight);
+  rightArr.classList.toggle('opacity-100', canRight);
+  rightArr.classList.toggle('pointer-events-auto', canRight);
 }
 
 function handleTab(e) {
