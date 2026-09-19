@@ -47,17 +47,31 @@ tailwind.config = {
 .download-btn:hover{background:rgba(223,255,0,.1);box-shadow:0 0 20px rgba(223,255,0,.2)}
 .pool-card-wrapper{perspective:600px}
 .pool-card-inner{transition:transform .5s ease,opacity .3s ease}
-.neon-line{height:1px;background:linear-gradient(90deg,transparent,rgba(223,255,0,.4) 30%,rgba(223,255,0,.4) 70%,transparent)}
+.neon-line{height:1px;background:linear-gradient(90deg,transparent,rgba(223,255,0,.4) 30%,rgba(223,255,0,.4) 70%,transparent);position:relative;overflow:hidden}
+.neon-line::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(223,255,0,.9),transparent);animation:neonSweep 4s ease-in-out infinite}
+@keyframes neonSweep{0%{left:-30%}100%{left:130%}}
 .modal-backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px);transition:opacity .3s ease}
 .modal-content{animation:fadeScale .3s ease-out}
 
 /* Animated gradient background */
 @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradient(135deg,#0b0b0e 0%,#0d1117 25%,#0b0b0e 50%,#111118 75%,#0b0b0e 100%);background-size:400% 400%;animation:gradientShift 20s ease infinite}
+body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradient(135deg,#0b0b0e 0%,#0f1520 20%,#0d0b1a 40%,#0b0b0e 55%,#0b1518 70%,#12101e 85%,#0b0b0e 100%);background-size:400% 400%;animation:gradientShift 25s ease infinite}
 
 /* Floating particles */
-@keyframes float{0%,100%{transform:translateY(0) translateX(0)}25%{transform:translateY(-30px) translateX(10px)}50%{transform:translateY(-15px) translateX(-10px)}75%{transform:translateY(-40px) translateX(5px)}}
-.particle{position:fixed;border-radius:50%;pointer-events:none;opacity:.15;animation:float linear infinite;z-index:-1}
+@keyframes floatA{0%,100%{transform:translate(0,0)}25%{transform:translate(12px,-30px)}50%{transform:translate(-8px,-15px)}75%{transform:translate(5px,-40px)}}
+@keyframes floatB{0%,100%{transform:translate(0,0)}33%{transform:translate(-15px,-25px)}66%{transform:translate(10px,-35px)}}
+@keyframes floatC{0%,100%{transform:translate(0,0)}20%{transform:translate(20px,-10px)}50%{transform:translate(-12px,-40px)}80%{transform:translate(8px,-20px)}}
+.particle{position:fixed;border-radius:50%;pointer-events:none;z-index:-1}
+
+/* Aurora / nebula glow blobs */
+@keyframes auroraA{0%,100%{transform:translate(0,0) scale(1);opacity:.06}50%{transform:translate(60px,40px) scale(1.3);opacity:.12}}
+@keyframes auroraB{0%,100%{transform:translate(0,0) scale(1.1);opacity:.05}50%{transform:translate(-50px,-30px) scale(.9);opacity:.10}}
+@keyframes auroraC{0%,100%{transform:translate(0,0) scale(1);opacity:.04}33%{transform:translate(30px,-50px) scale(1.2);opacity:.09}66%{transform:translate(-40px,20px) scale(.85);opacity:.07}}
+.aurora{position:fixed;border-radius:50%;pointer-events:none;z-index:-1;filter:blur(80px)}
+
+/* Shooting stars */
+@keyframes shoot{0%{transform:translate(0,0) rotate(-35deg);opacity:0;width:0}10%{opacity:1;width:80px}90%{opacity:1}100%{transform:translate(calc(60vw),calc(40vh)) rotate(-35deg);opacity:0;width:120px}}
+.shooting-star{position:fixed;height:1.5px;border-radius:1px;pointer-events:none;z-index:-1;opacity:0;background:linear-gradient(90deg,rgba(223,255,0,.7),rgba(223,255,0,0))}
 
 /* Search highlight */
 .search-highlight{background:rgba(223,255,0,.2);border-radius:2px;padding:0 2px}
@@ -75,15 +89,50 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
 </head>
 <body class="bg-[#0b0b0e] text-zinc-100 font-sans min-h-screen antialiased selection:bg-brand-neon selection:text-black overflow-x-hidden">
 
-<!-- Floating particles -->
-<div class="particle w-1 h-1 bg-brand-neon top-[10%] left-[15%]" style="animation-duration:8s"></div>
-<div class="particle w-1.5 h-1.5 bg-blue-400 top-[30%] left-[80%]" style="animation-duration:12s;animation-delay:-3s"></div>
-<div class="particle w-1 h-1 bg-brand-neon top-[60%] left-[25%]" style="animation-duration:10s;animation-delay:-5s"></div>
-<div class="particle w-2 h-2 bg-blue-500 top-[45%] left-[65%]" style="animation-duration:14s;animation-delay:-2s"></div>
-<div class="particle w-1 h-1 bg-brand-neon top-[80%] left-[50%]" style="animation-duration:9s;animation-delay:-7s"></div>
-<div class="particle w-1.5 h-1.5 bg-blue-400 top-[20%] left-[45%]" style="animation-duration:11s;animation-delay:-4s"></div>
-<div class="particle w-1 h-1 bg-brand-neon top-[70%] left-[85%]" style="animation-duration:13s;animation-delay:-1s"></div>
-<div class="particle w-2 h-2 bg-blue-500 top-[90%] left-[10%]" style="animation-duration:15s;animation-delay:-6s"></div>
+<!-- Aurora glow blobs -->
+<div class="aurora" style="width:500px;height:500px;top:-5%;left:-10%;background:radial-gradient(circle,rgba(223,255,0,.15),transparent 70%);animation:auroraA 25s ease-in-out infinite"></div>
+<div class="aurora" style="width:600px;height:600px;top:30%;right:-15%;background:radial-gradient(circle,rgba(59,130,246,.12),transparent 70%);animation:auroraB 30s ease-in-out infinite"></div>
+<div class="aurora" style="width:450px;height:450px;bottom:10%;left:20%;background:radial-gradient(circle,rgba(139,92,246,.10),transparent 70%);animation:auroraC 22s ease-in-out infinite"></div>
+<div class="aurora" style="width:350px;height:350px;top:60%;right:25%;background:radial-gradient(circle,rgba(223,255,0,.08),transparent 70%);animation:auroraA 28s ease-in-out infinite;animation-delay:-10s"></div>
+<div class="aurora" style="width:500px;height:500px;top:10%;left:50%;background:radial-gradient(circle,rgba(6,182,212,.08),transparent 70%);animation:auroraB 35s ease-in-out infinite;animation-delay:-5s"></div>
+
+<!-- Particles + shooting stars (generated by JS) -->
+<div id="particles-container"></div>
+
+<script>
+(function(){
+  var c=document.getElementById('particles-container');
+  var colors=['rgba(223,255,0,','rgba(59,130,246,','rgba(139,92,246,','rgba(6,182,212,','rgba(236,72,153,'];
+  var anims=['floatA','floatB','floatC'];
+  for(var i=0;i<45;i++){
+    var d=document.createElement('div');
+    d.className='particle';
+    var col=colors[Math.floor(Math.random()*colors.length)];
+    var sz=Math.random()*4+1;
+    var op=Math.random()*0.2+0.05;
+    var dur=Math.random()*14+6;
+    var del=Math.random()*-20;
+    var anim=anims[Math.floor(Math.random()*anims.length)];
+    d.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;background:'+col+op+');box-shadow:0 0 '+(sz*3)+'px '+col+(op*.6)+');animation:'+anim+' '+dur+'s linear infinite;animation-delay:'+del+'s';
+    c.appendChild(d);
+  }
+  function spawnStar(){
+    var s=document.createElement('div');
+    s.className='shooting-star';
+    var fromTop=Math.random()*40;
+    var fromLeft=Math.random()*60;
+    var col=Math.random()>.5?'rgba(223,255,0,':'rgba(59,130,246,';
+    s.style.cssText='top:'+fromTop+'%;left:'+fromLeft+'%;background:linear-gradient(90deg,'+col+'.8),'+col+'0));animation:shoot '+(Math.random()*1.5+1)+'s linear forwards';
+    document.body.appendChild(s);
+    s.addEventListener('animationend',function(){s.remove()});
+  }
+  function scheduleStars(){
+    spawnStar();
+    setTimeout(scheduleStars,Math.random()*5000+3000);
+  }
+  setTimeout(scheduleStars,2000);
+})();
+</script>
 
 <!-- ========== HEADER ========== -->
 <header class="sticky top-0 z-50 bg-[#0c0c0f]/95 backdrop-blur-md border-b border-zinc-900/80 transition-shadow duration-300" id="main-header">

@@ -16,24 +16,31 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 3. **Shark Murcia** → https://sharkmurcia-suscripciones.blogspot.com/p/suscripciones.html (Hardstyle, remixes)
 
 ## Stack
-- HTML: `pools.html` (principal), `admin.html` (gestion usuarios), `index.html` (redirect a pools)
+- HTML: `pools.html` (principal, ~936 lineas), `admin.html` (gestion usuarios), `index.html` (redirect a pools)
 - Tailwind CSS v3 via CDN con config custom (brand colors, Montserrat font)
 - Fuente: Montserrat (400-900)
 - Vanilla JS: IntersectionObserver (scroll reveal), localStorage/sessionStorage (auth)
-- Datos: `pools-links.js` (365 enlaces MEGA mapeados por pool+fecha)
+- Datos: `pools-links.js` (365 enlaces MEGA mapeados por pool+fecha), `pools-tracks.js` (16,342 tracklists mapeados por pool+fecha)
+- Logo: `logo-dpw.jpg` (usado en header, hero section, y fondo decorativo)
 
 ## Estetica (pools.html)
 - Tema oscuro (fondo `#0b0b0e`)
 - Color neon amarillo (`#dfff00`) como acento principal
-- Cards de pool con colores unicos por pool (28 disenos)
+- Fondo animado: gradiente CSS `gradientShift` (20s infinite, 4 colores oscuros)
+- Particulas flotantes: 8 circulos fijos (neon + azul) con animacion `float`, `z-index:-1`
+- Logo `logo-dpw.jpg` en: header (circular, borde azul, glow hover), hero (junto al titulo + fondo fantasma 8% opacidad)
+- Cards de pool con colores unicos por pool (28 disenos en `POOL_CARDS`)
 - Animaciones: fadeUp, fadeScale, slideDown, pulseNeon, shimmer
-- Card flip 3D al cambiar tabs (perspective + rotateY)
-- Hover effects: cards suben 4px + glow neon, botones con shimmer
-- Scroll reveal staggered con IntersectionObserver
-- Header sticky con shadow on scroll
-- Boton scroll-to-top con fade in/out
-- Dropdown hover en navbar (POOLS, MI CUENTA)
+- Card flip 3D al cambiar tabs (perspective + rotateY, 150ms transicion)
+- Hover effects: cards suben 4px + glow neon, botones con shimmer overlay
+- Scroll reveal staggered con IntersectionObserver (threshold 0.08, delay por indice)
+- Header sticky con shadow on scroll (`shadow-[0_4px_20px_rgba(0,0,0,.5)]`)
+- Boton scroll-to-top con fade in/out (aparece a 400px scroll)
+- Dropdown hover en navbar (POOLS con meses dinamicos, MI CUENTA)
 - Modals con backdrop blur para login, descarga y editar cuenta
+- Flechas de navegacion en tabs de pools (aparecen/desaparecen segun scroll position)
+- Buscador de canciones con highlight de resultados (`search-highlight` class)
+- Tracklist accordion en modal de descarga (expandible, max 600px)
 
 ## Sistema de usuarios
 - **Almacenamiento:** localStorage (`dpw_users`, `dpw_deleted`) + sessionStorage (`dpw_session`)
@@ -52,11 +59,22 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 
 ## Pagina de Pools (pools.html)
 - **Meses auto-generados** desde MEGA_LINKS (siempre sincronizado con pools-links.js)
-- **26 fechas, 26 pools, 365 archivos** (agosto 2026)
-- **Alias de pools:** `LATINREMIXES.COM` → `LATIN REMIXES` (transparente en UI)
-- **Tabs por fecha:** click cambia card visual + boton descarga
-- **Descarga:** modal con enlaces MEGA (requiere login) o prompt de login
-- **Stats en hero:** archivos, pools y fechas calculados de MEGA_LINKS
+- **26 fechas, 26 pools, 365 archivos, 16,342 tracks** (agosto 2026)
+- **Alias de pools:** `LATINREMIXES.COM` → `LATIN REMIXES` (transparente en UI via `POOL_ALIASES`)
+- **Tabs por fecha:** click cambia card visual + boton descarga con flip 3D
+- **Flechas de tabs:** `scrollTabs(idx, dir)` desplaza 250px, `updateTabArrows(idx)` muestra/oculta flechas segun scroll position (gradiente fade con bg del card container)
+- **28 pool cards visuales:** definidos en `POOL_CARDS` con bg/html unicos por pool
+- **Descarga:** modal con tracklist accordion + enlaces MEGA (requiere login) o prompt de login
+- **Tracklist en modal:** boton "VER CONTENIDO (N tracks)" despliega lista con nombre de cada track (accordion con `max-height` transition)
+- **Stats en hero:** archivos, pools, fechas y tracks calculados dinamicamente de MEGA_LINKS y TRACK_LIST
+- **Buscador de canciones:**
+  - Input en hero section con debounce 250ms
+  - Busca en `TRACK_LIST` (16,342 tracks) por nombre de cancion, artista o remix
+  - Max 50 resultados, con highlight del texto buscado
+  - Click en resultado abre el modal de descarga del pool/fecha correspondiente
+  - Dropdown `z-50` dentro del hero `z-20` para aparecer encima de las secciones de abajo
+- **Overflow controlado:** `overflow-x-hidden` en body y main, `overflow-hidden` en card container (evita scroll horizontal por `min-w-max` en tabs)
+- **CSS stacking:** Hero section `z-20` para que el dropdown de busqueda aparezca encima de las secciones de fechas
 
 ## Admin Panel (admin.html)
 - **Acceso:** solo usuarios con rol `admin`
@@ -69,9 +87,11 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 ## Estructura
 ```
 index.html          -- Redirect a pools.html (meta refresh + JS)
-pools.html          -- Pagina principal (plataforma descargas)
-pools-links.js      -- 365 enlaces MEGA (auto-generado, 58KB)
+pools.html          -- Pagina principal (plataforma descargas, ~936 lineas)
+pools-links.js      -- 365 enlaces MEGA (auto-generado, const MEGA_LINKS)
+pools-tracks.js     -- 16,342 tracklists (auto-generado, const TRACK_LIST)
 admin.html          -- Panel admin gestion usuarios
+logo-dpw.jpg        -- Logo DJ Pool World (circular, usado en header y hero)
 nebula-bg.jpg       -- Fondo hero antiguo (no usado en pools)
 favicon.jpg         -- Tiburon neon azul (favicon)
 CLAUDE.md           -- Este archivo
@@ -235,6 +255,13 @@ CLAUDE.md           -- Este archivo
 - **Alias:** `LATINREMIXES.COM` aparece en dias 07 y 22 (mapeado a `LATIN REMIXES` en UI)
 - **Pool names en MEGA_LINKS:** AREYOUKIDY, BEATFREAKZ, BEEZO BEEHIVE, BPM LATINO, BPM SUPREME, CLUB KILLERS, CRACK 4 DJS, CROOKLYN CLAN, DA ZONE, DIGITAL MUSIC, DIRTY SOUNDS, DJ CITY, DJ CITY LATINO, ELITE REMIX, EUROPA REMIX, HEADLINER, LATIN BOX, LATIN REMIXES, LATINREMIXES.COM, MP3 MIXES POOL, PRO LATIN, REMIX PLANET, ROMPE DISCOTECA, THEMASHUP, UNLIMITED LATIN, URBAN ZONE
 
+## pools-tracks.js (generacion)
+- **Generado desde:** extraccion de nombres de archivo dentro de los ZIP/RAR de cada pool
+- **Formato:** `const TRACK_LIST = { "DD_MM": { "POOL NAME": ["track1.mp3", "track2.mp3", ...] } }`
+- **16,342 tracks** distribuidos en 26 fechas y 26 pools
+- **Usado por:** buscador de canciones (`handleSongSearch`), tracklist accordion en modal de descarga (`getTrackList`)
+- **Bug conocido:** Algunos nombres de tracks tienen caracteres Unicode rotos (ej: "Difícil" se muestra garbled). Causa: extraccion con WinRAR `UnRAR.exe` en consola Windows (cp1252) no maneja correctamente UTF-8. Pendiente re-generar con encoding correcto.
+
 ## Otros scripts en prueba
 - `rename_zip_folders.py` - Renombra carpetas internas de ZIPs (NO USAR, no era necesario)
 - `rename_rar_folders.py` - Renombra carpetas internas de RARs (NO USAR, no era necesario)
@@ -250,7 +277,7 @@ CLAUDE.md           -- Este archivo
 8. **Nuevos pools** → `process_new_pools.py` + `upload_new.py` (13 carpetas: copy, clean, tag 380 MP3s, zip, upload)
 9. **Actualizar blogpost** → `add_new_pools.py` (5 nuevas secciones con imagenes) + `inject_links.py` (365 links total)
 10. Publicar en Blogger → pendiente (copiar HTML de `blogpost_agosto_2026_links.html`)
-11. **Web DJ Pool World** → `pools.html` + `pools-links.js` + `admin.html` (plataforma de descargas con auth)
+11. **Web DJ Pool World** → `pools.html` + `pools-links.js` + `pools-tracks.js` + `admin.html` (plataforma completa con auth, busqueda, tracklists)
 
 ## Nuevos Pools Agosto 2026 (5 pools, 13 carpetas)
 - **Carpetas SSD:** `C:\Users\Javier\Desktop\PENDRIVE_DPW\NUEVOS\`
@@ -263,7 +290,11 @@ CLAUDE.md           -- Este archivo
 - **Procesado:** 380 MP3s tageados, 13 ZIPs (3.15 GB total)
 - **Subido:** 13/13 OK, 13/13 links generados
 
-# currentDate
-Today's date is 2026-09-15.
+## Bugs conocidos
+- **Unicode roto en pools-tracks.js:** Nombres de tracks con acentos (í, é, ñ, ü) se muestran garbled. La extraccion con WinRAR `UnRAR.exe` en Windows produce output en cp1252, no UTF-8. Afecta al buscador de canciones y al tracklist del modal de descarga. Necesita re-generar `pools-tracks.js` con encoding UTF-8 correcto.
 
-      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.
+## Funcionalidades pendientes
+- **Audio preview 30s:** Vista previa de 30 segundos de los tracks (requiere ffmpeg + hosting externo)
+- **Contador de descargas por pool:** Tracking de descargas por pool/fecha
+- **Publicar blogpost en Blogger:** Copiar HTML de `blogpost_agosto_2026_links.html` al blog
+- **Estrategia de almacenamiento:** Plan para 1-2 anos de contenido (recomendacion discutida, sin accion)
