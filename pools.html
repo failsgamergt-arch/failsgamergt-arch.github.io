@@ -85,11 +85,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
 <header class="sticky top-0 z-50 bg-[#0c0c0f]/95 backdrop-blur-md border-b border-zinc-900/80 transition-shadow duration-300" id="main-header">
 <div class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
   <a class="flex items-center gap-3 group" href="pools.html">
-    <div class="flex items-center gap-1">
-      <span class="w-1.5 h-6 bg-brand-neon rounded-full inline-block group-hover:scale-y-125 transition-transform duration-300"></span>
-      <span class="w-1.5 h-4 bg-white/70 rounded-full inline-block group-hover:h-5 transition-all duration-300"></span>
-      <span class="w-1.5 h-7 bg-brand-neon rounded-full inline-block group-hover:scale-y-110 transition-transform duration-300"></span>
-    </div>
+    <img src="logo-dpw.jpg" alt="DJ Pool World" class="w-10 h-10 rounded-full border border-blue-500/30 shadow-[0_0_12px_rgba(59,130,246,.25)] group-hover:shadow-[0_0_18px_rgba(59,130,246,.4)] transition-shadow duration-300">
     <div class="flex items-baseline tracking-tight">
       <span class="text-xl sm:text-2xl font-black text-white tracking-wider group-hover:text-zinc-200 transition-colors">DJ POOL</span>
       <span class="text-xl sm:text-2xl font-black text-brand-neon ml-1 group-hover:text-brand-neonHover transition-colors">WORLD</span>
@@ -210,12 +206,13 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
 <main class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
 
   <!-- Hero -->
-  <section class="reveal border border-zinc-800/80 bg-gradient-to-b from-[#14141a] to-[#0e0e12] rounded-2xl p-6 sm:p-8 lg:p-10 relative overflow-hidden card-hover">
-    <div class="absolute -right-20 -top-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -left-40 bottom-0 w-80 h-80 bg-brand-neon/3 rounded-full blur-3xl pointer-events-none"></div>
-    <!-- Logo watermark -->
-    <div class="absolute right-4 sm:right-10 top-1/2 -translate-y-1/2 w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72 opacity-[0.08] pointer-events-none">
-      <img src="logo-dpw.jpg" alt="" class="w-full h-full object-contain rounded-full">
+  <section class="reveal border border-zinc-800/80 bg-gradient-to-b from-[#14141a] to-[#0e0e12] rounded-2xl p-6 sm:p-8 lg:p-10 relative card-hover">
+    <div class="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+      <div class="absolute -right-20 -top-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+      <div class="absolute -left-40 bottom-0 w-80 h-80 bg-brand-neon/3 rounded-full blur-3xl"></div>
+      <div class="absolute right-4 sm:right-10 top-1/2 -translate-y-1/2 w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72 opacity-[0.08]">
+        <img src="logo-dpw.jpg" alt="" class="w-full h-full object-contain rounded-full">
+      </div>
     </div>
     <div class="relative z-10 max-w-4xl">
       <div class="flex items-center gap-3 mb-3">
