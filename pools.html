@@ -12,7 +12,7 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        brand: { black:'#0a0a0c', card:'#121216', surface:'#18181f', neon:'#dfff00', neonHover:'#f0ff40', neonMuted:'#9eb500', border:'#23232b' }
+        brand: { black:'#0a0a0c', card:'#121216', surface:'#18181f', neon:'#2563eb', neonHover:'#3b82f6', neonMuted:'#1e3a8a', border:'#23232b' }
       },
       fontFamily: { sans: ['Montserrat','Inter','system-ui','sans-serif'] }
     }
@@ -29,7 +29,7 @@ tailwind.config = {
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeScale{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulseNeon{0%,100%{box-shadow:0 0 15px rgba(223,255,0,.15)}50%{box-shadow:0 0 30px rgba(223,255,0,.3)}}
+@keyframes pulseNeon{0%,100%{box-shadow:0 0 15px rgba(37,99,235,.15)}50%{box-shadow:0 0 30px rgba(37,99,235,.3)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 .fade-up{animation:fadeUp .5s ease-out both}
 .fade-scale{animation:fadeScale .3s ease-out both}
@@ -38,24 +38,27 @@ tailwind.config = {
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 .card-hover{transition:all .35s cubic-bezier(.4,0,.2,1)}
-.card-hover:hover{transform:translateY(-4px);box-shadow:0 0 25px rgba(223,255,0,.2)}
+.card-hover:hover{transform:translateY(-4px);box-shadow:0 0 25px rgba(37,99,235,.2)}
 .tab-glow{transition:all .2s ease}
-.tab-glow:hover{text-shadow:0 0 8px rgba(223,255,0,.4)}
+.tab-glow:hover{text-shadow:0 0 8px rgba(37,99,235,.4)}
 .download-btn{position:relative;overflow:hidden;transition:all .3s ease}
-.download-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(223,255,0,.1),transparent);transition:left .5s ease}
+.download-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(37,99,235,.1),transparent);transition:left .5s ease}
 .download-btn:hover::before{left:100%}
-.download-btn:hover{background:rgba(223,255,0,.1);box-shadow:0 0 20px rgba(223,255,0,.2)}
+.download-btn:hover{background:rgba(37,99,235,.1);box-shadow:0 0 20px rgba(37,99,235,.2)}
 .pool-card-wrapper{perspective:600px}
 .pool-card-inner{transition:transform .5s ease,opacity .3s ease}
-.neon-line{height:1px;background:linear-gradient(90deg,transparent,rgba(223,255,0,.4) 30%,rgba(223,255,0,.4) 70%,transparent);position:relative;overflow:hidden}
-.neon-line::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(223,255,0,.9),transparent);animation:neonSweep 4s ease-in-out infinite}
+.neon-line{height:1px;background:linear-gradient(90deg,transparent,rgba(37,99,235,.4) 30%,rgba(37,99,235,.4) 70%,transparent);position:relative;overflow:hidden}
+.neon-line::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(37,99,235,.9),transparent);animation:neonSweep 4s ease-in-out infinite}
 @keyframes neonSweep{0%{left:-30%}100%{left:130%}}
 .modal-backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px);transition:opacity .3s ease}
 .modal-content{animation:fadeScale .3s ease-out}
 
 /* Animated gradient background */
 @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradient(135deg,#0b0b0e 0%,#0f1520 20%,#0d0b1a 40%,#0b0b0e 55%,#0b1518 70%,#12101e 85%,#0b0b0e 100%);background-size:400% 400%;animation:gradientShift 25s ease infinite}
+body::before{content:'';position:fixed;inset:0;z-index:-3;background:linear-gradient(135deg,#050510 0%,#0a1028 20%,#0d0b1e 40%,#080818 55%,#0b1525 70%,#0e0e2a 85%,#050510 100%);background-size:400% 400%;animation:gradientShift 25s ease infinite}
+@keyframes twinkle{0%,100%{opacity:var(--tw-base)}50%{opacity:0.02}}
+@keyframes shootingStar{0%{transform:translateX(0) translateY(0);opacity:1}70%{opacity:1}100%{transform:translateX(300px) translateY(300px);opacity:0}}
+@keyframes eqBounce{0%,100%{transform:scaleY(0.3)}50%{transform:scaleY(1)}}
 
 /* Floating particles */
 @keyframes floatA{0%,100%{transform:translate(0,0)}25%{transform:translate(12px,-30px)}50%{transform:translate(-8px,-15px)}75%{transform:translate(5px,-40px)}}
@@ -71,27 +74,28 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
 
 
 /* Search highlight */
-.search-highlight{background:rgba(223,255,0,.2);border-radius:2px;padding:0 2px}
+.search-highlight{background:rgba(37,99,235,.2);border-radius:2px;padding:0 2px}
 
 /* Tracklist accordion */
 .tracklist-toggle{transition:transform .2s ease}
 .tracklist-toggle.open{transform:rotate(180deg)}
 .tracklist-content{max-height:0;overflow:hidden;transition:max-height .4s ease}
-.tracklist-content.open{max-height:600px;overflow-y:auto}
+.tracklist-content.open{max-height:600px;overflow-y:auto;overflow-x:auto}
 
 /* Tab arrows */
 .tab-arrow{cursor:pointer}
-.tab-arrow:hover svg{filter:drop-shadow(0 0 6px rgba(223,255,0,.5))}
+.tab-arrow:hover svg{filter:drop-shadow(0 0 6px rgba(37,99,235,.5))}
 </style>
 </head>
-<body class="bg-[#0b0b0e] text-zinc-100 font-sans min-h-screen antialiased selection:bg-brand-neon selection:text-black overflow-x-hidden">
+<body class="bg-[#0b0b0e] text-zinc-100 font-sans min-h-screen antialiased selection:bg-brand-neon selection:text-white overflow-x-hidden">
 
-<!-- Aurora glow blobs -->
-<div class="aurora" style="width:500px;height:500px;top:-5%;left:-10%;background:radial-gradient(circle,rgba(223,255,0,.15),transparent 70%);animation:auroraA 25s ease-in-out infinite"></div>
-<div class="aurora" style="width:600px;height:600px;top:30%;right:-15%;background:radial-gradient(circle,rgba(59,130,246,.12),transparent 70%);animation:auroraB 30s ease-in-out infinite"></div>
-<div class="aurora" style="width:450px;height:450px;bottom:10%;left:20%;background:radial-gradient(circle,rgba(139,92,246,.10),transparent 70%);animation:auroraC 22s ease-in-out infinite"></div>
-<div class="aurora" style="width:350px;height:350px;top:60%;right:25%;background:radial-gradient(circle,rgba(223,255,0,.08),transparent 70%);animation:auroraA 28s ease-in-out infinite;animation-delay:-10s"></div>
-<div class="aurora" style="width:500px;height:500px;top:10%;left:50%;background:radial-gradient(circle,rgba(6,182,212,.08),transparent 70%);animation:auroraB 35s ease-in-out infinite;animation-delay:-5s"></div>
+<!-- Nebula / space glow blobs -->
+<div class="aurora" style="width:500px;height:500px;top:-5%;left:-10%;background:radial-gradient(circle,rgba(37,99,235,.18),transparent 70%);animation:auroraA 25s ease-in-out infinite"></div>
+<div class="aurora" style="width:600px;height:600px;top:30%;right:-15%;background:radial-gradient(circle,rgba(88,28,135,.15),transparent 70%);animation:auroraB 30s ease-in-out infinite"></div>
+<div class="aurora" style="width:450px;height:450px;bottom:10%;left:20%;background:radial-gradient(circle,rgba(139,92,246,.12),transparent 70%);animation:auroraC 22s ease-in-out infinite"></div>
+<div class="aurora" style="width:350px;height:350px;top:60%;right:25%;background:radial-gradient(circle,rgba(6,182,212,.10),transparent 70%);animation:auroraA 28s ease-in-out infinite;animation-delay:-10s"></div>
+<div class="aurora" style="width:500px;height:500px;top:10%;left:50%;background:radial-gradient(circle,rgba(37,99,235,.10),transparent 70%);animation:auroraB 35s ease-in-out infinite;animation-delay:-5s"></div>
+<div class="aurora" style="width:400px;height:400px;top:80%;left:60%;background:radial-gradient(circle,rgba(139,92,246,.08),transparent 70%);animation:auroraC 32s ease-in-out infinite;animation-delay:-15s"></div>
 
 <!-- Particles (generated by JS) -->
 <div id="particles-container"></div>
@@ -99,9 +103,9 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
 <script>
 (function(){
   var c=document.getElementById('particles-container');
-  var colors=['rgba(223,255,0,','rgba(59,130,246,','rgba(139,92,246,','rgba(6,182,212,','rgba(236,72,153,'];
+  var colors=['rgba(37,99,235,','rgba(100,149,237,','rgba(139,92,246,','rgba(6,182,212,','rgba(255,255,255,'];
   var anims=['floatA','floatB','floatC'];
-  for(var i=0;i<45;i++){
+  for(var i=0;i<40;i++){
     var d=document.createElement('div');
     d.className='particle';
     var col=colors[Math.floor(Math.random()*colors.length)];
@@ -113,6 +117,17 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
     d.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;background:'+col+op+');box-shadow:0 0 '+(sz*3)+'px '+col+(op*.6)+');animation:'+anim+' '+dur+'s linear infinite;animation-delay:'+del+'s';
     c.appendChild(d);
   }
+  // Stars
+  for(var i=0;i<120;i++){
+    var d=document.createElement('div');
+    d.className='particle';
+    var sz=Math.random()*1.8+0.3;
+    var op=Math.random()*0.6+0.15;
+    var twDur=Math.random()*6+3;
+    var starCol=Math.random()>0.85?'rgba(140,180,255,'+op+')':'rgba(255,255,255,'+op+')';
+    d.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;background:'+starCol+';--tw-base:'+op+';animation:twinkle '+twDur+'s ease-in-out infinite;animation-delay:'+Math.random()*-10+'s';
+    c.appendChild(d);
+  }
 })();
 </script>
 
@@ -120,10 +135,17 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
 <header class="sticky top-0 z-50 bg-[#0c0c0f]/95 backdrop-blur-md border-b border-zinc-900/80 transition-shadow duration-300" id="main-header">
 <div class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
   <a class="flex items-center gap-3 group" href="pools.html">
-    <img src="logo-dpw.jpg" alt="DJ Pool World" class="w-10 h-10 rounded-full border border-blue-500/30 shadow-[0_0_12px_rgba(59,130,246,.25)] group-hover:shadow-[0_0_18px_rgba(59,130,246,.4)] transition-shadow duration-300">
-    <div class="flex items-baseline tracking-tight">
+    <div class="flex items-end gap-[2px] h-6 group-hover:opacity-80 transition-opacity">
+      <span class="w-[3px] rounded-sm bg-brand-neon origin-bottom" style="height:10px;animation:eqBounce 0.8s ease-in-out infinite"></span>
+      <span class="w-[3px] rounded-sm bg-brand-neon origin-bottom" style="height:18px;animation:eqBounce 0.8s ease-in-out infinite 0.15s"></span>
+      <span class="w-[3px] rounded-sm bg-brand-neon origin-bottom" style="height:12px;animation:eqBounce 0.8s ease-in-out infinite 0.3s"></span>
+      <span class="w-[3px] rounded-sm bg-brand-neon origin-bottom" style="height:22px;animation:eqBounce 0.8s ease-in-out infinite 0.45s"></span>
+      <span class="w-[3px] rounded-sm bg-brand-neon origin-bottom" style="height:8px;animation:eqBounce 0.8s ease-in-out infinite 0.6s"></span>
+    </div>
+    <div class="flex items-center tracking-tight gap-1.5">
       <span class="text-xl sm:text-2xl font-black text-white tracking-wider group-hover:text-zinc-200 transition-colors">DJ POOL</span>
-      <span class="text-xl sm:text-2xl font-black text-brand-neon ml-1 group-hover:text-brand-neonHover transition-colors">WORLD</span>
+      <svg class="w-4 h-4 sm:w-5 sm:h-5 text-brand-neon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+      <span class="text-xl sm:text-2xl font-black text-brand-neon group-hover:text-brand-neonHover transition-colors">WORLD</span>
     </div>
   </a>
 
@@ -142,6 +164,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
   </nav>
 
   <div class="flex items-center gap-4 sm:gap-6">
+    <a href="#subscribe" onclick="event.preventDefault();alert('Proximamente: sistema de suscripciones')" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-neon text-white text-xs font-black tracking-widest hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_15px_rgba(37,99,235,.3)]">SUSCRIBIRSE</a>
     <!-- User dropdown -->
     <div class="relative group" id="user-area">
       <button class="flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wider text-zinc-200 hover:text-brand-neon transition-colors duration-200 py-2" type="button" id="btn-login">
@@ -186,7 +209,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
       </div>
     </div>
     <p class="text-red-500 text-xs mt-3 hidden" id="login-error">Usuario o password incorrectos</p>
-    <button type="submit" class="mt-6 w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(223,255,0,.3)]">ENTRAR</button>
+    <button type="submit" class="mt-6 w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(37,99,235,.3)]">ENTRAR</button>
   </form>
 </div>
 </div>
@@ -232,7 +255,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
     </div>
     <p class="text-red-500 text-xs mt-3 hidden" id="acc-error"></p>
     <p class="text-emerald-400 text-xs mt-3 hidden" id="acc-success">Cuenta actualizada correctamente</p>
-    <button type="submit" class="mt-6 w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(223,255,0,.3)]">GUARDAR CAMBIOS</button>
+    <button type="submit" class="mt-6 w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(37,99,235,.3)]">GUARDAR CAMBIOS</button>
   </form>
 </div>
 </div>
@@ -241,24 +264,37 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
 <main class="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 overflow-x-hidden">
 
   <!-- Hero -->
-  <section class="reveal border border-zinc-800/80 bg-gradient-to-b from-[#14141a] to-[#0e0e12] rounded-2xl p-6 sm:p-8 lg:p-10 relative z-20 card-hover">
+  <section class="reveal border border-blue-500/15 bg-[#131a38]/55 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 relative z-20 card-hover">
     <div class="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
       <div class="absolute -right-20 -top-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
       <div class="absolute -left-40 bottom-0 w-80 h-80 bg-brand-neon/3 rounded-full blur-3xl"></div>
-      <div class="absolute right-4 sm:right-10 top-1/2 -translate-y-1/2 w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72">
-        <img src="logo-dpw.jpg" alt="" class="w-full h-full object-contain rounded-full border-2 border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,.3)]">
+      <div class="absolute right-6 sm:right-12 top-1/2 -translate-y-1/2 flex items-end gap-1 sm:gap-1.5 h-28 sm:h-40 lg:h-52 opacity-[0.07]">
+        <span class="w-1.5 sm:w-2 rounded-sm bg-brand-neon origin-bottom" style="height:30%;animation:eqBounce 1.2s ease-in-out infinite"></span>
+        <span class="w-1.5 sm:w-2 rounded-sm bg-brand-neon origin-bottom" style="height:60%;animation:eqBounce 1.2s ease-in-out infinite 0.2s"></span>
+        <span class="w-1.5 sm:w-2 rounded-sm bg-brand-neon origin-bottom" style="height:45%;animation:eqBounce 1.2s ease-in-out infinite 0.4s"></span>
+        <span class="w-1.5 sm:w-2 rounded-sm bg-brand-neon origin-bottom" style="height:80%;animation:eqBounce 1.2s ease-in-out infinite 0.6s"></span>
+        <span class="w-1.5 sm:w-2 rounded-sm bg-brand-neon origin-bottom" style="height:35%;animation:eqBounce 1.2s ease-in-out infinite 0.8s"></span>
+        <span class="w-1.5 sm:w-2 rounded-sm bg-brand-neon origin-bottom" style="height:55%;animation:eqBounce 1.2s ease-in-out infinite 1s"></span>
+        <span class="w-1.5 sm:w-2 rounded-sm bg-brand-neon origin-bottom" style="height:70%;animation:eqBounce 1.2s ease-in-out infinite 0.15s"></span>
+        <span class="w-1.5 sm:w-2 rounded-sm bg-brand-neon origin-bottom" style="height:25%;animation:eqBounce 1.2s ease-in-out infinite 0.5s"></span>
       </div>
     </div>
     <div class="relative z-10 max-w-4xl">
       <div class="flex items-center gap-3 mb-3">
-        <img src="logo-dpw.jpg" alt="DJ Pool World" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-[0_0_20px_rgba(59,130,246,.3)] border-2 border-blue-500/30">
+        <div class="flex items-end gap-[2px] h-10 sm:h-12">
+          <span class="w-[3px] rounded-sm bg-brand-neon origin-bottom" style="height:35%;animation:eqBounce 0.9s ease-in-out infinite"></span>
+          <span class="w-[3px] rounded-sm bg-brand-neon origin-bottom" style="height:65%;animation:eqBounce 0.9s ease-in-out infinite 0.12s"></span>
+          <span class="w-[3px] rounded-sm bg-brand-neon origin-bottom" style="height:45%;animation:eqBounce 0.9s ease-in-out infinite 0.24s"></span>
+          <span class="w-[3px] rounded-sm bg-brand-neon origin-bottom" style="height:85%;animation:eqBounce 0.9s ease-in-out infinite 0.36s"></span>
+          <span class="w-[3px] rounded-sm bg-brand-neon origin-bottom" style="height:30%;animation:eqBounce 0.9s ease-in-out infinite 0.48s"></span>
+        </div>
         <div>
           <span class="text-xs sm:text-sm font-black tracking-[0.25em] text-brand-neon uppercase block">DJ POOL WORLD</span>
-          <span class="text-[10px] text-zinc-500 font-bold tracking-widest">DESCARGAS EXCLUSIVAS</span>
+          <span class="text-[10px] text-zinc-400 font-bold tracking-widest">EL MEJOR CATALOGO</span>
         </div>
       </div>
-      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black uppercase text-brand-neon tracking-tight mb-3" id="hero-title">AGOSTO 2026 | POOLS</h1>
-      <p class="text-zinc-400 text-sm sm:text-base font-medium leading-relaxed">Las ultimas actualizaciones de las mejores pools de DJ listas para descargar. Todos los packs en un solo lugar.</p>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black uppercase text-white tracking-tight mb-3" id="hero-title">AGOSTO 2026 | POOLS</h1>
+      <p class="text-blue-200/60 text-sm sm:text-base font-medium leading-relaxed">Descarga las mejores records djpools del mundo</p>
       <div class="flex flex-wrap items-center gap-3 mt-5">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-neon/10 border border-brand-neon/30 text-brand-neon text-[11px] font-bold tracking-wider">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
@@ -289,7 +325,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-grad
 </main>
 
 <!-- ========== SCROLL TO TOP ========== -->
-<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-brand-neon text-black flex items-center justify-center shadow-[0_0_20px_rgba(223,255,0,.3)] hover:shadow-[0_0_30px_rgba(223,255,0,.5)] hover:scale-110 transition-all duration-300 opacity-0 invisible translate-y-4">
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-brand-neon text-black flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,.3)] hover:shadow-[0_0_30px_rgba(37,99,235,.5)] hover:scale-110 transition-all duration-300 opacity-0 invisible translate-y-4">
   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
 </button>
 
@@ -638,7 +674,7 @@ function showDownloadModal(poolName, day, monthNum) {
               '<div class="flex items-center gap-2 py-1.5 px-2 rounded text-xs text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 transition-colors">' +
                 '<span class="text-zinc-600 font-mono text-[10px] w-5 text-right flex-shrink-0">' + (i+1) + '</span>' +
                 '<svg class="w-3 h-3 text-zinc-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>' +
-                '<span class="truncate">' + t.replace(/\.mp3$/i,'') + '</span>' +
+                '<span class="whitespace-nowrap">' + t.replace(/\.mp3$/i,'') + '</span>' +
               '</div>'
             ).join('') +
           '</div>' +
@@ -804,7 +840,7 @@ function renderSections(data) {
           '<span>' + dt.day + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.month + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.year + '</span>' +
         '</div>' +
       '</div>' +
-      '<div class="relative rounded-3xl border border-brand-neon bg-[#0c0c10] p-3 sm:p-5 lg:p-6 shadow-[0_0_20px_rgba(223,255,0,0.08)] card-hover overflow-hidden">' +
+      '<div class="relative rounded-3xl border border-brand-neon bg-[#0c0c10] p-3 sm:p-5 lg:p-6 shadow-[0_0_20px_rgba(37,99,235,0.08)] card-hover overflow-hidden">' +
         '<div class="relative group/tabs">' +
           '<button onclick="scrollTabs(\'' + idx + '\',-1)" class="tab-arrow tab-arrow-left absolute left-0 top-0 bottom-0 z-10 w-10 flex items-center justify-center bg-gradient-to-r from-[#0c0c10] via-[#0c0c10]/90 to-transparent opacity-0 pointer-events-none transition-opacity duration-200" aria-label="Anterior">' +
             '<svg class="w-5 h-5 text-brand-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>' +
