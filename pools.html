@@ -55,7 +55,7 @@ tailwind.config = {
 
 /* Animated gradient background */
 @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-body::before{content:'';position:fixed;inset:0;z-index:-3;background:linear-gradient(135deg,#050510 0%,#0a1028 20%,#0d0b1e 40%,#080818 55%,#0b1525 70%,#0e0e2a 85%,#050510 100%);background-size:400% 400%;animation:gradientShift 25s ease infinite}
+body::before{content:'';position:fixed;inset:0;z-index:-3;background:linear-gradient(135deg,rgba(5,5,16,.7) 0%,rgba(10,16,40,.65) 20%,rgba(13,11,30,.7) 40%,rgba(8,8,24,.6) 55%,rgba(11,21,37,.65) 70%,rgba(14,14,42,.7) 85%,rgba(5,5,16,.7) 100%);background-size:400% 400%;animation:gradientShift 25s ease infinite}
 @keyframes twinkle{0%,100%{opacity:var(--tw-base)}50%{opacity:0.02}}
 @keyframes shootingStar{0%{transform:translateX(0) translateY(0);opacity:1}70%{opacity:1}100%{transform:translateX(300px) translateY(300px);opacity:0}}
 @keyframes eqBounce{0%,100%{transform:scaleY(0.3)}50%{transform:scaleY(1)}}
