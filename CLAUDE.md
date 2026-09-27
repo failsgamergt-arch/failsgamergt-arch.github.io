@@ -21,28 +21,32 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Fuente: Montserrat (400-900)
 - Vanilla JS: IntersectionObserver (scroll reveal), localStorage/sessionStorage (auth)
 - Datos: `pools-links.js` (365 enlaces MEGA mapeados por pool+fecha), `pools-tracks.js` (16,342 tracklists mapeados por pool+fecha)
-- Logo: `logo-dpw.jpg` (usado en header, hero section, y fondo decorativo)
+- Logo: `logo-dpw.jpg` (globo con auriculares, usado en hero section decorativo grande a la derecha)
 
 ## Estetica (pools.html)
-- Tema oscuro (fondo `#0b0b0e`)
-- Color neon amarillo (`#dfff00`) como acento principal
-- Fondo animado: gradiente CSS `gradientShift` (25s infinite, 7 colores oscuros con tonos azul/violeta/teal)
-- 45 particulas flotantes generadas por JS (5 colores: neon, azul, violeta, cyan, rosa) con 3 trayectorias (`floatA/B/C`), tamaños y velocidades aleatorias
-- 5 blobs de aurora/nebula: circulos grandes (350-600px) con `blur(80px)`, animaciones lentas (22-35s), colores neon/azul/violeta/cyan
-- Neon sweep en separadores: linea de brillo recorre los `.neon-line` de izquierda a derecha (`neonSweep` 4s infinite)
-- Logo `logo-dpw.jpg` en: header (circular, borde azul, glow hover), hero (junto al titulo + decorativo grande a la derecha con borde y glow azul)
+- Tema oscuro espacial (fondo `#050510` con gradiente azul/violeta)
+- Color acento azul intenso (`#2563eb`) como color principal (antes era neon amarillo `#dfff00`)
+- Fondo animado: gradiente CSS `gradientShift` (25s infinite, 7 colores oscuros con tonos azul/violeta profundo)
+- Fondo estrellado: 120 estrellas generadas por JS (blancas + azuladas) con animacion `twinkle`
+- 40 particulas flotantes generadas por JS (5 colores: azul, cornflower, violeta, cyan, blanco) con 3 trayectorias (`floatA/B/C`)
+- 6 blobs de nebulosa: circulos grandes (350-600px) con `blur(80px)`, animaciones lentas (22-35s), colores azul/violeta/cyan
+- Neon sweep en separadores: linea de brillo azul recorre los `.neon-line` de izquierda a derecha
+- Header: barras de ecualizador animadas (eqBounce) + nota musical SVG + texto DJ POOL WORLD
+- Hero: logo `logo-dpw.jpg` grande decorativo a la derecha con glow azul, barras ecualizador junto al branding
+- Boton "SUSCRIBIRSE" en header (bg azul, hidden en mobile)
 - Cards de pool con colores unicos por pool (28 disenos en `POOL_CARDS`)
-- Animaciones: fadeUp, fadeScale, slideDown, pulseNeon, shimmer
+- Animaciones: fadeUp, fadeScale, slideDown, pulseNeon, shimmer, eqBounce, twinkle
 - Card flip 3D al cambiar tabs (perspective + rotateY, 150ms transicion)
-- Hover effects: cards suben 4px + glow neon, botones con shimmer overlay
+- Hover effects: cards suben 4px + glow azul, botones con shimmer overlay
 - Scroll reveal staggered con IntersectionObserver (threshold 0.08, delay por indice)
-- Header sticky con shadow on scroll (`shadow-[0_4px_20px_rgba(0,0,0,.5)]`)
+- Header sticky con shadow on scroll
 - Boton scroll-to-top con fade in/out (aparece a 400px scroll)
 - Dropdown hover en navbar (POOLS con meses dinamicos, MI CUENTA)
 - Modals con backdrop blur para login, descarga y editar cuenta
 - Flechas de navegacion en tabs de pools (aparecen/desaparecen segun scroll position)
 - Buscador de canciones con highlight de resultados (`search-highlight` class)
-- Tracklist accordion en modal de descarga (expandible, max 600px)
+- Tracklist accordion en modal de descarga (expandible, max 600px, scroll horizontal para nombres largos)
+- Frase hero: "Descarga las mejores records djpools del mundo"
 
 ## Sistema de usuarios
 - **Almacenamiento:** localStorage (`dpw_users`, `dpw_deleted`) + sessionStorage (`dpw_session`)
@@ -262,7 +266,7 @@ CLAUDE.md           -- Este archivo
 - **Formato:** `const TRACK_LIST = { "DD_MM": { "POOL NAME": ["track1.mp3", "track2.mp3", ...] } }`
 - **16,342 tracks** distribuidos en 26 fechas y 26 pools
 - **Usado por:** buscador de canciones (`handleSongSearch`), tracklist accordion en modal de descarga (`getTrackList`)
-- **Bug conocido:** Algunos nombres de tracks tienen caracteres Unicode rotos (ej: "Difícil" se muestra garbled). Causa: extraccion con WinRAR `UnRAR.exe` en consola Windows (cp1252) no maneja correctamente UTF-8. Pendiente re-generar con encoding correcto.
+- **Encoding fix aplicado (sep 2026):** 180 caracteres Unicode corruptos reparados. Tres patrones de corrupcion de WinRAR UnRAR.exe corregidos: cp437→Latin-1 (¡→í, ¤→ñ, Æ→ã), NFD combining via cp437 (╠ü→acute, ╠â→tilde), cp1252→cp437 (‚→é, †→å, ‰→ë, ‹→ï, "→ö, ™→Ö). Tambien: NBSP→espacio, ├ÿ→Ø, NFC normalization.
 
 ## Otros scripts en prueba
 - `rename_zip_folders.py` - Renombra carpetas internas de ZIPs (NO USAR, no era necesario)
@@ -293,10 +297,18 @@ CLAUDE.md           -- Este archivo
 - **Subido:** 13/13 OK, 13/13 links generados
 
 ## Bugs conocidos
-- **Unicode roto en pools-tracks.js:** Nombres de tracks con acentos (í, é, ñ, ü) se muestran garbled. La extraccion con WinRAR `UnRAR.exe` en Windows produce output en cp1252, no UTF-8. Afecta al buscador de canciones y al tracklist del modal de descarga. Necesita re-generar `pools-tracks.js` con encoding UTF-8 correcto.
+- (Ninguno actualmente)
+
+## Fixes aplicados
+- **Rediseño visual (sep 2026):** Cambio de color principal de neon amarillo (#dfff00) a azul intenso (#2563eb). Fondo espacial con 120 estrellas titilantes + nebulosas. Hero rediseñado: logo decorativo, barras ecualizador, frase actualizada, fondo semi-transparente azul. Boton suscribirse en header. Tracklist con scroll horizontal. Barras ecualizador animadas en header.
+- **Unicode pools-tracks.js (sep 2026):** 180 caracteres corruptos reparados con script Node.js. Tres cadenas de corrupcion de WinRAR corregidas:
+  1. **cp437→Latin-1** (26 fixes): bytes A0-A5 interpretados como Latin-1 en vez de cp437 (¡→í, ¢→ó, £→ú, ¤→ñ, ¥→Ñ, Æ→ã)
+  2. **NFD combining via cp437** (73 fixes): bytes CC+XX (combining marks UTF-8) leidos como cp437 (╠ü→acute, ╠â→tilde)
+  3. **cp1252 en vez de cp437** (54 fixes): bytes 80-9F leidos como cp1252 (‚→é, †→å, ‰→ë, ‹→ï, "→ö, ™→Ö, ›→ö)
+  4. **Otros** (27 fixes): ΓÇô→–, ├ÿ→Ø, NBSP→espacio, ´→apostrofo, Jaÿ-Z→Jay-Z, NFC normalization
 
 ## Funcionalidades pendientes
-- **Audio preview 30s:** Vista previa de 30 segundos de los tracks (requiere ffmpeg + hosting externo)
+- **Audio preview 30s:** Vista previa de 30 segundos via Deezer API (gratis, CORS, sin auth). Prerequisito Unicode ya completado. Implementacion revertida anteriormente por encoding roto, lista para reimplementar.
 - **Contador de descargas por pool:** Tracking de descargas por pool/fecha
 - **Publicar blogpost en Blogger:** Copiar HTML de `blogpost_agosto_2026_links.html` al blog
-- **Estrategia de almacenamiento:** Plan para 1-2 anos de contenido (recomendacion discutida, sin accion)
+- **Estrategia de almacenamiento largo plazo:** Cloudflare R2 evaluado (10GB gratis permanente, egress gratis, ~$2.70/mes para 180GB a 2 anos). Alternativa: Deezer API para previews sin hosting propio.
