@@ -165,7 +165,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-3;background:linear-grad
   </nav>
 
   <div class="flex items-center gap-4 sm:gap-6">
-    <a href="#subscribe" onclick="event.preventDefault();alert('Proximamente: sistema de suscripciones')" class="hidden sm:inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-black tracking-widest hover:from-rose-500 hover:to-red-500 transition-all duration-200 shadow-[0_0_12px_rgba(225,29,72,.25)] hover:shadow-[0_0_20px_rgba(225,29,72,.4)]">SUSCRIBIRSE</a>
+    <button id="btn-subscribe" onclick="showSubscribeModal()" class="hidden sm:inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-black tracking-widest hover:from-rose-500 hover:to-red-500 transition-all duration-200 shadow-[0_0_12px_rgba(225,29,72,.25)] hover:shadow-[0_0_20px_rgba(225,29,72,.4)]">SUSCRIBIRSE</button>
     <!-- User dropdown -->
     <div class="relative group" id="user-area">
       <button class="flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wider text-zinc-200 hover:text-brand-neon transition-colors duration-200 py-2" type="button" id="btn-login">
@@ -212,6 +212,44 @@ body::before{content:'';position:fixed;inset:0;z-index:-3;background:linear-grad
     <p class="text-red-500 text-xs mt-3 hidden" id="login-error">Usuario o password incorrectos</p>
     <button type="submit" class="mt-6 w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(37,99,235,.3)]">ENTRAR</button>
   </form>
+</div>
+</div>
+
+<!-- ========== SUBSCRIBE MODAL ========== -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="subscribe-modal">
+<div class="modal-content bg-[#14141a] border border-zinc-700/80 rounded-2xl p-8 w-full max-w-sm mx-4 shadow-2xl relative">
+  <button onclick="hideSubscribeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+  <h2 class="text-xl font-black text-brand-neon tracking-wider mb-2">SUSCRIPCION</h2>
+  <p class="text-xs text-zinc-500 font-bold tracking-wider mb-6">ACCESO COMPLETO A DJ POOL WORLD</p>
+  <div class="text-center py-4 mb-4 rounded-xl bg-[#0c0c10] border border-zinc-800">
+    <span class="text-4xl font-black text-white">100&#8364;</span>
+    <span class="text-sm text-zinc-400 font-bold">/mes</span>
+  </div>
+  <div class="space-y-3 mb-6">
+    <div class="flex items-start gap-2.5">
+      <svg class="w-4 h-4 text-brand-neon mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span class="text-sm text-zinc-300">Acceso a todas las pools y descargas</span>
+    </div>
+    <div class="flex items-start gap-2.5">
+      <svg class="w-4 h-4 text-brand-neon mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span class="text-sm text-zinc-300">Actualizaciones mensuales de catalogo</span>
+    </div>
+    <div class="flex items-start gap-2.5">
+      <svg class="w-4 h-4 text-brand-neon mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span class="text-sm text-zinc-300">Usuario y password personalizados</span>
+    </div>
+  </div>
+  <div class="rounded-xl bg-[#0c0c10] border border-zinc-800 p-4 mb-6">
+    <p class="text-xs font-black text-zinc-300 tracking-wider mb-2">COMO SUSCRIBIRTE</p>
+    <ol class="text-xs text-zinc-400 space-y-2 list-decimal list-inside">
+      <li>Realiza el pago de <span class="text-white font-bold">100&#8364;</span> via <span class="text-blue-400 font-bold">PayPal</span></li>
+      <li>Envia foto o captura del comprobante a:<br><a href="mailto:sharkmurciamusic@gmail.com" class="text-brand-neon font-bold hover:text-brand-neonHover transition-colors">sharkmurciamusic@gmail.com</a></li>
+      <li>Se te creara un usuario con acceso completo a la web y las descargas</li>
+    </ol>
+  </div>
+  <button onclick="hideSubscribeModal()" class="w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200">ENTENDIDO</button>
 </div>
 </div>
 
@@ -493,10 +531,12 @@ function updateUserUI() {
   const navAdmin = document.getElementById('nav-admin');
   const mobileAdmin = document.getElementById('mobile-admin');
   const footerAdmin = document.getElementById('footer-admin');
+  const btnSub = document.getElementById('btn-subscribe');
 
   const itemClass = 'block w-full text-left px-4 py-2.5 text-xs tracking-wider font-extrabold transition-all duration-150';
 
   if (u) {
+    if (btnSub) btnSub.classList.add('!hidden');
     el.textContent = u.user.toUpperCase();
     const isAdmin = u.role === 'admin';
     if (isAdmin) {
@@ -519,6 +559,7 @@ function updateUserUI() {
       (isAdmin ? '<a href="admin.html" class="' + itemClass + ' text-brand-neon hover:bg-brand-neon hover:text-black">PANEL ADMIN</a>' : '') +
       '<button onclick="logout()" class="' + itemClass + ' text-red-400 hover:bg-red-950 hover:text-red-300">CERRAR SESION</button>';
   } else {
+    if (btnSub) btnSub.classList.remove('!hidden');
     el.textContent = 'MI CUENTA';
     badge.classList.add('hidden');
     navAdmin.classList.add('hidden');
@@ -530,6 +571,14 @@ function updateUserUI() {
       '</div>' +
       '<button onclick="showLoginModal()" class="' + itemClass + ' text-brand-neon hover:bg-brand-neon hover:text-black">INICIAR SESION</button>';
   }
+}
+function showSubscribeModal() {
+  const m = document.getElementById('subscribe-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+}
+function hideSubscribeModal() {
+  const m = document.getElementById('subscribe-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
 }
 function showLoginModal() {
   document.getElementById('login-error').classList.add('hidden');
