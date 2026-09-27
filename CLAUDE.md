@@ -21,19 +21,21 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Fuente: Montserrat (400-900)
 - Vanilla JS: IntersectionObserver (scroll reveal), localStorage/sessionStorage (auth)
 - Datos: `pools-links.js` (365 enlaces MEGA mapeados por pool+fecha), `pools-tracks.js` (16,342 tracklists mapeados por pool+fecha)
-- Logo: `logo-dpw.jpg` (globo con auriculares, usado en hero section decorativo grande a la derecha)
+- Logo: `logo-dpw.jpg` (globo con auriculares, altavoces y mesa de mezclas, fondo oscuro con efectos electricos azules; usado en header, hero section y como background-image del body)
+- Logo alternativo: `logodpw.png` (version recortada con fondo transparente, no en uso actualmente)
 
 ## Estetica (pools.html)
 - Tema oscuro espacial (fondo `#050510` con gradiente azul/violeta)
 - Color acento azul intenso (`#2563eb`) como color principal (antes era neon amarillo `#dfff00`)
-- Fondo animado: gradiente CSS `gradientShift` (25s infinite, 7 colores oscuros con tonos azul/violeta profundo)
+- Fondo imagen: `logo-dpw.jpg` como background-image fijo del body con overlay oscuro (`rgba(11,11,14,.88)` a `.94`), tecnica similar a referencia
+- Fondo animado: gradiente CSS `gradientShift` (25s infinite, 7 colores oscuros con tonos azul/violeta profundo) como capa adicional
 - Fondo estrellado: 120 estrellas generadas por JS (blancas + azuladas) con animacion `twinkle`
 - 40 particulas flotantes generadas por JS (5 colores: azul, cornflower, violeta, cyan, blanco) con 3 trayectorias (`floatA/B/C`)
 - 6 blobs de nebulosa: circulos grandes (350-600px) con `blur(80px)`, animaciones lentas (22-35s), colores azul/violeta/cyan
 - Neon sweep en separadores: linea de brillo azul recorre los `.neon-line` de izquierda a derecha
-- Header: barras de ecualizador animadas (eqBounce) + nota musical SVG + texto DJ POOL WORLD
-- Hero: logo `logo-dpw.jpg` grande decorativo a la derecha con glow azul, barras ecualizador junto al branding
-- Boton "SUSCRIBIRSE" en header (bg azul, hidden en mobile)
+- Header: logo `logo-dpw.jpg` circular + barras de ecualizador animadas (eqBounce) + nota musical SVG + texto DJ POOL WORLD
+- Hero: logo `logo-dpw.jpg` grande redondeado (`rounded-full`) decorativo a la derecha con glow azul, barras ecualizador junto al branding
+- Boton "SUSCRIBIRSE" en header (bg coral/rojo, solo visible sin sesion activa, abre modal de suscripcion)
 - Cards de pool con colores unicos por pool (28 disenos en `POOL_CARDS`)
 - Animaciones: fadeUp, fadeScale, slideDown, pulseNeon, shimmer, eqBounce, twinkle
 - Card flip 3D al cambiar tabs (perspective + rotateY, 150ms transicion)
@@ -42,7 +44,7 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Header sticky con shadow on scroll
 - Boton scroll-to-top con fade in/out (aparece a 400px scroll)
 - Dropdown hover en navbar (POOLS con meses dinamicos, MI CUENTA)
-- Modals con backdrop blur para login, descarga y editar cuenta
+- Modals con backdrop blur para login, suscripcion, descarga y editar cuenta
 - Flechas de navegacion en tabs de pools (aparecen/desaparecen segun scroll position)
 - Buscador de canciones con highlight de resultados (`search-highlight` class)
 - Tracklist accordion en modal de descarga (expandible, max 600px, scroll horizontal para nombres largos)
@@ -62,6 +64,7 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
   - Con sesion: nombre + rol + "EDITAR MI CUENTA" + (admin: "PANEL ADMIN") + "CERRAR SESION"
 - **Editar cuenta:** Modal para cambiar nombre y password (con confirmacion)
 - **Restricciones admin:** Un admin NO puede eliminar ni desactivar a otro admin
+- **Suscripcion:** Modal con precio (100€/mes), enlace PayPal directo (`paypal.com/paypalme/djpoolworld/100`), instrucciones de enviar comprobante a `sharkmurciamusic@gmail.com` para obtener acceso. Boton visible solo sin sesion activa.
 
 ## Pagina de Pools (pools.html)
 - **Meses auto-generados** desde MEGA_LINKS (siempre sincronizado con pools-links.js)
@@ -97,7 +100,8 @@ pools.html          -- Pagina principal (plataforma descargas, ~936 lineas)
 pools-links.js      -- 365 enlaces MEGA (auto-generado, const MEGA_LINKS)
 pools-tracks.js     -- 16,342 tracklists (auto-generado, const TRACK_LIST)
 admin.html          -- Panel admin gestion usuarios
-logo-dpw.jpg        -- Logo DJ Pool World (circular, usado en header y hero)
+logo-dpw.jpg        -- Logo DJ Pool World (globo+auriculares+altavoces+mesa, fondo oscuro con efectos electricos azules, usado en header, hero y body background)
+logodpw.png         -- Logo alternativo recortado con fondo transparente (no en uso)
 nebula-bg.jpg       -- Fondo hero antiguo (no usado en pools)
 favicon.jpg         -- Tiburon neon azul (favicon)
 CLAUDE.md           -- Este archivo
