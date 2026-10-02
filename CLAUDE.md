@@ -21,20 +21,20 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Fuente: Montserrat (400-900)
 - Vanilla JS: IntersectionObserver (scroll reveal), localStorage/sessionStorage (auth)
 - Datos: `pools-links.js` (365 enlaces MEGA mapeados por pool+fecha), `pools-tracks.js` (16,342 tracklists mapeados por pool+fecha)
-- Logo: `logo-dpw.jpg` (globo con auriculares, altavoces y mesa de mezclas, fondo oscuro con efectos electricos azules; usado en header, hero section y como background-image del body)
-- Logo alternativo: `logodpw.png` (version recortada con fondo transparente, no en uso actualmente)
+- Logo: `logo-dpw.png` (LOGO FINAL: circulo con globo terraqueo real azul/verde, auriculares, notas musicales; PNG 512x512 con esquinas transparentes, generado desde `OneDrive\Desktop\LOGO FINAL.jpeg`). Usado en header (junto a WORLD) y hero (grande a la derecha)
+- Logos antiguos sin uso: `logo-dpw.jpg`, `logodpw.png`
 
 ## Estetica (pools.html)
 - Tema oscuro espacial (fondo `#050510` con gradiente azul/violeta)
-- Color acento azul intenso (`#2563eb`) como color principal (antes era neon amarillo `#dfff00`)
-- Fondo imagen: `logo-dpw.jpg` como background-image fijo del body con overlay oscuro (`rgba(11,11,14,.88)` a `.94`), tecnica similar a referencia
-- Fondo animado: gradiente CSS `gradientShift` (25s infinite, 7 colores oscuros con tonos azul/violeta profundo) como capa adicional
-- Fondo estrellado: 120 estrellas generadas por JS (blancas + azuladas) con animacion `twinkle`
+- Paleta azul + verde (como la bola del mundo del logo): acento azul `#2563eb` (antes neon amarillo `#dfff00`), toques verdes `emerald-400` (subtitulo hero, menu ARCHIVO, filtro de pool, beneficio "años anteriores")
+- Fondo cosmico CSS puro: `body::before` (6 gradientes radiales cyan/violeta/verde/azul sobre gradiente lineal azul oscuro) + `body::after` (5 halos animados con `gradientShift` 30s). Sin imagen de fondo
+- Fondo estrellado: 200 estrellas pequenas (blancas, cyan, violeta, verde palido) + 15 estrellas brillantes con glow, animacion `twinkle`
 - 40 particulas flotantes generadas por JS (5 colores: azul, cornflower, violeta, cyan, blanco) con 3 trayectorias (`floatA/B/C`)
-- 6 blobs de nebulosa: circulos grandes (350-600px) con `blur(80px)`, animaciones lentas (22-35s), colores azul/violeta/cyan
+- 7 blobs de nebulosa: elipses grandes (400-800px) con `blur(80px)`, animaciones lentas (22-40s), colores cyan/verde/violeta/azul
 - Neon sweep en separadores: linea de brillo azul recorre los `.neon-line` de izquierda a derecha
-- Header: logo `logo-dpw.jpg` circular + barras de ecualizador animadas (eqBounce) + nota musical SVG + texto DJ POOL WORLD
-- Hero: logo `logo-dpw.jpg` grande redondeado (`rounded-full`) decorativo a la derecha con glow azul, barras ecualizador junto al branding
+- Header: barras ecualizador animadas (eqBounce) + DJ POOL + nota musical + WORLD + logo `logo-dpw.png` 56-64px (hover scale)
+- Navbar: POOLS (lista de pools del mes con filtro) | ARCHIVO (meses) | BLOG | WILD SOUNDS | SHARK MURCIA
+- Hero: logo `logo-dpw.png` grande a la derecha con glow azul, barras ecualizador + "DJ POOL WORLD" + "El mejor catálogo para tus sesiones de Deejay" (verde)
 - Boton "SUSCRIBIRSE" en header (bg coral/rojo, solo visible sin sesion activa, abre modal de suscripcion)
 - Cards de pool con colores unicos por pool (28 disenos en `POOL_CARDS`)
 - Animaciones: fadeUp, fadeScale, slideDown, pulseNeon, shimmer, eqBounce, twinkle
@@ -48,7 +48,7 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Flechas de navegacion en tabs de pools (aparecen/desaparecen segun scroll position)
 - Buscador de canciones con highlight de resultados (`search-highlight` class)
 - Tracklist accordion en modal de descarga (expandible, max 600px, scroll horizontal para nombres largos)
-- Frase hero: "Descarga las mejores records djpools del mundo"
+- Frase hero (literal, pedida asi): "Descarga Las Mejores Record DJ Pools Del Mundo"
 
 ## Sistema de usuarios
 - **Almacenamiento:** localStorage (`dpw_users`, `dpw_deleted`) + sessionStorage (`dpw_session`)
@@ -64,11 +64,12 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
   - Con sesion: nombre + rol + "EDITAR MI CUENTA" + (admin: "PANEL ADMIN") + "CERRAR SESION"
 - **Editar cuenta:** Modal para cambiar nombre y password (con confirmacion)
 - **Restricciones admin:** Un admin NO puede eliminar ni desactivar a otro admin
-- **Suscripcion:** Modal con precio (100€/mes), enlace PayPal directo (`paypal.com/paypalme/djpoolworld/100`), instrucciones de enviar comprobante a `sharkmurciamusic@gmail.com` para obtener acceso. Boton visible solo sin sesion activa.
+- **Suscripcion:** Modal con precio **100€/año** (NO al mes), enlace PayPal directo (`paypal.com/paypalme/djpoolworld/100`), enviar comprobante a `djpoolworld@gmail.com` para que se cree el usuario. Beneficios: todas las pools, actualizaciones mensuales, **acceso a descargas de años anteriores**, usuario personalizado. Boton visible solo sin sesion activa.
 
 ## Pagina de Pools (pools.html)
-- **Meses auto-generados** desde MEGA_LINKS (siempre sincronizado con pools-links.js)
-- **26 fechas, 26 pools, 365 archivos, 16,342 tracks** (agosto 2026)
+- **Meses auto-generados** desde MEGA_LINKS (siempre sincronizado con pools-links.js), seleccionables en menu ARCHIVO (`switchMonth`)
+- **Filtro por pool:** menu POOLS lista las pools del mes en 2 columnas (+ "TODAS LAS POOLS"); `filterPool(name)` re-renderiza solo las fechas de esa pool con una unica tab, muestra barra `#pool-filter-bar` ("MOSTRANDO X · N FECHAS" + boton "VER TODAS LAS POOLS") y el titulo pasa a "AGOSTO 2026 | X". `filterPool(null)` quita el filtro. Estado en `currentMonth` / `currentPool`, render en `refreshView()`
+- **26 fechas, 25 pools (tras alias), 365 archivos, 17,131 tracks** (agosto 2026)
 - **Alias de pools:** `LATINREMIXES.COM` → `LATIN REMIXES` (transparente en UI via `POOL_ALIASES`)
 - **Tabs por fecha:** click cambia card visual + boton descarga con flip 3D
 - **Flechas de tabs:** `scrollTabs(idx, dir)` desplaza 250px, `updateTabArrows(idx)` muestra/oculta flechas segun scroll position (gradiente fade con bg del card container)
@@ -100,8 +101,9 @@ pools.html          -- Pagina principal (plataforma descargas, ~936 lineas)
 pools-links.js      -- 365 enlaces MEGA (auto-generado, const MEGA_LINKS)
 pools-tracks.js     -- 16,342 tracklists (auto-generado, const TRACK_LIST)
 admin.html          -- Panel admin gestion usuarios
-logo-dpw.jpg        -- Logo DJ Pool World (globo+auriculares+altavoces+mesa, fondo oscuro con efectos electricos azules, usado en header, hero y body background)
-logodpw.png         -- Logo alternativo recortado con fondo transparente (no en uso)
+logo-dpw.png        -- LOGO FINAL circular con fondo transparente (header + hero)
+logo-dpw.jpg        -- Logo antiguo (altavoces + mesa, no usado)
+logodpw.png         -- Logo antiguo recortado (no usado)
 nebula-bg.jpg       -- Fondo hero antiguo (no usado en pools)
 favicon.jpg         -- Tiburon neon azul (favicon)
 CLAUDE.md           -- Este archivo
@@ -268,7 +270,8 @@ CLAUDE.md           -- Este archivo
 ## pools-tracks.js (generacion)
 - **Generado desde:** extraccion de nombres de archivo dentro de los ZIP/RAR de cada pool
 - **Formato:** `const TRACK_LIST = { "DD_MM": { "POOL NAME": ["track1.mp3", "track2.mp3", ...] } }`
-- **16,342 tracks** distribuidos en 26 fechas y 26 pools
+- **17,131 tracks** distribuidos en 26 fechas y 26 pools (oct 2026: +789 tracks de 19 entradas que faltaban: Latin Box x6, Elite Remix x2, Urban Zone x2, Unlimited Latin x2, Dirty Sounds, Beatfreakz x3, Beezo BeeHive 13/08, Da Zone 22/08 y 24/08, extraidos de los ZIP/RAR de `PENDRIVE_DPW` y `PENDRIVE_DPW\NUEVOS`)
+- **Sin tracklist:** solo `MP3 Mixes Pool 04 08` (ZIP corrupto)
 - **Usado por:** buscador de canciones (`handleSongSearch`), tracklist accordion en modal de descarga (`getTrackList`)
 - **Encoding fix aplicado (sep 2026):** 180 caracteres Unicode corruptos reparados. Tres patrones de corrupcion de WinRAR UnRAR.exe corregidos: cp437→Latin-1 (¡→í, ¤→ñ, Æ→ã), NFD combining via cp437 (╠ü→acute, ╠â→tilde), cp1252→cp437 (‚→é, †→å, ‰→ë, ‹→ï, "→ö, ™→Ö). Tambien: NBSP→espacio, ├ÿ→Ø, NFC normalization.
 
