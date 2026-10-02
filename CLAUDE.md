@@ -26,8 +26,8 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 
 ## Estetica (pools.html)
 - Tema oscuro espacial (fondo `#050510` con gradiente azul/violeta)
-- Paleta azul + verde (como la bola del mundo del logo): acento azul `#2563eb` (antes neon amarillo `#dfff00`), toques verdes `emerald-400` (subtitulo hero, menu ARCHIVO, filtro de pool, beneficio "años anteriores")
-- Fondo imagen: `fondo.jpg` (nebulosa violeta/rosa con rayos, 626x357, convertida desde `OneDrive\Desktop\fondo.avif`) en `body::before` fijo (`center/cover`), con velo oscuro degradado en `body::after` (`rgba(3,3,18,.35)` → `.7`) para legibilidad. Estrellas y blobs JS por encima
+- Fondo imagen: `fondo.jpg` 3200x1800 (~930 KB) = Nebulosa del Velo de Hubble (`potw2113a`, ESA/Hubble & NASA, Z. Levay, **CC BY 4.0 → credito obligatorio en footer**), recortada a 16:9 y con color retocado (naranjas/verdes → rosa/magenta/violeta, azules intactos) para parecerse a la referencia `OneDrive\Desktop\fondo.avif`. Script: tablas LUT de tono/saturacion con PIL. En `body::before` fijo (`center/cover`) + velo oscuro degradado en `body::after` (`rgba(3,3,18,.35)` → `.7`). Estrellas y blobs JS por encima
+- Paleta adaptada al fondo: azul `#2563eb` principal + fucsia/rosa (`fuchsia-400/500/600`, `pink-600`) como secundario (sustituye a los verdes emerald): subtitulo hero, icono ARCHIVO, filtro de pool, beneficio "años anteriores", boton SUSCRIBIRSE (degradado fucsia→rosa). Contenedores de fechas semi-transparentes (`bg-[#0c0c14]/85 backdrop-blur-sm`) con glow azul+rosa. Las cards de cada pool (`POOL_CARDS`) mantienen sus colores de marca
 - Fondo estrellado: 200 estrellas pequenas (blancas, cyan, violeta, verde palido) + 15 estrellas brillantes con glow, animacion `twinkle`
 - 40 particulas flotantes generadas por JS (5 colores: azul, cornflower, violeta, cyan, blanco) con 3 trayectorias (`floatA/B/C`)
 - 7 blobs de nebulosa: elipses grandes (400-800px) con `blur(80px)`, animaciones lentas (22-40s), colores cyan/verde/violeta/azul
