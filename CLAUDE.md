@@ -16,11 +16,11 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 3. **Shark Murcia** → https://sharkmurcia-suscripciones.blogspot.com/p/suscripciones.html (Hardstyle, remixes)
 
 ## Stack
-- HTML: `pools.html` (principal, ~936 lineas), `admin.html` (gestion usuarios), `index.html` (redirect a pools)
+- HTML: `pools.html` (principal, ~1130 lineas), `admin.html` (gestion usuarios), `index.html` (redirect a pools)
 - Tailwind CSS v3 via CDN con config custom (brand colors, Montserrat font)
 - Fuente: Montserrat (400-900)
 - Vanilla JS: IntersectionObserver (scroll reveal), localStorage/sessionStorage (auth)
-- Datos: `pools-links.js` (365 enlaces MEGA mapeados por pool+fecha), `pools-tracks.js` (16,342 tracklists mapeados por pool+fecha)
+- Datos: `pools-links.js` (365 enlaces MEGA mapeados por pool+fecha), `pools-tracks.js` (17,131 tracks mapeados por pool+fecha)
 - Logo: `logo-dpw.png` (LOGO FINAL: circulo con globo terraqueo real azul/verde, auriculares, notas musicales; PNG 512x512 con esquinas transparentes, generado desde `OneDrive\Desktop\LOGO FINAL.jpeg`). Usado en header (junto a WORLD) y hero (grande a la derecha)
 - Logos antiguos sin uso: `logo-dpw.jpg`, `logodpw.png`
 
@@ -35,7 +35,7 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Header: barras ecualizador animadas (eqBounce) + DJ POOL + nota musical + WORLD + logo `logo-dpw.png` 56-64px (hover scale)
 - Navbar: POOLS (lista de pools del mes con filtro) | ARCHIVO (meses) | BLOG | WILD SOUNDS | SHARK MURCIA
 - Hero: logo `logo-dpw.png` grande a la derecha con glow azul, barras ecualizador + "DJ POOL WORLD" + "El mejor catálogo para tus sesiones de Deejay" (verde)
-- Boton "SUSCRIBIRSE" en header (bg coral/rojo, solo visible sin sesion activa, abre modal de suscripcion)
+- Boton "SUSCRIBIRSE" en header (degradado fucsia→rosa, solo visible sin sesion activa, abre modal de suscripcion)
 - Cards de pool con colores unicos por pool (28 disenos en `POOL_CARDS`)
 - Animaciones: fadeUp, fadeScale, slideDown, pulseNeon, shimmer, eqBounce, twinkle
 - Card flip 3D al cambiar tabs (perspective + rotateY, 150ms transicion)
@@ -43,7 +43,8 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Scroll reveal staggered con IntersectionObserver (threshold 0.08, delay por indice)
 - Header sticky con shadow on scroll
 - Boton scroll-to-top con fade in/out (aparece a 400px scroll)
-- Dropdown hover en navbar (POOLS con meses dinamicos, MI CUENTA)
+- Dropdowns hover en navbar: POOLS (pools del mes, 2 columnas, filtro), ARCHIVO (meses), MI CUENTA
+- Footer: credito del fondo "ESA/Hubble & NASA, Z. Levay (CC BY 4.0)" — obligatorio por licencia, no quitar
 - Modals con backdrop blur para login, suscripcion, descarga y editar cuenta
 - Flechas de navegacion en tabs de pools (aparecen/desaparecen segun scroll position)
 - Buscador de canciones con highlight de resultados (`search-highlight` class)
@@ -79,7 +80,7 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - **Stats en hero:** archivos, pools, fechas y tracks calculados dinamicamente de MEGA_LINKS y TRACK_LIST
 - **Buscador de canciones:**
   - Input en hero section con debounce 250ms
-  - Busca en `TRACK_LIST` (16,342 tracks) por nombre de cancion, artista o remix
+  - Busca en `TRACK_LIST` (17,131 tracks) por nombre de cancion, artista o remix
   - Max 50 resultados, con highlight del texto buscado
   - Click en resultado abre el modal de descarga del pool/fecha correspondiente
   - Dropdown `z-50` dentro del hero `z-20` para aparecer encima de las secciones de abajo
@@ -97,14 +98,16 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 ## Estructura
 ```
 index.html          -- Redirect a pools.html (meta refresh + JS)
-pools.html          -- Pagina principal (plataforma descargas, ~936 lineas)
+pools.html          -- Pagina principal (plataforma descargas, ~1130 lineas)
 pools-links.js      -- 365 enlaces MEGA (auto-generado, const MEGA_LINKS)
-pools-tracks.js     -- 16,342 tracklists (auto-generado, const TRACK_LIST)
+pools-tracks.js     -- 17,131 tracks (auto-generado, const TRACK_LIST)
 admin.html          -- Panel admin gestion usuarios
 logo-dpw.png        -- LOGO FINAL circular con fondo transparente (header + hero)
 logo-dpw.jpg        -- Logo antiguo (altavoces + mesa, no usado)
 logodpw.png         -- Logo antiguo recortado (no usado)
+fondo.jpg           -- Fondo web 3200x1800 (Nebulosa del Velo, Hubble, color retocado; CC BY 4.0)
 nebula-bg.jpg       -- Fondo hero antiguo (no usado en pools)
+image 1-3.jpeg      -- Capturas de referencia (yourlatinmusic.es), sin commitear
 favicon.jpg         -- Tiburon neon azul (favicon)
 CLAUDE.md           -- Este archivo
 ```
@@ -307,7 +310,10 @@ CLAUDE.md           -- Este archivo
 - (Ninguno actualmente)
 
 ## Fixes aplicados
-- **Rediseño visual (sep 2026):** Cambio de color principal de neon amarillo (#dfff00) a azul intenso (#2563eb). Fondo espacial con 120 estrellas titilantes + nebulosas. Hero rediseñado: logo decorativo, barras ecualizador, frase actualizada, fondo semi-transparente azul. Boton suscribirse en header. Tracklist con scroll horizontal. Barras ecualizador animadas en header.
+- **Rediseño visual (sep 2026):** Cambio de color principal de neon amarillo (#dfff00) a azul intenso (#2563eb). Fondo espacial con estrellas titilantes + nebulosas. Hero rediseñado: logo decorativo, barras ecualizador, frase actualizada, fondo semi-transparente azul. Boton suscribirse en header. Tracklist con scroll horizontal. Barras ecualizador animadas en header.
+- **Rediseño v2 (oct 2026, feedback del socio):** LOGO FINAL circular (`logo-dpw.png`) en header junto a WORLD y en hero; frases hero nuevas; suscripcion 100€/año + `djpoolworld@gmail.com` + acceso a años anteriores; menu POOLS con filtro por pool y menu ARCHIVO con meses; +789 tracks en 19 entradas sin tracklist.
+- **Fondo HD (oct 2026):** el `fondo.avif` aportado era 626x357 (se veia borroso); sustituido por Nebulosa del Velo de Hubble a 3200x1800 retocada a azul/rosa/violeta. Paleta secundaria verde → fucsia para encajar con el fondo.
+- **Cache GitHub Pages:** si no se ven cambios tras push, forzar rebuild (`gh api .../pages/builds -X POST`) y abrir con `?v=<commit>` en incognito.
 - **Unicode pools-tracks.js (sep 2026):** 180 caracteres corruptos reparados con script Node.js. Tres cadenas de corrupcion de WinRAR corregidas:
   1. **cp437→Latin-1** (26 fixes): bytes A0-A5 interpretados como Latin-1 en vez de cp437 (¡→í, ¢→ó, £→ú, ¤→ñ, ¥→Ñ, Æ→ã)
   2. **NFD combining via cp437** (73 fixes): bytes CC+XX (combining marks UTF-8) leidos como cp437 (╠ü→acute, ╠â→tilde)
