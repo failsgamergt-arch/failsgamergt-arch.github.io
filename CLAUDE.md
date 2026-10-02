@@ -27,7 +27,7 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 ## Estetica (pools.html)
 - Tema oscuro espacial (fondo `#050510` con gradiente azul/violeta)
 - Paleta azul + verde (como la bola del mundo del logo): acento azul `#2563eb` (antes neon amarillo `#dfff00`), toques verdes `emerald-400` (subtitulo hero, menu ARCHIVO, filtro de pool, beneficio "años anteriores")
-- Fondo cosmico CSS puro: `body::before` (6 gradientes radiales cyan/violeta/verde/azul sobre gradiente lineal azul oscuro) + `body::after` (5 halos animados con `gradientShift` 30s). Sin imagen de fondo
+- Fondo imagen: `fondo.jpg` (nebulosa violeta/rosa con rayos, 626x357, convertida desde `OneDrive\Desktop\fondo.avif`) en `body::before` fijo (`center/cover`), con velo oscuro degradado en `body::after` (`rgba(3,3,18,.35)` → `.7`) para legibilidad. Estrellas y blobs JS por encima
 - Fondo estrellado: 200 estrellas pequenas (blancas, cyan, violeta, verde palido) + 15 estrellas brillantes con glow, animacion `twinkle`
 - 40 particulas flotantes generadas por JS (5 colores: azul, cornflower, violeta, cyan, blanco) con 3 trayectorias (`floatA/B/C`)
 - 7 blobs de nebulosa: elipses grandes (400-800px) con `blur(80px)`, animaciones lentas (22-40s), colores cyan/verde/violeta/azul
