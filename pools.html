@@ -55,7 +55,7 @@ tailwind.config = {
 
 /* Animated gradient background */
 @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-body::before{content:'';position:fixed;inset:0;z-index:-3;background:#030312 url('fondo.jpg') center/cover no-repeat}
+body::before{content:'';position:fixed;inset:0;z-index:-3;background:#030312 url('fondo.jpg?v=3') center/cover no-repeat}
 body::after{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(3,3,18,.35) 0%,rgba(3,3,18,.5) 50%,rgba(3,3,18,.7) 100%)}
 @keyframes twinkle{0%,100%{opacity:var(--tw-base)}50%{opacity:0.02}}
 @keyframes shootingStar{0%{transform:translateX(0) translateY(0);opacity:1}70%{opacity:1}100%{transform:translateX(300px) translateY(300px);opacity:0}}
@@ -395,9 +395,7 @@ body::after{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradi
 <div class="max-w-[1560px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
   <div class="flex items-center gap-2">
     <span class="font-bold text-zinc-300 uppercase tracking-widest">DJ POOL WORLD</span>
-    <span>&copy; 2026</span>
-    <span class="text-zinc-600 text-[10px] ml-2">Fondo: <a href="https://esahubble.org/images/potw2113a/" target="_blank" rel="noopener" class="hover:text-zinc-400 underline">ESA/Hubble &amp; NASA, Z. Levay</a> (CC BY 4.0)</span>
-  </div>
+    <span>&copy; 2026</span>  </div>
   <div class="flex items-center gap-6 text-zinc-400 font-semibold uppercase tracking-wider text-[11px]">
     <a class="hover:text-brand-neon transition-colors duration-200" href="https://djpoolworld.blogspot.com/" target="_blank">Blog</a>
     <a class="hover:text-brand-neon transition-colors duration-200" href="https://soundcloud.com/wildsoundsmusic" target="_blank">Wild Sounds</a>

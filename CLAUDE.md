@@ -28,7 +28,8 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 
 ## Estetica (pools.html)
 - Tema oscuro espacial (fondo `#050510` con gradiente azul/violeta)
-- Fondo imagen: `fondo.jpg` 3200x1800 (~930 KB) = Nebulosa del Velo de Hubble (`potw2113a`, ESA/Hubble & NASA, Z. Levay, **CC BY 4.0 → credito obligatorio en footer**), recortada a 16:9 y con color retocado (naranjas/verdes → rosa/magenta/violeta, azules intactos) para parecerse a la referencia `OneDrive\Desktop\fondo.avif`. Script: tablas LUT de tono/saturacion con PIL. En `body::before` fijo (`center/cover`) + velo oscuro degradado en `body::after` (`rgba(3,3,18,.35)` → `.7`). Estrellas y blobs JS por encima
+- Fondo imagen: `fondo.jpg` 1672x941 (Tierra azul con anillo luminoso y luces de ciudades, aportada por el socio: `OneDriveDesktop
+uevo fondo.jpg`). En `body::before` fijo (`center/cover`, URL `fondo.jpg?v=3` para saltar cache al cambiarlo; subir el numero si se vuelve a cambiar) + velo oscuro degradado en `body::after` (`rgba(3,3,18,.35)` → `.7`). Estrellas y blobs JS por encima
 - Paleta adaptada al fondo: azul `#2563eb` principal + fucsia/rosa (`fuchsia-400/500/600`, `pink-600`) como secundario (sustituye a los verdes emerald): subtitulo hero, icono ARCHIVO, filtro de pool, beneficio "años anteriores", boton SUSCRIBIRSE (degradado fucsia→rosa). Contenedores de fechas semi-transparentes (`bg-[#0c0c14]/85 backdrop-blur-sm`) con glow azul+rosa. Las cards de cada pool (`POOL_CARDS`) mantienen sus colores de marca
 - Fondo estrellado: 200 estrellas pequenas (blancas, cyan, violeta, verde palido) + 15 estrellas brillantes con glow, animacion `twinkle`
 - 40 particulas flotantes generadas por JS (5 colores: azul, cornflower, violeta, cyan, blanco) con 3 trayectorias (`floatA/B/C`)
@@ -46,7 +47,6 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Header sticky con shadow on scroll
 - Boton scroll-to-top con fade in/out (aparece a 400px scroll)
 - Dropdowns hover en navbar: POOLS (pools del mes, 2 columnas, filtro), ARCHIVO (meses), MI CUENTA
-- Footer: credito del fondo "ESA/Hubble & NASA, Z. Levay (CC BY 4.0)" — obligatorio por licencia, no quitar
 - Modals con backdrop blur para login, suscripcion, descarga y editar cuenta
 - Flechas de navegacion en tabs de pools (aparecen/desaparecen segun scroll position)
 - Buscador de canciones con highlight de resultados (`search-highlight` class)
@@ -163,7 +163,7 @@ pools-tracks.js     -- 17,131 tracks (const TRACK_LIST, claves "YYYY-MM-DD" -> a
 logo-dpw.png        -- LOGO FINAL circular con fondo transparente (header + hero)
 logo-dpw.jpg        -- Logo antiguo (altavoces + mesa, no usado)
 logodpw.png         -- Logo antiguo recortado (no usado)
-fondo.jpg           -- Fondo web 3200x1800 (Nebulosa del Velo, Hubble, color retocado; CC BY 4.0)
+fondo.jpg           -- Fondo web (Tierra azul con anillo, 1672x941)
 nebula-bg.jpg       -- Fondo hero antiguo (no usado en pools)
 image 1-3.jpeg      -- Capturas de referencia (yourlatinmusic.es), sin commitear
 favicon.jpg         -- Tiburon neon azul (favicon)
@@ -375,6 +375,7 @@ CLAUDE.md           -- Este archivo
 - **Rediseño v2 (oct 2026, feedback del socio):** LOGO FINAL circular (`logo-dpw.png`) en header junto a WORLD y en hero; frases hero nuevas; suscripcion 100€/año + `djpoolworld@gmail.com` + acceso a años anteriores; menu POOLS con filtro por pool y menu ARCHIVO con meses; +789 tracks en 19 entradas sin tracklist.
 - **Fondo HD (oct 2026):** el `fondo.avif` aportado era 626x357 (se veia borroso); sustituido por Nebulosa del Velo de Hubble a 3200x1800 retocada a azul/rosa/violeta. Paleta secundaria verde → fucsia para encajar con el fondo.
 - **CMS de pools (oct 2026):** subida/edicion/borrado de pools desde admin.html (escribe `dpw-data/pools.json` via API de GitHub; admins solo con usuario y contraseña, llave cifrada en access.json), artistas persistentes, historial con restaurar, CLI `tools/pools-cli.js`. Web publica dividida por meses (mas reciente primero) con ARCHIVO arriba y al final. Renders sin JS inline y con escape (antes los nombres iban dentro de `onclick`). Verificado con tests unitarios (`tools/test-dpw.js`) y pruebas end-to-end en Chrome headless (web 20/20, admin 36/36 contra un GitHub simulado) + revision multi-agente (datos, seguridad, web publica, API GitHub, flujos admin) con fallos confirmados corregidos.
+- **Fondo nuevo (oct 2026):** la Tierra azul de `nuevo fondo.jpg` sustituye a la nebulosa de Hubble; quitado el credito ESA/Hubble del footer (ya no se usa esa imagen).
 - **Cache GitHub Pages:** si no se ven cambios tras push, forzar rebuild (`gh api .../pages/builds -X POST`) y abrir con `?v=<commit>` en incognito.
 - **Unicode pools-tracks.js (sep 2026):** 180 caracteres corruptos reparados con script Node.js. Tres cadenas de corrupcion de WinRAR corregidas:
   1. **cp437→Latin-1** (26 fixes): bytes A0-A5 interpretados como Latin-1 en vez de cp437 (¡→í, ¢→ó, £→ú, ¤→ñ, ¥→Ñ, Æ→ã)
