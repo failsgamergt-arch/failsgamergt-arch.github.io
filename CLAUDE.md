@@ -28,8 +28,7 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 
 ## Estetica (pools.html)
 - Tema oscuro espacial (fondo `#050510` con gradiente azul/violeta)
-- Fondo imagen: `fondo.jpg` 1672x941 (Tierra azul con anillo luminoso y luces de ciudades, aportada por el socio: `OneDriveDesktop
-uevo fondo.jpg`). En `body::before` fijo (`center/cover`, URL `fondo.jpg?v=3` para saltar cache al cambiarlo; subir el numero si se vuelve a cambiar) + velo oscuro degradado en `body::after` (`rgba(3,3,18,.35)` → `.7`). Estrellas y blobs JS por encima
+- Fondo imagen: `fondo.jpg` 1672x941 (Tierra azul con anillo luminoso y luces de ciudades, aportada por el socio: `OneDrive/Desktop/nuevo fondo.jpg`). En `body::before` fijo (`center/cover`, URL `fondo.jpg?v=3` para saltar cache al cambiarlo; subir el numero si se vuelve a cambiar) + velo oscuro degradado en `body::after` (`rgba(3,3,18,.35)` → `.7`). Estrellas y blobs JS por encima
 - Paleta adaptada al fondo: azul `#2563eb` principal + fucsia/rosa (`fuchsia-400/500/600`, `pink-600`) como secundario (sustituye a los verdes emerald): subtitulo hero, icono ARCHIVO, filtro de pool, beneficio "años anteriores", boton SUSCRIBIRSE (degradado fucsia→rosa). Contenedores de fechas semi-transparentes (`bg-[#0c0c14]/85 backdrop-blur-sm`) con glow azul+rosa. Las cards de cada pool (`POOL_CARDS`) mantienen sus colores de marca
 - Fondo estrellado: 200 estrellas pequenas (blancas, cyan, violeta, verde palido) + 15 estrellas brillantes con glow, animacion `twinkle`
 - 40 particulas flotantes generadas por JS (5 colores: azul, cornflower, violeta, cyan, blanco) con 3 trayectorias (`floatA/B/C`)
