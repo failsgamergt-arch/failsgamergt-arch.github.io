@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="robots" content="noindex"/>
 <title>DJ POOL WORLD - Admin</title>
 <link rel="icon" href="favicon.jpg" type="image/jpeg">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -12,7 +13,7 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        brand: { black:'#0a0a0c', card:'#121216', surface:'#18181f', neon:'#dfff00', neonHover:'#f0ff40', neonMuted:'#9eb500', border:'#23232b' }
+        brand: { black:'#0a0a0c', card:'#121216', surface:'#18181f', neon:'#2563eb', neonHover:'#3b82f6', neonMuted:'#1e3a8a', border:'#23232b' }
       },
       fontFamily: { sans: ['Montserrat','Inter','system-ui','sans-serif'] }
     }
@@ -26,127 +27,348 @@ tailwind.config = {
 *{box-sizing:border-box}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeScale{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
-.fade-up{animation:fadeUp .5s ease-out both}
+.fade-up{animation:fadeUp .4s ease-out both}
 .fade-scale{animation:fadeScale .3s ease-out both}
 .modal-backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px);transition:opacity .3s ease}
 .modal-content{animation:fadeScale .3s ease-out}
+input.inp,select.inp,textarea.inp{width:100%;background-color:#0c0c10;border:1px solid #3f3f46;border-radius:.5rem;padding:.6rem .8rem;font-size:.85rem;line-height:1.25rem;color:#fff;outline:none;transition:border-color .15s;color-scheme:dark}
+input.inp:focus,select.inp:focus,textarea.inp:focus{border-color:#2563eb;box-shadow:0 0 0 1px rgba(37,99,235,.5)}
+input.inp.bad{border-color:#ef4444}
+input.inp.good{border-color:#10b981}
+input.inp::placeholder,textarea.inp::placeholder{color:#52525b}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem 1rem;border-radius:.5rem;font-size:.7rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;transition:all .15s;white-space:nowrap}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:#2563eb;color:#fff}.btn-primary:not(:disabled):hover{background:#3b82f6;box-shadow:0 0 18px rgba(37,99,235,.4)}
+.btn-ghost{border:1px solid #3f3f46;color:#d4d4d8}.btn-ghost:not(:disabled):hover{border-color:#2563eb;color:#fff}
+.btn-danger{border:1px solid rgba(239,68,68,.5);color:#f87171}.btn-danger:not(:disabled):hover{background:#7f1d1d;color:#fff}
+.chip{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .7rem;border-radius:9999px;border:1px solid #3f3f46;font-size:.65rem;font-weight:800;letter-spacing:.08em;color:#a1a1aa;transition:all .15s;cursor:pointer}
+.chip:hover{border-color:#d946ef;color:#f0abfc}
+.chip.on{background:#2563eb;border-color:#2563eb;color:#fff}
+.card{background:#14141a;border:1px solid #27272a;border-radius:.9rem}
+.tab-btn{padding:.7rem 1rem;font-size:.7rem;font-weight:900;letter-spacing:.14em;color:#a1a1aa;border-bottom:2px solid transparent;white-space:nowrap}
+.tab-btn:hover{color:#fff}
+.tab-btn.on{color:#fff;border-color:#2563eb}
+.lbl{display:block;font-size:.65rem;font-weight:800;letter-spacing:.14em;color:#a1a1aa;margin-bottom:.35rem;text-transform:uppercase}
 </style>
 </head>
-<body class="bg-[#0b0b0e] text-zinc-100 font-sans min-h-screen antialiased selection:bg-brand-neon selection:text-black">
+<body class="bg-[#0b0b0e] text-zinc-100 font-sans min-h-screen antialiased selection:bg-brand-neon selection:text-white">
 
 <!-- HEADER -->
 <header class="sticky top-0 z-50 bg-[#0c0c0f]/95 backdrop-blur-md border-b border-zinc-900/80">
 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-  <a class="flex items-center gap-3 group" href="pools.html">
-    <div class="flex items-center gap-1">
-      <span class="w-1.5 h-6 bg-brand-neon rounded-full inline-block"></span>
-      <span class="w-1.5 h-4 bg-white/70 rounded-full inline-block"></span>
-      <span class="w-1.5 h-7 bg-brand-neon rounded-full inline-block"></span>
-    </div>
-    <span class="text-lg font-black text-white tracking-wider">DJ POOL <span class="text-brand-neon">WORLD</span></span>
+  <a class="flex items-center gap-2 group" href="pools.html">
+    <img src="logo-dpw.png" alt="" class="w-9 h-9">
+    <span class="text-base sm:text-lg font-black text-white tracking-wider">DJ POOL <span class="text-brand-neon">WORLD</span></span>
+    <span class="hidden sm:inline ml-2 px-2 py-0.5 rounded text-[9px] font-black tracking-widest bg-brand-neon/15 text-brand-neon border border-brand-neon/30">ADMIN</span>
   </a>
-  <div class="flex items-center gap-4">
-    <span class="text-xs font-bold tracking-wider text-zinc-400" id="admin-user"></span>
-    <a href="pools.html" class="text-xs font-bold tracking-widest text-zinc-400 hover:text-brand-neon transition-colors">VOLVER</a>
-    <button onclick="logout()" class="text-xs font-bold tracking-widest text-red-500 hover:text-red-400 transition-colors">SALIR</button>
+  <div class="flex items-center gap-4 whitespace-nowrap">
+    <span class="hidden sm:inline text-xs font-bold tracking-wider text-zinc-400" id="admin-user"></span>
+    <a href="pools.html" class="text-xs font-bold tracking-widest text-zinc-400 hover:text-brand-neon transition-colors">VER WEB</a>
+    <button data-action="logout" id="btn-logout" class="hidden text-xs font-bold tracking-widest text-red-500 hover:text-red-400 transition-colors">SALIR</button>
   </div>
 </div>
 </header>
 
-<!-- ACCESS DENIED (shown if not admin) -->
-<div id="access-denied" class="hidden max-w-md mx-auto mt-32 text-center px-6">
-  <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
-  <h2 class="text-2xl font-black text-red-500 tracking-wider mb-3">ACCESO DENEGADO</h2>
-  <p class="text-zinc-400 text-sm mb-6">Necesitas permisos de administrador.</p>
-  <a href="pools.html" class="inline-flex px-6 py-2.5 rounded-lg bg-brand-neon text-black font-black tracking-widest text-xs hover:bg-brand-neonHover transition-all">IR A POOLS</a>
+<!-- ===================== GATE: loading / login / first-time setup ===================== -->
+<div id="gate" class="max-w-lg mx-auto px-4 sm:px-6 py-12">
+  <div id="gate-loading" class="text-center py-20">
+    <div class="inline-block w-8 h-8 border-2 border-brand-neon border-t-transparent rounded-full animate-spin mb-3"></div>
+    <p class="text-xs font-black tracking-widest text-zinc-400">CARGANDO...</p>
+  </div>
+
+  <form id="login-screen" class="hidden card p-7 sm:p-8 fade-up" autocomplete="on">
+    <h1 class="text-xl font-black tracking-wider text-brand-neon mb-1">PANEL ADMIN</h1>
+    <p class="text-xs text-zinc-500 mb-6">Entra con tu usuario y contraseña de administrador.</p>
+    <div class="space-y-4">
+      <div><label class="lbl" for="l-user">USUARIO</label><input id="l-user" class="inp" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+      <div><label class="lbl" for="l-pass">CONTRASEÑA</label><input id="l-pass" type="password" class="inp" autocomplete="current-password"></div>
+    </div>
+    <p class="text-xs text-red-400 mt-3 hidden" id="l-error"></p>
+    <button type="submit" class="btn btn-primary w-full py-3 mt-6 text-xs" id="l-submit">ENTRAR</button>
+    <p class="text-[11px] text-zinc-500 mt-4">¿Olvidaste la contraseña? Pide a otro admin que te cree una nueva desde ADMINS.</p>
+  </form>
+
+  <form id="setup-screen" class="hidden card p-7 sm:p-8 fade-up" autocomplete="off">
+    <h1 class="text-xl font-black tracking-wider text-brand-neon mb-1">ACTIVAR PUBLICACION</h1>
+    <p class="text-xs text-zinc-400 leading-relaxed mb-6">Se hace <b class="text-white">una sola vez</b> y solo la hace el <b class="text-white">dueño de la cuenta de GitHub failsgamergt-arch</b>. Despues, cualquier admin publica entrando con su usuario y contraseña, desde cualquier ordenador o movil, sin nada mas.</p>
+
+    <div class="space-y-6">
+      <div>
+        <p class="text-sm font-black tracking-wider text-white mb-2"><span class="text-brand-neon">1 ·</span> CREA LA LLAVE EN GITHUB</p>
+        <a class="btn btn-ghost w-full py-3" target="_blank" rel="noopener" id="setup-link">ABRIR GITHUB (YA VIENE RELLENO)</a>
+        <ol class="text-xs text-zinc-400 space-y-1.5 list-decimal list-inside mt-3 leading-relaxed">
+          <li>En <b class="text-white">Repository access</b> elige <b class="text-white">Only select repositories</b> → <b class="text-white font-mono">dpw-data</b>.</li>
+          <li>Comprueba que <b class="text-white">Contents</b> esta en <b class="text-white">Read and write</b> y la caducidad en <b class="text-white">No expiration</b>.</li>
+          <li>Pulsa <b class="text-white">Generate token</b> y copia la llave (empieza por <span class="font-mono text-white">github_pat_</span>).</li>
+        </ol>
+      </div>
+      <div>
+        <p class="text-sm font-black tracking-wider text-white mb-2"><span class="text-brand-neon">2 ·</span> PEGA LA LLAVE</p>
+        <input id="s-token" type="password" class="inp font-mono" placeholder="github_pat_..." autocomplete="off" spellcheck="false">
+        <p class="text-[11px] text-zinc-500 mt-1.5">Se guarda cifrada con la contraseña de los admins: nadie la vera nunca en claro.</p>
+      </div>
+      <div>
+        <p class="text-sm font-black tracking-wider text-white mb-2"><span class="text-brand-neon">3 ·</span> TU CUENTA DE ADMIN</p>
+        <div class="space-y-3">
+          <div><label class="lbl" for="s-user">USUARIO</label><input id="s-user" class="inp" value="sharkmusic" autocapitalize="none" spellcheck="false"></div>
+          <div>
+            <label class="lbl" for="s-pass">CONTRASEÑA (MINIMO 12, LETRAS Y NUMEROS)</label>
+            <div class="flex gap-2"><input id="s-pass" type="password" class="inp font-mono" autocomplete="new-password"><button type="button" class="btn btn-ghost" data-action="gen-pass" data-target="s-pass" data-confirm="s-pass2">GENERAR</button></div>
+          </div>
+          <div><label class="lbl" for="s-pass2">REPITE LA CONTRASEÑA</label><input id="s-pass2" type="password" class="inp font-mono" autocomplete="new-password"></div>
+        </div>
+      </div>
+    </div>
+    <p class="text-xs text-red-400 mt-4 hidden whitespace-pre-line" id="s-error"></p>
+    <button type="submit" class="btn btn-primary w-full py-3 mt-6 text-xs" id="s-submit">ACTIVAR</button>
+  </form>
 </div>
 
-<!-- MAIN (shown if admin) -->
-<main id="admin-panel" class="hidden max-w-[1200px] mx-auto px-4 sm:px-6 py-8 space-y-8">
+<!-- ===================== PANEL ===================== -->
+<main id="admin-panel" class="hidden max-w-[1200px] mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-  <!-- Stats -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 fade-up">
-    <div class="bg-[#14141a] border border-zinc-800 rounded-xl p-5 text-center">
-      <p class="text-3xl font-black text-brand-neon" id="stat-total">0</p>
-      <p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">TOTAL USUARIOS</p>
-    </div>
-    <div class="bg-[#14141a] border border-zinc-800 rounded-xl p-5 text-center">
-      <p class="text-3xl font-black text-emerald-400" id="stat-active">0</p>
-      <p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">ACTIVOS</p>
-    </div>
-    <div class="bg-[#14141a] border border-zinc-800 rounded-xl p-5 text-center">
-      <p class="text-3xl font-black text-red-400" id="stat-inactive">0</p>
-      <p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">INACTIVOS</p>
-    </div>
-    <div class="bg-[#14141a] border border-zinc-800 rounded-xl p-5 text-center">
-      <p class="text-3xl font-black text-violet-400" id="stat-admins">0</p>
-      <p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">ADMINS</p>
-    </div>
-  </div>
+  <nav class="flex overflow-x-auto border-b border-zinc-800 -mx-1" id="tabs">
+    <button class="tab-btn" data-tab="upload">SUBIR POOLS</button>
+    <button class="tab-btn" data-tab="manage">GESTIONAR</button>
+    <button class="tab-btn" data-tab="artists">ARTISTAS</button>
+    <button class="tab-btn" data-tab="history">HISTORIAL</button>
+    <button class="tab-btn" data-tab="admins">ADMINS</button>
+    <button class="tab-btn" data-tab="users">USUARIOS</button>
+  </nav>
 
-  <!-- Toolbar -->
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-    <h1 class="text-xl font-black tracking-wider text-brand-neon uppercase">Gestion de Usuarios</h1>
-    <div class="flex items-center gap-3 w-full sm:w-auto">
-      <div class="relative flex-1 sm:flex-initial">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        <input type="text" id="search-input" placeholder="Buscar usuario..." class="w-full sm:w-56 bg-[#0c0c10] border border-zinc-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" oninput="renderTable()">
+  <div id="gh-banner"></div>
+
+  <!-- ===================== SUBIR POOLS ===================== -->
+  <section class="tab-panel hidden space-y-5" id="tab-upload">
+    <div class="card p-5 sm:p-6">
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+        <h2 class="text-sm font-black tracking-widest text-white"><span class="text-brand-neon">1 ·</span> ¿QUE DIAS VAS A SUBIR?</h2>
+        <button class="btn btn-ghost" data-action="draft-clear">VACIAR BORRADOR</button>
       </div>
-      <button onclick="openModal()" class="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-neon text-black font-black tracking-widest text-xs hover:bg-brand-neonHover hover:shadow-[0_0_20px_rgba(223,255,0,.3)] transition-all duration-200">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-        NUEVO
-      </button>
+      <div class="flex flex-wrap gap-2 mb-4" id="period-buttons">
+        <button class="chip" data-action="period" data-value="day">1 DIA</button>
+        <button class="chip" data-action="period" data-value="2days">2 DIAS</button>
+        <button class="chip" data-action="period" data-value="week">1 SEMANA</button>
+        <button class="chip" data-action="period" data-value="month">MES COMPLETO</button>
+        <button class="chip" data-action="period" data-value="custom">PERSONALIZADO</button>
+      </div>
+      <div class="flex flex-wrap items-end gap-4">
+        <div><label class="lbl" for="p-start" id="p-start-label">DIA</label><input type="date" id="p-start" class="inp w-44"></div>
+        <div id="p-end-wrap" class="hidden"><label class="lbl" for="p-end">HASTA</label><input type="date" id="p-end" class="inp w-44"></div>
+        <p class="text-xs text-zinc-500 font-bold pb-2" id="period-summary"></p>
+      </div>
     </div>
-  </div>
 
-  <!-- Table -->
-  <div class="bg-[#14141a] border border-zinc-800 rounded-xl overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-zinc-800 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
-            <th class="text-left px-5 py-4">Usuario</th>
-            <th class="text-left px-5 py-4">Rol</th>
-            <th class="text-left px-5 py-4">Estado</th>
-            <th class="text-left px-5 py-4">Creado</th>
-            <th class="text-right px-5 py-4">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="users-tbody"></tbody>
-      </table>
+    <div class="card p-5 sm:p-6">
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-1">
+        <h2 class="text-sm font-black tracking-widest text-white"><span class="text-brand-neon">2 ·</span> ARTISTAS Y ENLACES MEGA</h2>
+        <div class="flex gap-2">
+          <button class="btn btn-ghost" data-action="toggle-paste">PEGADO RAPIDO</button>
+          <button class="btn btn-ghost" data-action="artist-new">+ NUEVO ARTISTA</button>
+        </div>
+      </div>
+      <p class="text-xs text-zinc-500 mb-4">En cada dia pulsa los artistas que subes y pega su enlace de MEGA. El nombre del archivo se rellena solo.</p>
+      <div id="paste-box" class="hidden mb-5 rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/5 p-4">
+        <label class="lbl" for="paste-input">PEGA VARIOS ENLACES (UNO POR LINEA)</label>
+        <textarea id="paste-input" rows="5" class="inp font-mono text-xs" placeholder="https://mega.nz/file/XXXXXXXX#YYYYYYYY..."></textarea>
+        <div class="flex items-center gap-3 mt-3">
+          <button class="btn btn-primary" data-action="paste-detect">DETECTAR DIA Y ARTISTA</button>
+          <p class="text-[11px] text-zinc-500" id="paste-status">Lee el nombre del archivo en MEGA (ej. "Bpm Supreme 03 08 2026") y lo coloca en su dia y artista.</p>
+        </div>
+      </div>
+      <div id="day-blocks" class="space-y-3"></div>
     </div>
-    <div id="empty-state" class="hidden text-center py-12">
-      <svg class="w-12 h-12 text-zinc-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-      <p class="text-zinc-500 text-sm font-bold">No hay usuarios</p>
-    </div>
-  </div>
 
+    <div class="card p-5 sm:p-6">
+      <h2 class="text-sm font-black tracking-widest text-white mb-4"><span class="text-brand-neon">3 ·</span> REVISAR Y PUBLICAR</h2>
+      <div id="upload-review"></div>
+      <div class="flex flex-wrap items-center gap-3 mt-5">
+        <button class="btn btn-primary px-6 py-3 text-xs" data-action="publish" id="btn-publish">PUBLICAR EN LA WEB</button>
+        <p class="text-[11px] text-zinc-500">Los cambios aparecen en la web en ~1 minuto. Se puede deshacer desde HISTORIAL.</p>
+      </div>
+      <div id="upload-result" class="mt-4"></div>
+    </div>
+  </section>
+
+  <!-- ===================== GESTIONAR ===================== -->
+  <section class="tab-panel hidden space-y-4" id="tab-manage">
+    <div class="flex flex-wrap items-end gap-3">
+      <div><label class="lbl" for="m-month">MES</label><select id="m-month" class="inp w-52"></select></div>
+      <div class="flex-1 min-w-[180px]"><label class="lbl" for="m-filter">FILTRAR ARTISTA</label><input id="m-filter" class="inp" placeholder="Ej. BPM SUPREME"></div>
+      <button class="btn btn-ghost" data-action="reload">RECARGAR</button>
+    </div>
+    <p class="text-xs text-zinc-500" id="manage-summary"></p>
+    <div id="manage-list" class="space-y-3"></div>
+  </section>
+
+  <!-- ===================== ARTISTAS ===================== -->
+  <section class="tab-panel hidden space-y-4" id="tab-artists">
+    <div class="card p-5 flex flex-wrap items-end gap-3">
+      <div class="flex-1 min-w-[220px]"><label class="lbl" for="a-new">NUEVO ARTISTA</label><input id="a-new" class="inp" maxlength="40" placeholder="Ej. DJ CITY LATINO"></div>
+      <button class="btn btn-primary" data-action="artist-add">ANADIR</button>
+    </div>
+    <p class="text-xs text-zinc-500">Los artistas se guardan para siempre y aparecen en el desplegable de subida. Solo se puede borrar un artista sin publicaciones.</p>
+    <div class="card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm">
+      <thead><tr class="border-b border-zinc-800 text-[10px] font-bold tracking-widest text-zinc-500 uppercase"><th class="text-left px-5 py-3">Artista</th><th class="text-left px-5 py-3">Publicaciones</th><th class="text-right px-5 py-3">Acciones</th></tr></thead>
+      <tbody id="artists-tbody"></tbody>
+    </table></div></div>
+  </section>
+
+  <!-- ===================== HISTORIAL ===================== -->
+  <section class="tab-panel hidden space-y-4" id="tab-history">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <p class="text-xs text-zinc-500">Cada cambio queda guardado. "Restaurar" vuelve a dejar las pools exactamente como estaban en ese momento.</p>
+      <button class="btn btn-ghost" data-action="history-load">ACTUALIZAR</button>
+    </div>
+    <div id="history-list" class="space-y-2"></div>
+  </section>
+
+  <!-- ===================== ADMINS ===================== -->
+  <section class="tab-panel hidden space-y-5" id="tab-admins">
+    <div class="card p-5 sm:p-6">
+      <h2 class="text-sm font-black tracking-widest text-white mb-1">MI CONTRASEÑA</h2>
+      <p class="text-xs text-zinc-500 mb-4">Has entrado como <b class="text-white" id="me-name"></b>.</p>
+      <div class="grid sm:grid-cols-[1fr_1fr_auto] gap-3 items-end">
+        <div>
+          <label class="lbl" for="pw-new">NUEVA CONTRASEÑA</label>
+          <div class="flex gap-2"><input id="pw-new" type="password" class="inp font-mono" autocomplete="new-password"><button class="btn btn-ghost" data-action="gen-pass" data-target="pw-new" data-confirm="pw-new2">GENERAR</button></div>
+        </div>
+        <div><label class="lbl" for="pw-new2">REPITELA</label><input id="pw-new2" type="password" class="inp font-mono" autocomplete="new-password"></div>
+        <button class="btn btn-primary" data-action="pw-change">CAMBIAR</button>
+      </div>
+    </div>
+
+    <div class="card p-5 sm:p-6">
+      <h2 class="text-sm font-black tracking-widest text-white mb-1">ADMINISTRADORES</h2>
+      <p class="text-xs text-zinc-500 mb-4">Pueden subir, editar y borrar pools. Entran con su usuario y contraseña desde cualquier dispositivo.</p>
+      <div id="admins-list" class="space-y-2 mb-5"></div>
+      <div class="grid sm:grid-cols-[1fr_1fr_auto] gap-3 items-end">
+        <div><label class="lbl" for="na-user">NUEVO ADMIN: USUARIO</label><input id="na-user" class="inp" autocapitalize="none" spellcheck="false" placeholder="ej. socio"></div>
+        <div>
+          <label class="lbl" for="na-pass">SU CONTRASEÑA</label>
+          <div class="flex gap-2"><input id="na-pass" type="text" class="inp font-mono" autocomplete="off"><button class="btn btn-ghost" data-action="gen-pass" data-target="na-pass">GENERAR</button></div>
+        </div>
+        <button class="btn btn-primary" data-action="admin-add">ANADIR</button>
+      </div>
+      <p class="text-[11px] text-zinc-500 mt-2">Pasale la contraseña por un canal privado; despues puede cambiarla el mismo aqui.</p>
+    </div>
+
+    <details class="card p-5 sm:p-6">
+      <summary class="cursor-pointer text-sm font-black tracking-widest text-zinc-300">LLAVE DE PUBLICACION <span class="text-[10px] text-zinc-500 tracking-widest ml-2">SOLO SI GITHUB DEJA DE ACEPTARLA</span></summary>
+      <div class="mt-4 space-y-3">
+        <p class="text-xs text-zinc-400 leading-relaxed">Normalmente no hay que tocar nada aqui. Solo si al publicar aparece "la llave ya no funciona" (por ejemplo, si se borro en GitHub): el dueño de la cuenta crea una nueva con el boton y la pega. Ningun admin pierde su contraseña.</p>
+        <a class="btn btn-ghost" target="_blank" rel="noopener" id="renew-link">CREAR LLAVE NUEVA EN GITHUB</a>
+        <div class="flex flex-wrap gap-2 items-end">
+          <div class="flex-1 min-w-[240px]"><label class="lbl" for="rk-token">LLAVE NUEVA</label><input id="rk-token" type="password" class="inp font-mono" placeholder="github_pat_..." autocomplete="off"></div>
+          <button class="btn btn-primary" data-action="key-renew">GUARDAR LLAVE NUEVA</button>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===================== USUARIOS ===================== -->
+  <section class="tab-panel hidden space-y-6" id="tab-users">
+    <div class="grid grid-cols-3 gap-4">
+      <div class="card p-5 text-center"><p class="text-3xl font-black text-brand-neon" id="stat-total">0</p><p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">USUARIOS</p></div>
+      <div class="card p-5 text-center"><p class="text-3xl font-black text-emerald-400" id="stat-active">0</p><p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">ACTIVOS</p></div>
+      <div class="card p-5 text-center"><p class="text-3xl font-black text-red-400" id="stat-inactive">0</p><p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">INACTIVOS</p></div>
+    </div>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-black tracking-wider text-brand-neon uppercase">Usuarios (descargas)</h1>
+        <p class="text-[11px] text-zinc-500 mt-1">Los administradores se gestionan en ADMINS.</p>
+      </div>
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <div class="relative flex-1 sm:flex-initial">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" id="search-input" placeholder="Buscar usuario..." class="inp sm:w-56 pl-10" oninput="renderTable()">
+        </div>
+        <button onclick="openModal()" class="btn btn-primary">+ NUEVO</button>
+      </div>
+    </div>
+    <div class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-zinc-800 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+              <th class="text-left px-5 py-4">Usuario</th>
+              <th class="text-left px-5 py-4">Estado</th>
+              <th class="text-left px-5 py-4">Creado</th>
+              <th class="text-right px-5 py-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+      <div id="empty-state" class="hidden text-center py-12"><p class="text-zinc-500 text-sm font-bold">No hay usuarios</p></div>
+    </div>
+  </section>
 </main>
+
+<!-- TOASTS -->
+<div id="toasts" class="fixed bottom-5 right-5 z-[200] space-y-2 w-[min(92vw,360px)]"></div>
+
+<!-- BUSY OVERLAY -->
+<div id="busy" class="fixed inset-0 z-[150] hidden items-center justify-center modal-backdrop">
+  <div class="card px-8 py-6 text-center"><div class="inline-block w-8 h-8 border-2 border-brand-neon border-t-transparent rounded-full animate-spin mb-3"></div><p class="text-xs font-black tracking-widest text-zinc-300" id="busy-text">GUARDANDO...</p></div>
+</div>
+
+<!-- GENERIC CONFIRM MODAL -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="confirm-modal">
+<div class="modal-content card p-7 w-full max-w-md mx-4 shadow-2xl">
+  <h3 class="text-base font-black tracking-wider mb-3" id="confirm-title"></h3>
+  <div class="text-sm text-zinc-400 mb-6 max-h-[50vh] overflow-y-auto" id="confirm-body"></div>
+  <div class="flex gap-3">
+    <button class="btn btn-primary flex-1 py-3" id="confirm-ok">ACEPTAR</button>
+    <button class="btn btn-ghost flex-1 py-3" data-action="modal-close" data-modal="confirm-modal">CANCELAR</button>
+  </div>
+</div>
+</div>
+
+<!-- GENERIC PROMPT MODAL -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="prompt-modal">
+<div class="modal-content card p-7 w-full max-w-md mx-4 shadow-2xl">
+  <h3 class="text-base font-black tracking-wider text-brand-neon mb-4" id="prompt-title"></h3>
+  <label class="lbl" for="prompt-input" id="prompt-label"></label>
+  <input id="prompt-input" class="inp" maxlength="40">
+  <p class="text-[11px] text-zinc-500 mt-2" id="prompt-help"></p>
+  <p class="text-xs text-red-400 mt-2 hidden" id="prompt-error"></p>
+  <div class="flex gap-3 mt-6">
+    <button class="btn btn-primary flex-1 py-3" id="prompt-ok">GUARDAR</button>
+    <button class="btn btn-ghost flex-1 py-3" data-action="modal-close" data-modal="prompt-modal">CANCELAR</button>
+  </div>
+</div>
+</div>
+
+<!-- ENTRY (ADD / EDIT LINK) MODAL -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="entry-modal">
+<div class="modal-content card p-7 w-full max-w-lg mx-4 shadow-2xl">
+  <h3 class="text-base font-black tracking-wider text-brand-neon mb-5" id="entry-title">EDITAR</h3>
+  <div class="grid grid-cols-2 gap-4">
+    <div><label class="lbl" for="e-date">DIA</label><input type="date" id="e-date" class="inp"></div>
+    <div><label class="lbl" for="e-artist">ARTISTA</label><select id="e-artist" class="inp"></select></div>
+    <div class="col-span-2"><label class="lbl" for="e-url">ENLACE MEGA</label><input id="e-url" class="inp font-mono text-xs" placeholder="https://mega.nz/file/...#..."></div>
+    <div class="col-span-2"><label class="lbl" for="e-name">NOMBRE DEL ARCHIVO</label><input id="e-name" class="inp" maxlength="200" placeholder="Se genera solo si lo dejas vacio"></div>
+  </div>
+  <p class="text-xs text-red-400 mt-3 hidden whitespace-pre-line" id="entry-error"></p>
+  <div class="flex gap-3 mt-6">
+    <button class="btn btn-primary flex-1 py-3" data-action="entry-save">GUARDAR</button>
+    <button class="btn btn-ghost flex-1 py-3" data-action="modal-close" data-modal="entry-modal">CANCELAR</button>
+  </div>
+</div>
+</div>
 
 <!-- USER MODAL -->
 <div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="user-modal">
-<div class="modal-content bg-[#14141a] border border-zinc-700/80 rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl relative">
+<div class="modal-content card p-8 w-full max-w-md mx-4 shadow-2xl relative">
   <button onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
   </button>
   <h2 class="text-lg font-black text-brand-neon tracking-wider mb-6" id="modal-title">NUEVO USUARIO</h2>
   <form onsubmit="saveUser(event)">
     <div class="space-y-4">
-      <div>
-        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">USUARIO</label>
-        <input type="text" id="m-user" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" placeholder="nombre de usuario">
-      </div>
-      <div>
-        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">PASSWORD</label>
-        <input type="text" id="m-pass" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" placeholder="password">
-      </div>
-      <div>
-        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">ROL</label>
-        <select id="m-role" class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all">
-          <option value="user">Usuario</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
+      <div><label class="lbl">USUARIO</label><input type="text" id="m-user" required class="inp" placeholder="nombre de usuario"></div>
+      <div><label class="lbl">PASSWORD</label><input type="text" id="m-pass" required class="inp" placeholder="password"></div>
       <div class="flex items-center gap-3">
         <label class="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" id="m-active" checked class="sr-only peer">
@@ -157,109 +379,212 @@ tailwind.config = {
     </div>
     <p class="text-red-500 text-xs mt-3 hidden" id="modal-error"></p>
     <div class="flex gap-3 mt-6">
-      <button type="submit" class="flex-1 py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(223,255,0,.3)]">GUARDAR</button>
-      <button type="button" onclick="closeModal()" class="px-6 py-3 rounded-lg border border-zinc-700 text-zinc-400 font-bold tracking-widest text-sm hover:border-zinc-500 hover:text-white transition-all duration-200">CANCELAR</button>
+      <button type="submit" class="btn btn-primary flex-1 py-3">GUARDAR</button>
+      <button type="button" onclick="closeModal()" class="btn btn-ghost px-6 py-3">CANCELAR</button>
     </div>
   </form>
 </div>
 </div>
 
-<!-- DELETE CONFIRM MODAL -->
+<!-- DELETE USER CONFIRM MODAL -->
 <div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="delete-modal">
-<div class="modal-content bg-[#14141a] border border-red-900/50 rounded-2xl p-8 w-full max-w-sm mx-4 shadow-2xl text-center">
-  <svg class="w-14 h-14 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+<div class="modal-content card border-red-900/50 p-8 w-full max-w-sm mx-4 shadow-2xl text-center">
   <h3 class="text-lg font-black text-red-500 tracking-wider mb-2">ELIMINAR USUARIO</h3>
   <p class="text-zinc-400 text-sm mb-6">Eliminar a <strong class="text-white" id="delete-name"></strong>? Esta accion no se puede deshacer.</p>
   <div class="flex gap-3">
-    <button onclick="confirmDelete()" class="flex-1 py-3 rounded-lg bg-red-600 text-white font-black tracking-widest text-sm hover:bg-red-500 transition-all">ELIMINAR</button>
-    <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-lg border border-zinc-700 text-zinc-400 font-bold tracking-widest text-sm hover:border-zinc-500 hover:text-white transition-all">CANCELAR</button>
+    <button onclick="confirmDelete()" class="btn flex-1 py-3 bg-red-600 text-white hover:bg-red-500">ELIMINAR</button>
+    <button onclick="closeDeleteModal()" class="btn btn-ghost flex-1 py-3">CANCELAR</button>
   </div>
 </div>
 </div>
 
+<script src="js/dpw-data.js"></script>
+<script src="js/dpw-vault.js"></script>
+<script src="js/dpw-github.js"></script>
+<script src="js/dpw-auth.js"></script>
+<script src="js/dpw-mega.js"></script>
 <script>
 // ============================================================
-// AUTH
+// HELPERS
 // ============================================================
-const DEFAULT_USERS = [
-  {user:'admin', pass:'admin2026', role:'admin', active:true, created:'2026-01-01'},
-  {user:'sharkmusic', pass:'shark-music_2026', role:'admin', active:true, created:'2026-09-15'},
-  {user:'prueba1', pass:'prueba_1', role:'user', active:true, created:'2026-09-15'},
-  {user:'demo', pass:'demo123', role:'user', active:true, created:'2026-09-01'}
-];
-function getDeletedUsers() {
-  const d = localStorage.getItem('dpw_deleted');
-  return d ? JSON.parse(d) : [];
+const esc = DPW.esc;
+const $ = id => document.getElementById(id);
+const WEEKDAYS = ['DOMINGO', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
+const KEY_URL = 'https://github.com/settings/personal-access-tokens/new?name=DJ+Pool+World+-+publicar' +
+  '&description=Llave+del+panel+admin+de+DJ+Pool+World.+Solo+repo+dpw-data.&target_name=failsgamergt-arch&expires_in=none&contents=write';
+const NBSP = / /g;
+
+function weekday(date) {
+  const [y, m, d] = date.split('-').map(Number);
+  return WEEKDAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
 }
-function addDeletedUser(username) {
-  const deleted = getDeletedUsers();
-  if (!deleted.includes(username)) {
-    deleted.push(username);
-    localStorage.setItem('dpw_deleted', JSON.stringify(deleted));
-  }
+
+function toast(msg, kind) {
+  const colors = { ok: 'border-emerald-500/50 text-emerald-300', err: 'border-red-500/60 text-red-300', info: 'border-brand-neon/50 text-blue-200' };
+  const el = document.createElement('div');
+  el.className = 'card fade-up px-4 py-3 text-xs font-bold whitespace-pre-line shadow-2xl border ' + (colors[kind] || colors.info);
+  el.textContent = msg;
+  $('toasts').appendChild(el);
+  setTimeout(() => { el.style.transition = 'opacity .4s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 400); }, kind === 'err' ? 9000 : 4500);
 }
-function getUsers() {
-  const d = localStorage.getItem('dpw_users');
-  const users = d ? JSON.parse(d) : [];
-  const deleted = getDeletedUsers();
-  let changed = false;
-  DEFAULT_USERS.forEach(def => {
-    if (!deleted.includes(def.user) && !users.some(u => u.user === def.user)) {
-      users.push(def);
-      changed = true;
-    }
+
+function openModalEl(id) { const m = $(id); m.classList.remove('hidden'); m.classList.add('flex'); }
+function closeModalEl(id) { const m = $(id); m.classList.add('hidden'); m.classList.remove('flex'); }
+
+function confirmBox(title, bodyHtml, okLabel, danger) {
+  return new Promise(resolve => {
+    $('confirm-title').textContent = title;
+    $('confirm-title').className = 'text-base font-black tracking-wider mb-3 ' + (danger ? 'text-red-400' : 'text-brand-neon');
+    $('confirm-body').innerHTML = bodyHtml;
+    const ok = $('confirm-ok');
+    ok.textContent = okLabel || 'ACEPTAR';
+    ok.className = 'btn flex-1 py-3 ' + (danger ? 'bg-red-600 text-white hover:bg-red-500' : 'btn-primary');
+    const done = v => { ok.onclick = null; closeModalEl('confirm-modal'); resolve(v); };
+    ok.onclick = () => done(true);
+    $('confirm-modal')._resolve = done;
+    openModalEl('confirm-modal');
   });
-  if (changed || !d) localStorage.setItem('dpw_users', JSON.stringify(users));
-  return users;
-}
-function saveUsers(users) {
-  localStorage.setItem('dpw_users', JSON.stringify(users));
-}
-function getCurrentUser() {
-  const s = sessionStorage.getItem('dpw_session');
-  return s ? JSON.parse(s) : null;
-}
-function logout() {
-  sessionStorage.removeItem('dpw_session');
-  window.location.href = 'pools.html';
 }
 
+// opts: {title, label, value, help, validate(v) -> error string | ''}
+function promptBox(opts) {
+  return new Promise(resolve => {
+    $('prompt-title').textContent = opts.title;
+    $('prompt-label').textContent = opts.label;
+    $('prompt-help').textContent = opts.help || '';
+    $('prompt-error').classList.add('hidden');
+    const input = $('prompt-input');
+    input.value = opts.value || '';
+    const ok = $('prompt-ok');
+    const finish = v => { ok.onclick = null; input.onkeydown = null; closeModalEl('prompt-modal'); resolve(v); };
+    ok.onclick = () => {
+      const err = opts.validate ? opts.validate(input.value) : '';
+      if (err) { $('prompt-error').textContent = err; $('prompt-error').classList.remove('hidden'); return; }
+      finish(input.value);
+    };
+    input.onkeydown = e => { if (e.key === 'Enter') ok.onclick(); };
+    $('prompt-modal')._resolve = finish;
+    openModalEl('prompt-modal');
+    setTimeout(() => input.focus(), 50);
+  });
+}
+
+function setBusy(text) {
+  if (text) { $('busy-text').textContent = text; openModalEl('busy'); }
+  else closeModalEl('busy');
+}
+
+function showError(id, msg) { const el = $(id); el.textContent = msg; el.classList.toggle('hidden', !msg); }
+
 // ============================================================
-// ACCESS CHECK
+// GATE: login / first-time setup
 // ============================================================
-function checkAccess() {
-  const u = getCurrentUser();
-  if (!u || u.role !== 'admin') {
-    document.getElementById('access-denied').classList.remove('hidden');
-    document.getElementById('admin-panel').classList.add('hidden');
-    return false;
+function me() { return (DPWAuth.getCurrentUser() || {}).user || ''; }
+
+function showGate(view) {
+  $('admin-panel').classList.add('hidden');
+  $('btn-logout').classList.add('hidden');
+  $('admin-user').textContent = '';
+  $('gate').classList.remove('hidden');
+  ['gate-loading', 'login-screen', 'setup-screen'].forEach(id => $(id).classList.toggle('hidden', id !== view));
+  if (view === 'login-screen') setTimeout(() => $('l-user').focus(), 50);
+}
+
+async function openGate(message) {
+  showGate('gate-loading');
+  try {
+    const access = await DPWAuth.getAccess(true);
+    if (!access) { showGate('setup-screen'); return; }
+    showGate('login-screen');
+    showError('l-error', message || '');
+  } catch (err) {
+    showGate('login-screen');
+    showError('l-error', err.message);
   }
-  document.getElementById('access-denied').classList.add('hidden');
-  document.getElementById('admin-panel').classList.remove('hidden');
-  document.getElementById('admin-user').textContent = u.user.toUpperCase();
-  return true;
+}
+
+async function submitLogin(e) {
+  e.preventDefault();
+  const btn = $('l-submit');
+  showError('l-error', '');
+  btn.disabled = true; btn.textContent = 'COMPROBANDO...';
+  try {
+    const r = await DPWAuth.login($('l-user').value, $('l-pass').value);
+    if (!r.ok) { showError('l-error', r.error); return; }
+    if (r.role !== 'admin') { DPWAuth.logout(); showError('l-error', 'Ese usuario no es administrador.'); return; }
+    $('l-pass').value = '';
+    enterPanel();
+  } catch (err) {
+    showError('l-error', err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'ENTRAR';
+  }
+}
+
+async function submitSetup(e) {
+  e.preventDefault();
+  const token = $('s-token').value.trim(), user = DPWVault.normUser($('s-user').value), pass = $('s-pass').value;
+  const problem = (!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(token) ? 'Pega la llave completa de GitHub (empieza por github_pat_).' : '') ||
+    DPWVault.userProblem(user) || DPWVault.passwordProblem(pass, user) || (pass !== $('s-pass2').value ? 'Las contraseñas no coinciden.' : '');
+  if (problem) { showError('s-error', problem); return; }
+  showError('s-error', '');
+  const btn = $('s-submit');
+  btn.disabled = true; btn.textContent = 'ACTIVANDO...';
+  try {
+    await DPWGitHub.checkKey(token);
+    const vault = await DPWVault.create(token, [{ user, password: pass }]);
+    await DPWGitHub.createAccess(vault.access, token);
+    DPWGitHub.setSession({ user, token, mk: vault.mk });
+    DPWAuth.setCurrentUser(user, 'admin');
+    $('s-token').value = ''; $('s-pass').value = ''; $('s-pass2').value = '';
+    enterPanel();
+    toast('Publicacion activada. A partir de ahora entra con ' + user + ' y tu contraseña.', 'ok');
+  } catch (err) {
+    showError('s-error', err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'ACTIVAR';
+  }
+}
+
+function logout() {
+  DPWAuth.logout();
+  STATE = { data: DPW.emptyData(), source: 'none', loaded: false, error: '', broken: false, repaired: false };
+  openGate();
+}
+
+function enterPanel() {
+  $('gate').classList.add('hidden');
+  $('admin-panel').classList.remove('hidden');
+  $('btn-logout').classList.remove('hidden');
+  $('admin-user').textContent = me().toUpperCase();
+  $('me-name').textContent = me().toUpperCase();
+  updateStats();
+  renderTable();
+  const fromHash = (location.hash.match(/^#(upload|manage|artists|history|admins|users)$/) || [])[1];
+  showTab(fromHash || currentTab());
+  renderUpload();
+  loadContent();
 }
 
 // ============================================================
-// STATS
+// USERS (download accounts, localStorage of this browser)
 // ============================================================
+const getUsers = DPWAuth.getUsers;
+const saveUsers = DPWAuth.saveUsers;
+
 function updateStats() {
   const users = getUsers();
-  document.getElementById('stat-total').textContent = users.length;
-  document.getElementById('stat-active').textContent = users.filter(u => u.active).length;
-  document.getElementById('stat-inactive').textContent = users.filter(u => !u.active).length;
-  document.getElementById('stat-admins').textContent = users.filter(u => u.role === 'admin').length;
+  $('stat-total').textContent = users.length;
+  $('stat-active').textContent = users.filter(u => u.active).length;
+  $('stat-inactive').textContent = users.filter(u => !u.active).length;
 }
 
-// ============================================================
-// TABLE
-// ============================================================
 function renderTable() {
   const users = getUsers();
-  const search = (document.getElementById('search-input').value || '').toLowerCase();
+  const search = ($('search-input').value || '').toLowerCase();
   const filtered = search ? users.filter(u => u.user.toLowerCase().includes(search)) : users;
-  const tbody = document.getElementById('users-tbody');
-  const empty = document.getElementById('empty-state');
+  const tbody = $('users-tbody');
+  const empty = $('empty-state');
 
   if (filtered.length === 0) {
     tbody.innerHTML = '';
@@ -268,19 +593,17 @@ function renderTable() {
   }
   empty.classList.add('hidden');
 
+  const icon = d => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + d + '"/></svg>';
   tbody.innerHTML = filtered.map((u, i) => `
-    <tr class="border-b border-zinc-800/50 hover:bg-zinc-900/30 transition-colors" style="animation:fadeUp .3s ease-out ${i*40}ms both">
+    <tr class="border-b border-zinc-800/50 hover:bg-zinc-900/30 transition-colors" style="animation:fadeUp .3s ease-out ${i * 40}ms both">
       <td class="px-5 py-4">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full ${u.role === 'admin' ? 'bg-brand-neon/20 text-brand-neon' : 'bg-zinc-800 text-zinc-400'} flex items-center justify-center text-xs font-black uppercase">${u.user.charAt(0)}</div>
+          <div class="w-9 h-9 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black uppercase">${esc(u.user.charAt(0))}</div>
           <div>
-            <p class="font-bold text-white">${u.user}</p>
-            <p class="text-[10px] text-zinc-600 font-mono">${u.pass}</p>
+            <p class="font-bold text-white">${esc(u.user)}</p>
+            <p class="text-[10px] text-zinc-600 font-mono">${esc(u.pass)}</p>
           </div>
         </div>
-      </td>
-      <td class="px-5 py-4">
-        <span class="inline-flex px-2.5 py-1 rounded text-[10px] font-black tracking-widest uppercase ${u.role === 'admin' ? 'bg-brand-neon/10 text-brand-neon border border-brand-neon/30' : 'bg-zinc-800 text-zinc-400 border border-zinc-700'}">${u.role}</span>
       </td>
       <td class="px-5 py-4">
         <span class="inline-flex items-center gap-1.5 text-xs font-bold">
@@ -288,168 +611,907 @@ function renderTable() {
           <span class="${u.active ? 'text-emerald-400' : 'text-red-400'}">${u.active ? 'Activo' : 'Inactivo'}</span>
         </span>
       </td>
-      <td class="px-5 py-4 text-zinc-500 text-xs font-mono">${u.created || '-'}</td>
+      <td class="px-5 py-4 text-zinc-500 text-xs font-mono">${esc(u.created || '-')}</td>
       <td class="px-5 py-4">
         <div class="flex items-center justify-end gap-2">
-          ${u.role === 'admin' ? '' : '<button onclick="toggleActive(\'' + u.user + '\')" title="' + (u.active ? 'Desactivar' : 'Activar') + '" class="p-2 rounded-lg hover:bg-zinc-800 transition-colors ' + (u.active ? 'text-emerald-400 hover:text-emerald-300' : 'text-red-400 hover:text-red-300') + '"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + (u.active ? 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z') + '"/></svg></button>'}
-          <button onclick="editUser('${u.user}')" title="Editar" class="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-brand-neon transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-          </button>
-          ${u.role === 'admin' ? '' : '<button onclick="deleteUser(\'' + u.user + '\')" title="Eliminar" class="p-2 rounded-lg text-zinc-400 hover:bg-red-950 hover:text-red-400 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>'}
+          <button data-action="user-toggle" data-user="${esc(u.user)}" title="${u.active ? 'Desactivar' : 'Activar'}" class="p-2 rounded-lg hover:bg-zinc-800 transition-colors ${u.active ? 'text-emerald-400' : 'text-red-400'}">${icon(u.active ? 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z')}</button>
+          <button data-action="user-edit" data-user="${esc(u.user)}" title="Editar" class="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-brand-neon transition-colors">${icon('M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z')}</button>
+          <button data-action="user-delete" data-user="${esc(u.user)}" title="Eliminar" class="p-2 rounded-lg text-zinc-400 hover:bg-red-950 hover:text-red-400 transition-colors">${icon('M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16')}</button>
         </div>
       </td>
     </tr>
   `).join('');
 }
 
-// ============================================================
-// ACTIONS
-// ============================================================
 let editingUser = null;
 let deletingUser = null;
 
 function toggleActive(username) {
-  const users = getUsers();
-  const current = getCurrentUser();
-  if (username === current.user) return;
-  const target = users.find(u => u.user === username);
-  if (target && target.role === 'admin') return;
-  const updated = users.map(u => u.user === username ? {...u, active: !u.active} : u);
-  saveUsers(updated);
+  saveUsers(getUsers().map(u => u.user === username ? { ...u, active: !u.active } : u));
   renderTable();
   updateStats();
 }
 
 function openModal(username) {
   editingUser = username || null;
-  const modal = document.getElementById('user-modal');
-  const title = document.getElementById('modal-title');
-  const errEl = document.getElementById('modal-error');
-  errEl.classList.add('hidden');
-
+  $('modal-error').classList.add('hidden');
   if (editingUser) {
-    const users = getUsers();
-    const u = users.find(x => x.user === editingUser);
+    const u = getUsers().find(x => x.user === editingUser);
     if (!u) return;
-    title.textContent = 'EDITAR USUARIO';
-    document.getElementById('m-user').value = u.user;
-    document.getElementById('m-pass').value = u.pass;
-    document.getElementById('m-role').value = u.role;
-    document.getElementById('m-active').checked = u.active;
+    $('modal-title').textContent = 'EDITAR USUARIO';
+    $('m-user').value = u.user;
+    $('m-pass').value = u.pass;
+    $('m-active').checked = u.active;
   } else {
-    title.textContent = 'NUEVO USUARIO';
-    document.getElementById('m-user').value = '';
-    document.getElementById('m-pass').value = '';
-    document.getElementById('m-role').value = 'user';
-    document.getElementById('m-active').checked = true;
+    $('modal-title').textContent = 'NUEVO USUARIO';
+    $('m-user').value = '';
+    $('m-pass').value = '';
+    $('m-active').checked = true;
   }
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
+  openModalEl('user-modal');
 }
 
 function closeModal() {
-  const modal = document.getElementById('user-modal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
+  closeModalEl('user-modal');
   editingUser = null;
 }
 
 function saveUser(e) {
   e.preventDefault();
-  const errEl = document.getElementById('modal-error');
-  const username = document.getElementById('m-user').value.trim();
-  const pass = document.getElementById('m-pass').value;
-  const role = document.getElementById('m-role').value;
-  const active = document.getElementById('m-active').checked;
+  const errEl = $('modal-error');
+  const username = $('m-user').value.trim();
+  const pass = $('m-pass').value;
+  const active = $('m-active').checked;
+  const fail = msg => { errEl.textContent = msg; errEl.classList.remove('hidden'); };
 
-  if (!username || !pass) {
-    errEl.textContent = 'Todos los campos son obligatorios';
-    errEl.classList.remove('hidden');
-    return;
-  }
-  if (username.length < 3) {
-    errEl.textContent = 'El usuario debe tener al menos 3 caracteres';
-    errEl.classList.remove('hidden');
-    return;
-  }
-
+  if (!username || !pass) return fail('Todos los campos son obligatorios');
+  if (username.length < 3) return fail('El usuario debe tener al menos 3 caracteres');
   const users = getUsers();
+  const clash = users.some(u => u.user.toLowerCase() === username.toLowerCase() && u.user !== editingUser);
+  if (clash) return fail('Ese nombre de usuario ya existe');
 
   if (editingUser) {
-    const current = getCurrentUser();
-    // Check if new username conflicts with another user
-    if (username !== editingUser && users.some(u => u.user.toLowerCase() === username.toLowerCase() && u.user !== editingUser)) {
-      errEl.textContent = 'Ese nombre de usuario ya existe';
-      errEl.classList.remove('hidden');
-      return;
-    }
-    const updated = users.map(u => {
-      if (u.user !== editingUser) return u;
-      const isSelf = editingUser === current.user;
-      const newUser = isSelf ? u.user : username;
-      const newRole = isSelf ? u.role : role;
-      const newActive = isSelf ? true : active;
-      return {...u, user: newUser, pass, role: newRole, active: newActive};
-    });
-    // If renamed, mark old name as deleted so defaults don't re-add it
-    if (username !== editingUser) addDeletedUser(editingUser);
-    saveUsers(updated);
+    if (username !== editingUser) DPWAuth.addDeletedUser(editingUser);
+    saveUsers(users.map(u => u.user !== editingUser ? u : { ...u, user: username, pass, active }));
   } else {
-    if (users.some(u => u.user.toLowerCase() === username.toLowerCase())) {
-      errEl.textContent = 'El usuario ya existe';
-      errEl.classList.remove('hidden');
-      return;
-    }
-    const today = new Date().toISOString().split('T')[0];
-    saveUsers([...users, {user: username, pass, role, active, created: today}]);
+    saveUsers([...users, { user: username, pass, role: 'user', active, created: new Date().toISOString().split('T')[0] }]);
   }
-
   closeModal();
   renderTable();
   updateStats();
 }
 
-function editUser(username) {
-  openModal(username);
-}
-
 function deleteUser(username) {
-  const current = getCurrentUser();
-  if (username === current.user) return;
-  const users = getUsers();
-  const target = users.find(u => u.user === username);
-  if (target && target.role === 'admin') return;
   deletingUser = username;
-  document.getElementById('delete-name').textContent = username;
-  const m = document.getElementById('delete-modal');
-  m.classList.remove('hidden');
-  m.classList.add('flex');
+  $('delete-name').textContent = username;
+  openModalEl('delete-modal');
 }
 
 function closeDeleteModal() {
-  const m = document.getElementById('delete-modal');
-  m.classList.add('hidden');
-  m.classList.remove('flex');
+  closeModalEl('delete-modal');
   deletingUser = null;
 }
 
 function confirmDelete() {
   if (!deletingUser) return;
-  addDeletedUser(deletingUser);
-  const users = getUsers().filter(u => u.user !== deletingUser);
-  saveUsers(users);
+  DPWAuth.addDeletedUser(deletingUser);
+  saveUsers(getUsers().filter(u => u.user !== deletingUser));
   closeDeleteModal();
   renderTable();
   updateStats();
 }
 
-// Close modals on backdrop/escape
-document.addEventListener('click', (e) => {
+// ============================================================
+// CONTENT STATE (dpw-data/pools.json)
+// ============================================================
+let STATE = { data: DPW.emptyData(), source: 'none', loaded: false, error: '', broken: false, repaired: false };
+let LEARNED = {};
+let lastPublishError = '';
+
+function canWrite() { return DPWGitHub.hasToken() && STATE.source === 'github' && !STATE.broken; }
+
+async function loadContent() {
+  STATE.error = '';
+  try {
+    const r = await DPWGitHub.load();
+    STATE.data = r.data;
+    STATE.broken = r.broken;
+    STATE.repaired = r.repaired;
+    STATE.source = 'github';
+    STATE.loaded = true;
+  } catch (err) {
+    STATE.error = err.message;
+    if (err.status === 401 || !DPWGitHub.hasToken()) STATE.source = 'none';
+    try {
+      const res = await fetch(DPW.DATA_PATH + '?t=' + Date.now(), { cache: 'no-store' });
+      if (res.ok) { STATE.data = DPW.sanitize(await res.json()); STATE.source = 'site'; STATE.loaded = true; }
+    } catch (e) { /* keep what we have */ }
+  }
+  renderAll();
+}
+
+// Applies a change on top of the latest version in GitHub, validates and publishes it.
+async function publish(mutate, message, busyText, opts) {
+  opts = opts || {};
+  lastPublishError = '';
+  if (!DPWGitHub.hasToken()) { openGate('Tu sesion ha caducado: vuelve a entrar.'); return null; }
+  setBusy(busyText || 'PUBLICANDO...');
+  try {
+    const res = await DPWGitHub.commit(mutate, 'admin(' + me() + '): ' + message, { allowBroken: opts.allowBroken });
+    STATE.data = res.data;
+    STATE.source = 'github';
+    STATE.broken = false;
+    STATE.repaired = false;
+    STATE.error = '';
+    renderAll();
+    return res;
+  } catch (err) {
+    lastPublishError = err.message;
+    if (err.status === 401) { STATE.error = err.message; renderBanner(); }
+    if (!opts.quiet) toast(err.message, 'err');
+    return null;
+  } finally {
+    setBusy(null);
+  }
+}
+
+function renderBanner() {
+  const el = $('gh-banner');
+  const tab = currentTab();
+  if (tab === 'users' || tab === 'admins') { el.innerHTML = ''; return; }
+  const box = (color, html) => '<div class="rounded-xl border border-' + color + '-500/40 bg-' + color + '-500/10 px-4 py-3 text-xs font-bold text-' + color + '-300 flex flex-wrap items-center justify-between gap-3">' + html + '</div>';
+  if (STATE.broken) {
+    el.innerHTML = box('red', '<span>El archivo de pools en GitHub esta dañado. Ve a HISTORIAL y restaura la ultima version buena (la web publica sigue funcionando).</span><button class="btn btn-ghost" data-action="tab" data-value="history">HISTORIAL</button>');
+  } else if (STATE.error) {
+    el.innerHTML = box('red', '<span>' + esc(STATE.error) + '</span><button class="btn btn-ghost" data-action="reload">REINTENTAR</button>');
+  } else if (STATE.repaired) {
+    el.innerHTML = box('amber', '<span>El archivo de pools tenia errores (editado a mano). Se muestran las partes validas; al publicar se guardara ya corregido.</span>');
+  } else {
+    el.innerHTML = '<div class="rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-4 py-2.5 text-[11px] font-bold text-emerald-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>PUBLICAS COMO ' + esc(me().toUpperCase()) + ' · LOS CAMBIOS APARECEN EN LA WEB EN ~1 MINUTO</div>';
+  }
+}
+
+function renderAll() {
+  LEARNED = DPW.learnArtistPrefixes(STATE.data);
+  renderBanner();
+  renderUpload();
+  renderManage();
+  renderArtists();
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function currentTab() { return sessionStorage.getItem('dpw_admin_tab') || 'upload'; }
+
+function showTab(tab) {
+  sessionStorage.setItem('dpw_admin_tab', tab);
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('hidden', p.id !== 'tab-' + tab));
+  renderBanner();
+  if (tab === 'history') loadHistory();
+  if (tab === 'admins') loadAdmins();
+}
+
+// ============================================================
+// UPLOAD (draft kept in localStorage until published)
+// ============================================================
+const DRAFT_KEY = 'dpw_upload_draft';
+let rowSeq = 1;
+let DRAFT = loadDraft();
+const resolving = {};
+
+function newDraft() {
+  return { period: 'day', start: DPW.todayISO(), end: DPW.todayISO(), rows: [], newArtists: [], open: {} };
+}
+function loadDraft() {
+  try {
+    const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+    if (d && Array.isArray(d.rows)) {
+      d.rows.forEach(r => { rowSeq = Math.max(rowSeq, (r.id || 0) + 1); });
+      // An empty draft from another day must not keep that old date.
+      if (!d.rows.length) return Object.assign(newDraft(), { period: d.period || 'day', newArtists: d.newArtists || [] });
+      return Object.assign(newDraft(), d);
+    }
+  } catch (e) { /* corrupted draft: start fresh */ }
+  return newDraft();
+}
+function saveDraft() {
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(DRAFT)); } catch (e) { /* storage full / private mode */ }
+}
+
+function allArtists() {
+  const set = new Set(STATE.data.artists);
+  DRAFT.newArtists.forEach(a => set.add(a));
+  return [...set].sort((a, b) => a.localeCompare(b));
+}
+
+function draftDays() {
+  const days = new Set(DPW.periodDays(DRAFT.start, DRAFT.period, DRAFT.end));
+  DRAFT.rows.forEach(r => { if (DPW.isValidDate(r.date)) days.add(r.date); });
+  return [...days].sort();
+}
+
+function rowStatus(r) {
+  const url = DPW.normalizeMegaUrl(r.url);
+  if (!r.url.trim()) return { ok: false, empty: true, msg: 'Falta el enlace' };
+  if (!url) return { ok: false, msg: 'Enlace MEGA incompleto o no valido' };
+  if (!r.artist || !allArtists().includes(r.artist)) return { ok: false, msg: 'Elige artista' };
+  if (!DPW.isValidDate(r.date)) return { ok: false, msg: 'Dia no valido' };
+  if (r.name && !DPW.isValidFileName(r.name)) return { ok: false, msg: 'Nombre no valido' };
+  const dupDraft = DRAFT.rows.find(o => o.id < r.id && DPW.normalizeMegaUrl(o.url) === url);
+  if (dupDraft) return { ok: false, msg: 'Enlace repetido en el borrador' };
+  const published = DPW.findUrl(STATE.data, url)[0];
+  if (published) return { ok: false, msg: 'Ya publicado el ' + DPW.formatDate(published.date) + ' en ' + published.artist };
+  return { ok: true, url };
+}
+
+function renderUpload() {
+  document.querySelectorAll('#period-buttons [data-action=period]').forEach(b => b.classList.toggle('on', b.dataset.value === DRAFT.period));
+  $('p-start').value = DRAFT.start;
+  $('p-end').value = DRAFT.end;
+  $('p-end-wrap').classList.toggle('hidden', DRAFT.period !== 'custom');
+  $('p-start-label').textContent = DRAFT.period === 'day' ? 'DIA' : DRAFT.period === 'month' ? 'CUALQUIER DIA DEL MES' : 'DESDE';
+  const period = DPW.periodDays(DRAFT.start, DRAFT.period, DRAFT.end);
+  $('period-summary').textContent = period.length
+    ? period.length + (period.length === 1 ? ' dia: ' : ' dias: del ') + DPW.formatDate(period[0]) + (period.length > 1 ? ' al ' + DPW.formatDate(period[period.length - 1]) : '')
+    : 'Elige una fecha';
+  renderDayBlocks();
+  renderReview();
+}
+
+// Re-rendering replaces the inputs: keep the focused field (and anything typed but not committed yet).
+function captureFocus() {
+  const a = document.activeElement;
+  if (!a || !a.dataset || !a.dataset.field || !a.dataset.id) return null;
+  return { id: a.dataset.id, field: a.dataset.field, value: a.value, start: a.selectionStart, end: a.selectionEnd };
+}
+function restoreFocus(f) {
+  if (!f) return;
+  const el = document.querySelector('[data-field="' + f.field + '"][data-id="' + f.id + '"]');
+  if (!el) return;
+  const row = DRAFT.rows.find(r => r.id === +f.id);
+  const committed = row ? String(row[f.field] || '') : '';
+  if (el.tagName === 'INPUT' && f.value !== committed && DPW.normalizeMegaUrl(f.value) !== committed) el.value = f.value;
+  el.focus();
+  try { if (el.tagName === 'INPUT' && f.start != null) el.setSelectionRange(f.start, f.end); } catch (e) { /* not a text input */ }
+}
+
+function renderDayBlocks() {
+  const focus = captureFocus();
+  const days = draftDays();
+  const artists = allArtists();
+  const period = new Set(DPW.periodDays(DRAFT.start, DRAFT.period, DRAFT.end));
+  const multi = days.length > 1;
+  const usedAnywhere = new Set(DRAFT.rows.map(r => r.artist));
+  $('day-blocks').innerHTML = days.slice().reverse().map(date => {
+    const rows = DRAFT.rows.filter(r => r.date === date);
+    const open = !multi || rows.length > 0 || DRAFT.open[date];
+    const existing = STATE.data.days[date] ? Object.keys(STATE.data.days[date]) : [];
+    const used = new Set(rows.map(r => r.artist));
+    const outside = !period.has(date);
+    return '<div class="rounded-xl border ' + (rows.length ? 'border-brand-neon/40 bg-brand-neon/[0.03]' : 'border-zinc-800') + '">' +
+      '<button class="w-full flex items-center justify-between gap-3 px-4 py-3 text-left" data-action="day-toggle" data-date="' + date + '">' +
+        '<span class="flex items-center gap-3 flex-wrap"><span class="text-sm font-black tracking-wider text-white">' + DPW.formatDate(date) + '</span>' +
+        '<span class="text-[10px] font-bold tracking-widest text-zinc-500">' + weekday(date) + '</span>' +
+        (rows.length ? '<span class="text-[10px] font-black tracking-widest text-brand-neon">' + rows.length + ' PARA SUBIR</span>' : '') +
+        (existing.length ? '<span class="text-[10px] font-bold tracking-widest text-zinc-500">· YA PUBLICADO: ' + existing.length + ' POOLS</span>' : '') +
+        (outside ? '<span class="text-[10px] font-black tracking-widest text-amber-400">FUERA DEL PERIODO</span>' : '') + '</span>' +
+        '<span class="text-zinc-500 text-xs">' + (multi ? (open ? '▲' : '▼') : '') + '</span>' +
+      '</button>' +
+      (open ? '<div class="px-4 pb-4 space-y-3">' +
+        '<div><p class="lbl">PULSA LOS ARTISTAS QUE SUBES ESTE DIA</p><div class="flex flex-wrap gap-1.5 items-center">' +
+          (artists.length ? artists.map(a => {
+            const removable = DRAFT.newArtists.includes(a) && !usedAnywhere.has(a);
+            return '<span class="inline-flex items-center gap-0.5">' +
+              '<button class="chip ' + (used.has(a) ? 'on' : '') + '" data-action="row-add" data-date="' + date + '" data-artist="' + esc(a) + '">' + (used.has(a) ? '✓ ' : '+ ') + esc(a) + (DRAFT.newArtists.includes(a) ? ' <span class="text-fuchsia-300">(NUEVO)</span>' : '') + '</button>' +
+              (removable ? '<button class="text-zinc-500 hover:text-red-400 text-xs px-1" title="Quitar artista nuevo" data-action="newartist-del" data-artist="' + esc(a) + '">✕</button>' : '') +
+            '</span>';
+          }).join('') : '<span class="text-xs text-zinc-500">No hay artistas: crea uno con + NUEVO ARTISTA</span>') +
+        '</div></div>' +
+        (rows.length ? '<div class="space-y-2">' + rows.map(r => rowHtml(r, artists, days)).join('') + '</div>' : '') +
+      '</div>' : '') +
+    '</div>';
+  }).join('') || '<p class="text-xs text-zinc-500">Elige primero los dias.</p>';
+  restoreFocus(focus);
+}
+
+function rowHtml(r, artists, days) {
+  const st = rowStatus(r);
+  const placeholderName = r.artist && DPW.isValidDate(r.date) ? DPW.defaultFileName(r.artist, r.date) : 'Nombre del archivo';
+  const hint = resolving[r.id] ? '<span class="text-zinc-400">Leyendo MEGA...</span>'
+    : (r.hint ? '<span class="text-amber-400">' + esc(r.hint) + '</span>' : '');
+  return '<div class="rounded-lg border border-zinc-800 bg-[#0c0c10] p-3" data-row="' + r.id + '">' +
+    '<div class="grid grid-cols-1 md:grid-cols-[130px_180px_1fr_auto] gap-2 items-start">' +
+      '<select class="inp" data-field="date" data-id="' + r.id + '" title="Dia">' +
+        days.map(d => '<option ' + (d === r.date ? 'selected' : '') + ' value="' + d + '">' + DPW.formatDate(d) + '</option>').join('') + '</select>' +
+      '<select class="inp" data-field="artist" data-id="' + r.id + '"><option value="">— Artista —</option>' +
+        artists.map(a => '<option ' + (a === r.artist ? 'selected' : '') + ' value="' + esc(a) + '">' + esc(a) + '</option>').join('') + '</select>' +
+      '<input class="inp font-mono text-xs ' + (r.url.trim() ? (st.ok ? 'good' : 'bad') : '') + '" data-field="url" data-id="' + r.id + '" value="' + esc(r.url) + '" placeholder="Pega aqui el enlace de MEGA" spellcheck="false">' +
+      '<button class="btn btn-danger" data-action="row-del" data-id="' + r.id + '" title="Quitar">✕</button>' +
+    '</div>' +
+    '<div class="grid grid-cols-1 md:grid-cols-[318px_1fr] gap-2 mt-2 items-center">' +
+      '<p class="text-[10px] font-bold tracking-widest ' + (st.ok ? 'text-emerald-400' : st.empty ? 'text-zinc-500' : 'text-red-400') + '">' + (st.ok ? '✓ LISTO' : esc(st.msg.toUpperCase())) + '</p>' +
+      '<input class="inp text-xs" data-field="name" data-id="' + r.id + '" value="' + esc(r.name || '') + '" maxlength="200" placeholder="' + esc(placeholderName) + '">' +
+    '</div>' +
+    (hint ? '<p class="text-[11px] mt-2">' + hint + '</p>' : '') +
+  '</div>';
+}
+
+function renderReview() {
+  const rows = DRAFT.rows;
+  const ready = rows.filter(r => rowStatus(r).ok);
+  const problems = rows.filter(r => !rowStatus(r).ok);
+  const byDay = {};
+  ready.forEach(r => { (byDay[r.date] = byDay[r.date] || []).push(r); });
+  const extra = ready.filter(r => STATE.data.days[r.date] && STATE.data.days[r.date][r.artist]);
+  const future = ready.filter(r => r.date > DPW.addDays(DPW.todayISO(), 1));
+  const flagged = ready.filter(r => r.hint);
+  const newUsed = DRAFT.newArtists.filter(a => ready.some(r => r.artist === a));
+  let html = '';
+  if (!rows.length) html = '<p class="text-xs text-zinc-500">Todavia no has anadido nada.</p>';
+  else {
+    html += '<div class="flex flex-wrap gap-4 text-xs font-black tracking-widest mb-3">' +
+      '<span class="text-emerald-400">' + ready.length + ' LISTOS</span>' +
+      (problems.length ? '<span class="text-red-400">' + problems.length + ' CON PROBLEMAS (no se suben)</span>' : '') +
+      '<span class="text-zinc-400">' + Object.keys(byDay).length + ' DIAS</span>' +
+      (newUsed.length ? '<span class="text-fuchsia-400">NUEVOS ARTISTAS: ' + esc(newUsed.join(', ')) + '</span>' : '') + '</div>';
+    html += '<div class="space-y-1">' + Object.keys(byDay).sort().reverse().map(d =>
+      '<p class="text-xs text-zinc-300"><span class="font-black text-white">' + DPW.formatDate(d) + '</span> · ' + byDay[d].map(r => esc(r.artist)).join(', ') + '</p>').join('') + '</div>';
+    if (flagged.length) html += '<p class="text-[11px] text-amber-300 mt-3">' + flagged.length + ' fila(s) con aviso amarillo: revisa dia y artista antes de publicar.</p>';
+    if (future.length) html += '<p class="text-[11px] text-amber-300 mt-1">Hay fechas en el futuro (' + [...new Set(future.map(r => DPW.formatDate(r.date)))].join(', ') + '): comprueba que el dia es correcto.</p>';
+    if (extra.length) html += '<p class="text-[11px] text-amber-300 mt-1">' + extra.length + ' artista(s) ya tenian publicacion ese dia: el enlace se anadira como descarga adicional (no se borra nada).</p>';
+  }
+  $('upload-review').innerHTML = html;
+  const btn = $('btn-publish');
+  btn.disabled = !ready.length || !canWrite();
+  btn.textContent = ready.length ? 'PUBLICAR ' + ready.length + ' EN LA WEB' : 'PUBLICAR EN LA WEB';
+}
+
+function addRow(date, artist, url, name) {
+  const row = { id: rowSeq++, date, artist: artist || '', url: url || '', name: name || '', autoName: !!name, hint: '' };
+  DRAFT.rows.push(row);
+  return row;
+}
+
+function onRowChange(id, field, value) {
+  const r = DRAFT.rows.find(x => x.id === id);
+  if (!r) return;
+  if (field === 'url') {
+    const next = DPW.normalizeMegaUrl(value) || value.trim();
+    if (next !== r.url) {
+      r.hint = '';
+      // A name read from the previous link belongs to that file, not to the new one.
+      if (r.autoName) { r.name = ''; r.autoName = false; }
+    }
+    r.url = next;
+  } else {
+    r[field] = value;
+    if (field === 'name') r.autoName = false;
+    if (field === 'date' || field === 'artist') r.hint = '';
+  }
+  saveDraft();
+  if (field === 'url' && DPW.normalizeMegaUrl(value)) autoFill(r);
+  renderUpload();
+}
+
+function cleanMegaName(n) { return String(n).replace(/\.(zip|rar|7z)$/i, '').replace(NBSP, ' ').trim(); }
+
+// Reads the MEGA file name to fill the name (and artist when missing) and flags anything that doesn't match.
+async function autoFill(r) {
+  if (!/\/file\//.test(r.url)) return;
+  const url = r.url;
+  if (resolving[r.id] === url) return;
+  resolving[r.id] = url;
+  renderUpload();
+  const info = await DPWMega.resolve(url);
+  if (resolving[r.id] === url) delete resolving[r.id];
+  const row = DRAFT.rows.find(x => x.id === r.id);
+  // The link was changed while MEGA was answering: that newer request owns the row.
+  if (!row || row.url !== url) return;
+  if (info && info.name) {
+    const clean = cleanMegaName(info.name);
+    if (!row.name && DPW.isValidFileName(clean)) { row.name = clean; row.autoName = true; }
+    const parsed = DPW.parseReleaseName(info.name, DRAFT.start.slice(0, 4));
+    const match = DPW.matchArtistInfo(parsed.prefix, allArtists(), LEARNED);
+    if (!row.artist && match.artist) row.artist = match.artist;
+    const notes = [];
+    if (parsed.date && !parsed.yearGuessed && parsed.date !== row.date) notes.push('el archivo parece del ' + DPW.formatDate(parsed.date));
+    if (match.artist && row.artist && match.artist !== row.artist) notes.push('el archivo parece de ' + match.artist);
+    else if (match.artist && !match.exact && row.artist === match.artist) notes.push('artista elegido por parecido con "' + parsed.prefix + '"');
+    row.hint = notes.length ? 'Ojo: ' + notes.join(' y ') + ' ("' + clean + '")' : '';
+  }
+  saveDraft();
+  renderUpload();
+}
+
+async function pasteDetect() {
+  const lines = $('paste-input').value.split(/[\s,]+/).map(s => s.trim()).filter(Boolean);
+  const urls = [...new Set(lines.map(l => DPW.normalizeMegaUrl(l)).filter(Boolean))];
+  if (!urls.length) { toast('No he encontrado enlaces de MEGA validos.', 'err'); return; }
+  $('paste-status').textContent = 'Leyendo ' + urls.length + ' enlace(s) en MEGA...';
+  const fallbackDate = DPW.periodDays(DRAFT.start, DRAFT.period, DRAFT.end)[0] || DPW.todayISO();
+  let placed = 0, manual = 0, skipped = 0;
+  const infos = await Promise.all(urls.map(u => DPWMega.resolve(u)));
+  urls.forEach((url, i) => {
+    if (DRAFT.rows.some(r => DPW.normalizeMegaUrl(r.url) === url)) { skipped++; return; }
+    const info = infos[i];
+    let date = fallbackDate, artist = '', name = '', dated = false, exact = false, prefix = '';
+    if (info && info.name) {
+      const parsed = DPW.parseReleaseName(info.name, DRAFT.start.slice(0, 4));
+      if (parsed.date) { date = parsed.date; dated = !parsed.yearGuessed; }
+      prefix = parsed.prefix;
+      const match = DPW.matchArtistInfo(parsed.prefix, allArtists(), LEARNED);
+      artist = match.artist || '';
+      exact = match.exact;
+      const clean = cleanMegaName(info.name);
+      if (DPW.isValidFileName(clean)) name = clean;
+    }
+    const row = addRow(date, artist, url, name);
+    if (info && artist && dated && exact) { placed++; return; }
+    manual++;
+    row.hint = !info ? 'No se pudo leer el nombre en MEGA: revisa dia y artista.'
+      : !artist ? 'No reconozco el artista de "' + name + '": eligelo (o crealo con + NUEVO ARTISTA).'
+      : !exact ? 'Artista elegido por parecido con "' + prefix + '": revisalo o crea el artista.'
+      : 'El nombre "' + name + '" no trae fecha completa: lo he puesto el ' + DPW.formatDate(date) + ', revisalo.';
+  });
+  const days = draftDays();
+  const period = DPW.periodDays(DRAFT.start, DRAFT.period, DRAFT.end);
+  if (days.length && (days[0] < period[0] || days[days.length - 1] > period[period.length - 1])) {
+    DRAFT.period = 'custom';
+    DRAFT.start = days[0];
+    DRAFT.end = days[days.length - 1];
+  }
+  $('paste-input').value = '';
+  $('paste-status').textContent = 'Listo: ' + placed + ' colocados automaticamente' + (manual ? ', ' + manual + ' para revisar (aviso amarillo)' : '') + (skipped ? ', ' + skipped + ' ya estaban en el borrador' : '') + '.';
+  saveDraft();
+  renderUpload();
+}
+
+async function publishDraft() {
+  const ready = DRAFT.rows.filter(r => rowStatus(r).ok);
+  if (!ready.length) return;
+  const days = [...new Set(ready.map(r => r.date))].sort();
+  const ok = await confirmBox('PUBLICAR ' + ready.length + ' ENLACE(S)',
+    '<p class="mb-3">Se publicaran en la web en ' + days.length + ' dia(s):</p>' +
+    days.slice().reverse().map(d => '<p class="text-xs"><b class="text-white">' + DPW.formatDate(d) + '</b> · ' + ready.filter(r => r.date === d).map(r => esc(r.artist)).join(', ') + '</p>').join(''),
+    'PUBLICAR');
+  if (!ok) return;
+  const rows = ready.map(r => ({ date: r.date, artist: r.artist, url: DPW.normalizeMegaUrl(r.url), name: r.name }));
+  const usedNew = DRAFT.newArtists.filter(a => rows.some(r => r.artist === a));
+  let report = null;
+  const label = days.length === 1 ? DPW.formatDate(days[0]) : DPW.formatDate(days[0]) + ' - ' + DPW.formatDate(days[days.length - 1]);
+  const res = await publish(fresh => {
+    report = DPW.addEntries(fresh, rows, { newArtists: usedNew });
+    if (!report.added.length) throw new Error('No hay nada nuevo que publicar:\n' + report.skipped.map(s => '- ' + s.row.artist + ' ' + DPW.formatDate(s.row.date) + ': ' + s.reason).join('\n'));
+    return report.data;
+  }, 'subir ' + rows.length + ' pool(s) ' + label, 'PUBLICANDO ' + rows.length + ' ENLACE(S)...');
+  if (!res) return;
+  const publishedUrls = new Set(report.added.map(a => a.url));
+  DRAFT.rows = DRAFT.rows.filter(r => !publishedUrls.has(DPW.normalizeMegaUrl(r.url)));
+  DRAFT.newArtists = DRAFT.newArtists.filter(a => !usedNew.includes(a));
+  saveDraft();
+  renderUpload();
+  const month = DPW.monthOf(days[days.length - 1]);
+  $('upload-result').innerHTML = '<div class="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 fade-up">' +
+    '<p class="text-sm font-black tracking-widest text-emerald-300 mb-1">✓ PUBLICADO: ' + report.added.length + ' ENLACE(S)</p>' +
+    (report.skipped.length ? '<p class="text-xs text-amber-300">' + report.skipped.length + ' omitido(s): ' + report.skipped.map(s => esc(s.row.artist + ' (' + s.reason + ')')).join(', ') + '</p>' : '') +
+    '<p class="text-xs text-zinc-400 mt-1">Aparecera en la web en ~1 minuto. <a class="text-brand-neon underline" href="pools.html#mes=' + month + '" target="_blank">Ver ' + esc(DPW.monthLabel(month)) + '</a></p></div>';
+  toast('Publicado correctamente', 'ok');
+}
+
+async function createArtistFlow(forDraft) {
+  const name = await promptBox({
+    title: 'NUEVO ARTISTA', label: 'NOMBRE', help: 'Se guardara en MAYUSCULAS. Ej: DJ CITY LATINO',
+    validate: v => {
+      const n = DPW.normalizeArtistName(v);
+      if (!DPW.ARTIST_RE.test(n)) return 'Solo letras, numeros, espacios y . & + - ! (maximo 40).';
+      if (allArtists().includes(n)) return 'Ese artista ya existe.';
+      return '';
+    }
+  });
+  if (name == null) return;
+  const n = DPW.normalizeArtistName(name);
+  if (forDraft) {
+    DRAFT.newArtists.push(n);
+    saveDraft();
+    renderUpload();
+    toast('Artista ' + n + ' listo para usar. Se guardara al publicar si lo usas.', 'info');
+  } else {
+    const res = await publish(fresh => DPW.addArtist(fresh, n), 'anadir artista ' + n, 'GUARDANDO ARTISTA...');
+    if (res) toast('Artista ' + n + ' guardado', 'ok');
+  }
+}
+
+// ============================================================
+// MANAGE
+// ============================================================
+let editRef = null;
+
+function renderManage() {
+  const months = DPW.listMonths(STATE.data);
+  const sel = $('m-month');
+  const prev = sel.value;
+  sel.innerHTML = months.map(m => '<option value="' + m.id + '">' + esc(m.label) + ' (' + m.files + ')</option>').join('');
+  if (months.some(m => m.id === prev)) sel.value = prev;
+  const month = sel.value;
+  const filter = DPW.normalizeArtistName($('m-filter').value);
+  if (!month) { $('manage-list').innerHTML = '<p class="text-xs text-zinc-500">No hay publicaciones.</p>'; $('manage-summary').textContent = ''; return; }
+  const days = DPW.monthDays(STATE.data, month);
+  let shownFiles = 0;
+  const dis = canWrite() ? '' : ' disabled';
+  $('manage-list').innerHTML = days.map(d => {
+    const pools = d.pools.filter(p => !filter || p.includes(filter));
+    if (!pools.length) return '';
+    const rows = pools.map(p => DPW.getFiles(STATE.data, d.date, p).map(f => {
+      shownFiles++;
+      return '<tr class="border-t border-zinc-800/60">' +
+        '<td class="px-4 py-2.5 text-xs font-black text-white whitespace-nowrap">' + esc(p) + '</td>' +
+        '<td class="px-4 py-2.5 text-xs text-zinc-300 max-w-[280px] truncate" title="' + esc(f.name) + '">' + esc(f.name) + '</td>' +
+        '<td class="px-4 py-2.5 text-[11px] font-mono text-zinc-500 max-w-[220px] truncate"><a class="hover:text-brand-neon" href="' + esc(f.url) + '" target="_blank" rel="noopener noreferrer">' + esc(f.url.replace('https://', '')) + '</a></td>' +
+        '<td class="px-4 py-2.5 text-right whitespace-nowrap">' +
+          '<button class="btn btn-ghost !px-2.5 !py-1.5" data-action="entry-edit" data-date="' + d.date + '" data-artist="' + esc(p) + '" data-url="' + esc(f.url) + '"' + dis + '>EDITAR</button> ' +
+          '<button class="btn btn-danger !px-2.5 !py-1.5" data-action="entry-del" data-date="' + d.date + '" data-artist="' + esc(p) + '" data-url="' + esc(f.url) + '"' + dis + '>BORRAR</button>' +
+        '</td></tr>';
+    }).join('')).join('');
+    return '<div class="card overflow-hidden">' +
+      '<div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 bg-[#101016]">' +
+        '<p class="text-sm font-black tracking-wider text-white">' + DPW.formatDate(d.date) + ' <span class="text-[10px] text-zinc-500 tracking-widest ml-2">' + weekday(d.date) + ' · ' + d.pools.length + ' POOLS</span></p>' +
+        '<span class="flex gap-2"><button class="btn btn-ghost !py-1.5" data-action="entry-new" data-date="' + d.date + '"' + dis + '>+ ANADIR</button>' +
+        '<button class="btn btn-danger !py-1.5" data-action="day-del" data-date="' + d.date + '"' + dis + '>BORRAR DIA</button></span>' +
+      '</div>' +
+      '<div class="overflow-x-auto"><table class="w-full">' + rows + '</table></div></div>';
+  }).join('') || '<p class="text-xs text-zinc-500">Ningun resultado.</p>';
+  $('manage-summary').textContent = days.length + ' dias en ' + DPW.monthLabel(month) + (filter ? ' · ' + shownFiles + ' enlaces de "' + filter + '"' : '');
+}
+
+function openEntryModal(mode, date, artist, url) {
+  const artists = STATE.data.artists;
+  $('e-artist').innerHTML = artists.map(a => '<option value="' + esc(a) + '">' + esc(a) + '</option>').join('');
+  showError('entry-error', '');
+  if (mode === 'edit') {
+    const f = DPW.getFiles(STATE.data, date, artist).find(x => x.url === url);
+    if (!f) { toast('Ese enlace ya no existe. Recargando...', 'err'); loadContent(); return; }
+    editRef = { mode, date, artist, url };
+    $('entry-title').textContent = 'EDITAR PUBLICACION';
+    $('e-date').value = date; $('e-artist').value = artist; $('e-url').value = f.url; $('e-name').value = f.name;
+  } else {
+    editRef = { mode: 'new' };
+    $('entry-title').textContent = 'ANADIR ENLACE';
+    $('e-date').value = date || DPW.todayISO(); $('e-artist').value = artists[0] || ''; $('e-url').value = ''; $('e-name').value = '';
+  }
+  openModalEl('entry-modal');
+}
+
+async function saveEntry() {
+  const date = $('e-date').value, artist = $('e-artist').value, url = DPW.normalizeMegaUrl($('e-url').value), name = $('e-name').value.trim();
+  const err = !DPW.isValidDate(date) ? 'Elige un dia.' : !artist ? 'Elige un artista.' : !url ? 'El enlace de MEGA no es valido o esta incompleto.' : (name && !DPW.isValidFileName(name)) ? 'El nombre no puede contener < >.' : '';
+  if (err) { showError('entry-error', err); return; }
+  const ref = editRef;
+  let res;
+  if (ref.mode === 'edit') {
+    res = await publish(fresh => {
+      const idx = DPW.getFiles(fresh, ref.date, ref.artist).findIndex(f => f.url === ref.url);
+      if (idx === -1) throw new Error('Esa publicacion ya no existe (otro admin la cambio).');
+      return DPW.updateFile(fresh, { date: ref.date, artist: ref.artist, index: idx }, { date, artist, url, name: name || DPW.defaultFileName(artist, date) });
+    }, 'editar ' + ref.artist + ' ' + DPW.formatDate(ref.date), 'GUARDANDO CAMBIOS...', { quiet: true });
+  } else {
+    res = await publish(fresh => {
+      const r = DPW.addEntries(fresh, [{ date, artist, url, name }]);
+      if (!r.added.length) throw new Error(r.skipped[0].reason);
+      return r.data;
+    }, 'anadir ' + artist + ' ' + DPW.formatDate(date), 'PUBLICANDO...', { quiet: true });
+  }
+  if (!res) { showError('entry-error', lastPublishError || 'No se pudo guardar.'); return; }
+  closeModalEl('entry-modal');
+  toast('Guardado', 'ok');
+}
+
+async function deleteEntry(date, artist, url) {
+  const f = DPW.getFiles(STATE.data, date, artist).find(x => x.url === url);
+  if (!f) return;
+  const ok = await confirmBox('BORRAR PUBLICACION', '<p>Se quitara de la web:</p><p class="mt-2 text-white font-bold">' + esc(artist) + ' · ' + DPW.formatDate(date) + '</p><p class="text-xs text-zinc-500 mt-1">' + esc(f.name) + '</p>', 'BORRAR', true);
+  if (!ok) return;
+  const res = await publish(fresh => {
+    const idx = DPW.getFiles(fresh, date, artist).findIndex(x => x.url === url);
+    if (idx === -1) throw new Error('Esa publicacion ya no existe.');
+    return DPW.removeFile(fresh, { date, artist, index: idx });
+  }, 'borrar ' + artist + ' ' + DPW.formatDate(date), 'BORRANDO...');
+  if (res) toast('Borrado', 'ok');
+}
+
+async function deleteDay(date) {
+  const pools = Object.keys(STATE.data.days[date] || {});
+  const ok = await confirmBox('BORRAR DIA COMPLETO', '<p>Se quitaran de la web las <b class="text-white">' + pools.length + ' pools</b> del <b class="text-white">' + DPW.formatDate(date) + '</b>:</p><p class="text-xs mt-2">' + pools.map(esc).join(', ') + '</p>', 'BORRAR DIA', true);
+  if (!ok) return;
+  // Only remove what the admin was shown; anything another admin added meanwhile stays.
+  const res = await publish(fresh => pools.reduce((acc, p) => (acc.days[date] && acc.days[date][p] ? DPW.removeEntry(acc, date, p) : acc), fresh),
+    'borrar dia ' + DPW.formatDate(date), 'BORRANDO...');
+  if (res) toast('Dia borrado', 'ok');
+}
+
+// ============================================================
+// ARTISTS
+// ============================================================
+function renderArtists() {
+  const usage = DPW.artistUsage(STATE.data);
+  const writable = canWrite();
+  $('artists-tbody').innerHTML = STATE.data.artists.map(a => {
+    const n = usage[a] || 0;
+    return '<tr class="border-b border-zinc-800/50">' +
+      '<td class="px-5 py-3 font-black text-white text-xs tracking-wider">' + esc(a) + '</td>' +
+      '<td class="px-5 py-3 text-xs text-zinc-400">' + n + '</td>' +
+      '<td class="px-5 py-3 text-right whitespace-nowrap">' +
+        '<button class="btn btn-ghost !py-1.5" data-action="artist-rename" data-artist="' + esc(a) + '"' + (writable ? '' : ' disabled') + '>RENOMBRAR</button> ' +
+        '<button class="btn btn-danger !py-1.5" data-action="artist-del" data-artist="' + esc(a) + '"' + (writable && !n ? '' : ' disabled') + ' title="' + (n ? 'Tiene publicaciones: borralas o renombra el artista' : 'Borrar') + '">BORRAR</button>' +
+      '</td></tr>';
+  }).join('') || '<tr><td class="px-5 py-6 text-xs text-zinc-500" colspan="3">No hay artistas.</td></tr>';
+}
+
+async function renameArtistFlow(from) {
+  const to = await promptBox({
+    title: 'RENOMBRAR ARTISTA', label: 'NUEVO NOMBRE', value: from,
+    help: 'Se cambiara en todas sus publicaciones. Las listas de canciones antiguas (VER CONTENIDO) van ligadas al nombre anterior.',
+    validate: v => {
+      const n = DPW.normalizeArtistName(v);
+      if (!DPW.ARTIST_RE.test(n)) return 'Nombre no valido.';
+      if (n !== from && STATE.data.artists.includes(n)) return 'Ya existe un artista con ese nombre.';
+      return '';
+    }
+  });
+  if (to == null || DPW.normalizeArtistName(to) === from) return;
+  const res = await publish(fresh => DPW.renameArtist(fresh, from, to), 'renombrar artista ' + from + ' -> ' + DPW.normalizeArtistName(to), 'RENOMBRANDO...');
+  if (res) toast('Artista renombrado', 'ok');
+}
+
+async function deleteArtistFlow(name) {
+  const ok = await confirmBox('BORRAR ARTISTA', '<p>Se quitara <b class="text-white">' + esc(name) + '</b> de la lista de artistas.</p>', 'BORRAR', true);
+  if (!ok) return;
+  const res = await publish(fresh => DPW.removeArtist(fresh, name), 'borrar artista ' + name, 'BORRANDO...');
+  if (res) toast('Artista borrado', 'ok');
+}
+
+// ============================================================
+// HISTORY
+// ============================================================
+async function loadHistory() {
+  const el = $('history-list');
+  el.innerHTML = '<p class="text-xs text-zinc-500">Cargando...</p>';
+  try {
+    const list = await DPWGitHub.history(30);
+    el.innerHTML = list.map((c, i) =>
+      '<div class="card px-4 py-3 flex flex-wrap items-center justify-between gap-3">' +
+        '<div class="min-w-0"><p class="text-xs font-bold text-white truncate">' + esc(c.message) + '</p>' +
+        '<p class="text-[10px] text-zinc-500 mt-0.5">' + esc(new Date(c.date).toLocaleString('es-ES')) + ' · ' + esc(c.author) + ' · <a class="hover:text-brand-neon font-mono" href="' + esc(c.url) + '" target="_blank" rel="noopener">' + esc(c.short) + '</a></p></div>' +
+        (i === 0 && !STATE.broken ? '<span class="text-[10px] font-black tracking-widest text-emerald-400">VERSION ACTUAL</span>'
+          : '<button class="btn btn-ghost !py-1.5" data-action="restore" data-sha="' + esc(c.sha) + '" data-label="' + esc(c.message) + '">RESTAURAR</button>') +
+      '</div>').join('') || '<p class="text-xs text-zinc-500">Sin cambios todavia.</p>';
+  } catch (err) {
+    el.innerHTML = '<p class="text-xs text-red-400">' + esc(err.message) + '</p>';
+  }
+}
+
+async function restoreVersion(sha, label) {
+  const ok = await confirmBox('RESTAURAR VERSION', '<p>Las pools volveran a quedar exactamente como estaban despues de:</p><p class="mt-2 text-white text-xs font-bold">' + esc(label) + '</p><p class="text-xs text-zinc-500 mt-3">Se guarda como un cambio nuevo: tambien se podra deshacer.</p>', 'RESTAURAR');
+  if (!ok) return;
+  setBusy('RESTAURANDO...');
+  try {
+    const res = await DPWGitHub.restore(sha, 'admin(' + me() + '): restaurar version ' + sha.slice(0, 7));
+    STATE.data = res.data;
+    STATE.broken = false;
+    STATE.repaired = false;
+    STATE.error = '';
+    renderAll();
+    toast(res.unchanged ? 'Esa version ya es la actual' : 'Version restaurada', 'ok');
+    loadHistory();
+  } catch (err) {
+    toast(err.message, 'err');
+  } finally {
+    setBusy(null);
+  }
+}
+
+// ============================================================
+// ADMINS (access.json)
+// ============================================================
+async function loadAdmins() {
+  const el = $('admins-list');
+  el.innerHTML = '<p class="text-xs text-zinc-500">Cargando...</p>';
+  try {
+    const { access } = await DPWGitHub.loadAccess();
+    const list = DPWVault.listAdmins(access);
+    el.innerHTML = list.map(u =>
+      '<div class="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-[#0c0c10] px-4 py-2.5">' +
+        '<span class="text-xs font-black tracking-wider text-white">' + esc(u.toUpperCase()) + (u === me() ? ' <span class="text-[10px] text-brand-neon ml-2">(TU)</span>' : '') + '</span>' +
+        '<button class="btn btn-danger !py-1.5" data-action="admin-del" data-user="' + esc(u) + '"' + (list.length <= 1 ? ' disabled title="Tiene que quedar al menos un admin"' : '') + '>QUITAR</button>' +
+      '</div>').join('');
+  } catch (err) {
+    el.innerHTML = '<p class="text-xs text-red-400">' + esc(err.message) + '</p>';
+  }
+}
+
+async function accessChange(busyText, mutate, message) {
+  const s = DPWGitHub.session();
+  if (!s || !s.mk) { openGate('Tu sesion ha caducado: vuelve a entrar.'); return null; }
+  setBusy(busyText);
+  try {
+    const next = await DPWGitHub.commitAccess(access => mutate(access, s.mk), 'admin(' + me() + '): ' + message);
+    DPWAuth.getAccess(true).catch(() => {});
+    loadAdmins();
+    return next;
+  } catch (err) {
+    toast(err.message, 'err');
+    return null;
+  } finally {
+    setBusy(null);
+  }
+}
+
+async function addAdminFlow() {
+  const user = DPWVault.normUser($('na-user').value), pass = $('na-pass').value;
+  const problem = DPWVault.userProblem(user) || DPWVault.passwordProblem(pass, user);
+  if (problem) { toast(problem, 'err'); return; }
+  const r = await accessChange('CREANDO ADMIN...', (access, mk) => DPWVault.addAdmin(access, mk, user, pass), 'anadir admin ' + user);
+  if (r) { $('na-user').value = ''; $('na-pass').value = ''; toast('Admin ' + user + ' creado. Ya puede entrar con su usuario y contraseña.', 'ok'); }
+}
+
+async function removeAdminFlow(user) {
+  const self = user === me();
+  const ok = await confirmBox('QUITAR ADMIN', '<p><b class="text-white">' + esc(user.toUpperCase()) + '</b> ya no podra entrar al panel ni publicar.' + (self ? ' Eres tu: se cerrara tu sesion.' : '') + '</p>', 'QUITAR', true);
+  if (!ok) return;
+  const r = await accessChange('QUITANDO ADMIN...', access => DPWVault.removeAdmin(access, user), 'quitar admin ' + user);
+  if (r) { toast('Admin ' + user + ' quitado', 'ok'); if (self) logout(); }
+}
+
+async function changeMyPassword() {
+  const pass = $('pw-new').value;
+  const problem = DPWVault.passwordProblem(pass, me()) || (pass !== $('pw-new2').value ? 'Las contraseñas no coinciden.' : '');
+  if (problem) { toast(problem, 'err'); return; }
+  const r = await accessChange('CAMBIANDO CONTRASEÑA...', (access, mk) => DPWVault.changePassword(access, mk, me(), pass), 'cambiar contraseña de ' + me());
+  if (r) { $('pw-new').value = ''; $('pw-new2').value = ''; toast('Contraseña cambiada. Usala la proxima vez que entres.', 'ok'); }
+}
+
+async function renewKey() {
+  const token = $('rk-token').value.trim();
+  if (!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(token)) { toast('Pega la llave completa (empieza por github_pat_).', 'err'); return; }
+  const s = DPWGitHub.session();
+  if (!s || !s.mk) { openGate('Tu sesion ha caducado: vuelve a entrar.'); return; }
+  setBusy('GUARDANDO LLAVE NUEVA...');
+  try {
+    await DPWGitHub.checkKey(token);
+    const current = await DPWGitHub.fetchAccessPublic();
+    if (!current) throw new Error('No se encontro access.json.');
+    const next = await DPWVault.replaceToken(current, s.mk, token);
+    await DPWGitHub.commitAccessWithToken(next, token, 'admin(' + me() + '): renovar llave de publicacion');
+    DPWGitHub.setSession({ user: s.user, token, mk: s.mk });
+    $('rk-token').value = '';
+    STATE.error = '';
+    toast('Llave renovada. Los admins siguen entrando con su contraseña de siempre.', 'ok');
+    loadContent();
+  } catch (err) {
+    toast(err.message, 'err');
+  } finally {
+    setBusy(null);
+  }
+}
+
+// ============================================================
+// EVENTS
+// ============================================================
+document.addEventListener('click', e => {
   if (e.target.id === 'user-modal') closeModal();
   if (e.target.id === 'delete-modal') closeDeleteModal();
+  if (e.target.id === 'entry-modal') closeModalEl('entry-modal');
+  const tabBtn = e.target.closest('.tab-btn');
+  if (tabBtn) { showTab(tabBtn.dataset.tab); return; }
+  const el = e.target.closest('[data-action]');
+  if (!el || el.disabled) return;
+  const a = el.dataset.action, d = el.dataset;
+  switch (a) {
+    case 'logout': logout(); break;
+    case 'tab': showTab(d.value); break;
+    case 'reload': loadContent(); break;
+    case 'modal-close': {
+      const m = $(d.modal);
+      if (m._resolve) { const r = m._resolve; m._resolve = null; r(d.modal === 'confirm-modal' ? false : null); }
+      closeModalEl(d.modal);
+      break;
+    }
+    case 'gen-pass': {
+      const pw = DPWVault.generatePassword();
+      const target = $(d.target);
+      target.value = pw;
+      target.type = 'text';
+      if (d.confirm) { $(d.confirm).value = pw; $(d.confirm).type = 'text'; }
+      toast('Contraseña generada: apuntala en un sitio seguro.', 'info');
+      break;
+    }
+    case 'period': DRAFT.period = d.value; if (d.value === 'custom' && DRAFT.end < DRAFT.start) DRAFT.end = DRAFT.start; saveDraft(); renderUpload(); break;
+    case 'day-toggle': DRAFT.open[d.date] = !DRAFT.open[d.date]; saveDraft(); renderDayBlocks(); break;
+    case 'row-add': {
+      const existing = DRAFT.rows.find(r => r.date === d.date && r.artist === d.artist && !r.url.trim());
+      const target = existing || addRow(d.date, d.artist);
+      DRAFT.open[d.date] = true;
+      saveDraft();
+      renderUpload();
+      const input = document.querySelector('[data-field=url][data-id="' + target.id + '"]');
+      if (input) input.focus();
+      break;
+    }
+    case 'row-del': DRAFT.rows = DRAFT.rows.filter(r => r.id !== +d.id); saveDraft(); renderUpload(); break;
+    case 'newartist-del': DRAFT.newArtists = DRAFT.newArtists.filter(x => x !== d.artist); saveDraft(); renderUpload(); break;
+    case 'toggle-paste': $('paste-box').classList.toggle('hidden'); break;
+    case 'paste-detect': pasteDetect(); break;
+    case 'artist-new': createArtistFlow(true); break;
+    case 'draft-clear':
+      confirmBox('VACIAR BORRADOR', '<p>Se quitara todo lo que no has publicado todavia.</p>', 'VACIAR', true).then(ok => {
+        if (!ok) return;
+        DRAFT = newDraft(); saveDraft(); $('upload-result').innerHTML = ''; renderUpload();
+      });
+      break;
+    case 'publish': publishDraft(); break;
+    case 'entry-edit': openEntryModal('edit', d.date, d.artist, d.url); break;
+    case 'entry-new': openEntryModal('new', d.date); break;
+    case 'entry-save': saveEntry(); break;
+    case 'entry-del': deleteEntry(d.date, d.artist, d.url); break;
+    case 'day-del': deleteDay(d.date); break;
+    case 'artist-add': {
+      const n = DPW.normalizeArtistName($('a-new').value);
+      if (!DPW.ARTIST_RE.test(n)) { toast('Nombre de artista no valido.', 'err'); break; }
+      if (STATE.data.artists.includes(n)) { toast('Ese artista ya existe.', 'err'); break; }
+      publish(fresh => DPW.addArtist(fresh, n), 'anadir artista ' + n, 'GUARDANDO ARTISTA...').then(r => { if (r) { $('a-new').value = ''; toast('Artista ' + n + ' guardado', 'ok'); } });
+      break;
+    }
+    case 'artist-rename': renameArtistFlow(d.artist); break;
+    case 'artist-del': deleteArtistFlow(d.artist); break;
+    case 'history-load': loadHistory(); break;
+    case 'restore': restoreVersion(d.sha, d.label); break;
+    case 'admin-add': addAdminFlow(); break;
+    case 'admin-del': removeAdminFlow(d.user); break;
+    case 'pw-change': changeMyPassword(); break;
+    case 'key-renew': renewKey(); break;
+    case 'user-toggle': toggleActive(d.user); break;
+    case 'user-edit': openModal(d.user); break;
+    case 'user-delete': deleteUser(d.user); break;
+  }
 });
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { closeModal(); closeDeleteModal(); }
+
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.field && t.dataset.id) onRowChange(+t.dataset.id, t.dataset.field, t.value);
+  if (t.id === 'p-start' && DPW.isValidDate(t.value)) { DRAFT.start = t.value; if (DRAFT.end < DRAFT.start) DRAFT.end = DRAFT.start; saveDraft(); renderUpload(); }
+  if (t.id === 'p-end' && DPW.isValidDate(t.value)) { DRAFT.end = t.value; saveDraft(); renderUpload(); }
+  if (t.id === 'm-month') renderManage();
+});
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'm-filter') renderManage();
+  // Pasting a link applies it at once; typing or deleting waits until the field loses focus (or Enter),
+  // so a half-edited link never gets saved.
+  if (t.dataset.field === 'url' && t.dataset.id) {
+    if (/^(insertText|insertCompositionText|delete|insertLineBreak|historyUndo|historyRedo)/.test(e.inputType || '')) return;
+    const row = DRAFT.rows.find(r => r.id === +t.dataset.id);
+    const url = DPW.normalizeMegaUrl(t.value);
+    if (row && url && url !== row.url) onRowChange(row.id, 'url', t.value);
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.dataset && e.target.dataset.field && e.target.tagName === 'INPUT') { e.preventDefault(); e.target.blur(); return; }
+  if (e.key !== 'Escape') return;
+  closeModal(); closeDeleteModal(); closeModalEl('entry-modal');
+  ['confirm-modal', 'prompt-modal'].forEach(id => {
+    const m = $(id);
+    if (!m.classList.contains('hidden')) {
+      if (m._resolve) { const r = m._resolve; m._resolve = null; r(id === 'confirm-modal' ? false : null); }
+      closeModalEl(id);
+    }
+  });
+});
+
+window.addEventListener('beforeunload', e => {
+  if (!$('busy').classList.contains('hidden')) { e.preventDefault(); e.returnValue = ''; }
 });
 
 // ============================================================
@@ -462,11 +1524,13 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.replace(window.location.pathname);
     return;
   }
-
-  if (checkAccess()) {
-    updateStats();
-    renderTable();
-  }
+  $('setup-link').href = KEY_URL;
+  $('renew-link').href = KEY_URL;
+  $('login-screen').addEventListener('submit', submitLogin);
+  $('setup-screen').addEventListener('submit', submitSetup);
+  const u = DPWAuth.getCurrentUser();
+  if (u && u.role === 'admin') enterPanel();
+  else openGate();
 });
 </script>
 </body>

@@ -233,7 +233,7 @@ body::after{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradi
       </div>
     </div>
     <p class="text-red-500 text-xs mt-3 hidden" id="login-error">Usuario o password incorrectos</p>
-    <button type="submit" class="mt-6 w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(37,99,235,.3)]">ENTRAR</button>
+    <button type="submit" id="login-submit" class="mt-6 w-full py-3 rounded-lg bg-brand-neon text-white font-black tracking-widest text-sm hover:bg-brand-neonHover disabled:opacity-60 transition-all duration-200 hover:shadow-[0_0_20px_rgba(37,99,235,.3)]">ENTRAR</button>
   </form>
 </div>
 </div>
@@ -357,16 +357,16 @@ body::after{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradi
       <div class="flex flex-wrap items-center gap-3 mt-5">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-neon/10 border border-brand-neon/30 text-brand-neon text-[11px] font-bold tracking-wider">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-          <span id="stat-files">365</span> ARCHIVOS
+          <span id="stat-files">–</span> ARCHIVOS
         </span>
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-800/50 border border-zinc-700/50 text-zinc-400 text-[11px] font-bold tracking-wider">
-          <span id="stat-pools">26</span> POOLS
+          <span id="stat-pools">–</span> POOLS
         </span>
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-800/50 border border-zinc-700/50 text-zinc-400 text-[11px] font-bold tracking-wider">
-          <span id="stat-dates">26</span> FECHAS
+          <span id="stat-dates">–</span> FECHAS
         </span>
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-[11px] font-bold tracking-wider">
-          <span id="stat-tracks">16342</span> TRACKS
+          <span id="stat-tracks">–</span> TRACKS
         </span>
       </div>
       <!-- Song search -->
@@ -381,6 +381,7 @@ body::after{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradi
   <!-- Sections -->
   <div id="pool-filter-bar" class="hidden"></div>
   <div id="sections-container" class="space-y-14"></div>
+  <div id="archive-bottom"></div>
 
 </main>
 
@@ -407,22 +408,13 @@ body::after{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradi
 </footer>
 
 <!-- ========== DATA ========== -->
-<script src="pools-links.js"></script>
+<script src="js/dpw-data.js"></script>
+<script src="js/dpw-vault.js"></script>
+<script src="js/dpw-github.js"></script>
+<script src="js/dpw-auth.js"></script>
 <script src="pools-tracks.js"></script>
 
 <script>
-// ============================================================
-// POOL NAME ALIASES (MEGA_LINKS key -> display name)
-// ============================================================
-const POOL_ALIASES = {
-  'LATINREMIXES.COM': 'LATIN REMIXES',
-  'CUBA REMIXES': 'CUBA REMIXES'
-};
-
-function normalizePoolName(name) {
-  return POOL_ALIASES[name] || name;
-}
-
 // ============================================================
 // POOL VISUAL CARDS
 // ============================================================
@@ -459,97 +451,81 @@ const POOL_CARDS = {
 };
 
 // ============================================================
-// BUILD MONTHS FROM MEGA_LINKS (auto-sync)
+// DATA (data/pools.json, rules in js/dpw-data.js)
 // ============================================================
-const MONTH_NAMES = {'01':'ENERO','02':'FEBRERO','03':'MARZO','04':'ABRIL','05':'MAYO','06':'JUNIO','07':'JULIO','08':'AGOSTO','09':'SEPTIEMBRE','10':'OCTUBRE','11':'NOVIEMBRE','12':'DICIEMBRE'};
-const MONTH_KEYS  = {'01':'enero','02':'febrero','03':'marzo','04':'abril','05':'mayo','06':'junio','07':'julio','08':'agosto','09':'septiembre','10':'octubre','11':'noviembre','12':'diciembre'};
+const esc = DPW.esc;
+let DATA = DPW.emptyData();
+let MONTHS = [];
+let currentMonth = '';
+let currentPool = null;
 
-function buildMonthsData() {
-  if (typeof MEGA_LINKS === 'undefined') return {};
-  const months = {};
-  let totalFiles = 0;
-  const allPools = new Set();
-
-  for (const dateKey of Object.keys(MEGA_LINKS)) {
-    const [day, month] = dateKey.split('_');
-    const mKey = MONTH_KEYS[month];
-    const mName = MONTH_NAMES[month];
-    if (!mKey) continue;
-
-    if (!months[mKey]) months[mKey] = { title: mName, dates: [] };
-
-    const rawPools = Object.keys(MEGA_LINKS[dateKey]);
-    const poolSet = new Set();
-    rawPools.forEach(p => {
-      const normalized = normalizePoolName(p);
-      poolSet.add(normalized);
-      allPools.add(normalized);
+function loadData() {
+  return fetch(DPW.DATA_PATH + '?t=' + Date.now(), { cache: 'no-store' })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(json => {
+      const v = DPW.validate(json);
+      if (v.ok) return json;
+      console.warn('[DPW] data/pools.json tiene errores; se muestran solo las partes validas:', v.errors);
+      return DPW.sanitize(json);
     });
-    const pools = [...poolSet].sort();
+}
 
-    rawPools.forEach(p => {
-      totalFiles += MEGA_LINKS[dateKey][p].length;
-    });
+const FALLBACK_HUES = ['from-sky-800', 'from-fuchsia-800', 'from-indigo-800', 'from-cyan-800', 'from-violet-800', 'from-blue-800', 'from-pink-800'];
+function cardFor(pool) {
+  if (POOL_CARDS[pool]) return POOL_CARDS[pool];
+  const words = pool.split(' ');
+  const half = Math.ceil(words.length / 2);
+  const top = words.length > 1 ? words.slice(0, half).join(' ') : pool;
+  const bottom = words.length > 1 ? words.slice(half).join(' ') : '';
+  let h = 0;
+  for (const c of pool) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return {
+    bg: 'bg-gradient-to-b ' + FALLBACK_HUES[h % FALLBACK_HUES.length] + ' to-zinc-950 border border-brand-neon/60 text-white',
+    html: '<div class="text-center font-black px-2"><span class="text-xl sm:text-2xl uppercase tracking-wider block break-words">' + esc(top) + '</span>' +
+      (bottom ? '<span class="text-sm text-brand-neon uppercase tracking-widest block mt-1 break-words">' + esc(bottom) + '</span>' : '') + '</div>'
+  };
+}
 
-    months[mKey].dates.push({
-      day: day.padStart(2,'0'),
-      month: mName,
-      year: '26',
-      m: month,
-      pools: pools
-    });
-  }
-
-  for (const mKey of Object.keys(months)) {
-    months[mKey].dates.sort((a, b) => parseInt(b.day) - parseInt(a.day));
-  }
-
-  return { months, totalFiles, totalPools: allPools.size, totalDates: Object.keys(MEGA_LINKS).length };
+function getTrackList(pool, date) {
+  if (typeof TRACK_LIST === 'undefined' || !TRACK_LIST[date]) return null;
+  return TRACK_LIST[date][pool] || null;
 }
 
 // ============================================================
-// AUTH (localStorage)
+// AUTH (js/dpw-auth.js: admins verified against dpw-data/access.json, users in localStorage)
 // ============================================================
-const DEFAULT_USERS = [
-  {user:'admin', pass:'admin2026', role:'admin', active:true, created:'2026-01-01'},
-  {user:'sharkmusic', pass:'shark-music_2026', role:'admin', active:true, created:'2026-09-15'},
-  {user:'prueba1', pass:'prueba_1', role:'user', active:true, created:'2026-09-15'},
-  {user:'demo', pass:'demo123', role:'user', active:true, created:'2026-09-01'}
-];
-function getUsers() {
-  const d = localStorage.getItem('dpw_users');
-  const users = d ? JSON.parse(d) : [];
-  const deleted = JSON.parse(localStorage.getItem('dpw_deleted') || '[]');
-  let changed = false;
-  DEFAULT_USERS.forEach(def => {
-    if (!deleted.includes(def.user) && !users.some(u => u.user === def.user)) {
-      users.push(def);
-      changed = true;
-    }
-  });
-  if (changed || !d) localStorage.setItem('dpw_users', JSON.stringify(users));
-  return users;
-}
-function getCurrentUser() {
-  const s = sessionStorage.getItem('dpw_session');
-  return s ? JSON.parse(s) : null;
-}
-function handleLogin(e) {
+const getUsers = DPWAuth.getUsers;
+const getCurrentUser = DPWAuth.getCurrentUser;
+let loginBusy = false;
+async function handleLogin(e) {
   e.preventDefault();
-  const u = document.getElementById('login-user').value.trim();
-  const p = document.getElementById('login-pass').value;
-  const users = getUsers();
-  const found = users.find(x => x.user === u && x.pass === p && x.active);
-  if (found) {
-    sessionStorage.setItem('dpw_session', JSON.stringify({user:found.user, role:found.role}));
-    hideLoginModal();
-    updateUserUI();
-  } else {
-    document.getElementById('login-error').classList.remove('hidden');
+  if (loginBusy) return;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-submit');
+  errEl.classList.add('hidden');
+  loginBusy = true;
+  btn.disabled = true;
+  btn.textContent = 'COMPROBANDO...';
+  try {
+    const r = await DPWAuth.login(document.getElementById('login-user').value, document.getElementById('login-pass').value);
+    if (r.ok) {
+      hideLoginModal();
+      updateUserUI();
+    } else {
+      errEl.textContent = r.error;
+      errEl.classList.remove('hidden');
+    }
+  } catch (err) {
+    errEl.textContent = 'No se pudo iniciar sesion: ' + err.message;
+    errEl.classList.remove('hidden');
+  } finally {
+    loginBusy = false;
+    btn.disabled = false;
+    btn.textContent = 'ENTRAR';
   }
 }
 function logout() {
-  sessionStorage.removeItem('dpw_session');
+  DPWAuth.logout();
   updateUserUI();
 }
 function updateUserUI() {
@@ -584,8 +560,10 @@ function updateUserUI() {
         '<p class="text-sm font-black text-white">' + u.user.toUpperCase() + '</p>' +
         '<p class="text-[10px] text-zinc-500 font-bold tracking-widest mt-0.5">' + (isAdmin ? 'ADMINISTRADOR' : 'USUARIO') + '</p>' +
       '</div>' +
-      '<button onclick="showAccountModal()" class="' + itemClass + ' text-zinc-300 hover:bg-brand-neon hover:text-black">EDITAR MI CUENTA</button>' +
-      (isAdmin ? '<a href="admin.html" class="' + itemClass + ' text-brand-neon hover:bg-brand-neon hover:text-black">PANEL ADMIN</a>' : '') +
+      (isAdmin
+        ? '<a href="admin.html" class="' + itemClass + ' text-brand-neon hover:bg-brand-neon hover:text-white">PANEL ADMIN</a>' +
+          '<a href="admin.html#admins" class="' + itemClass + ' text-zinc-300 hover:bg-brand-neon hover:text-white">CAMBIAR MI CONTRASEÑA</a>'
+        : '<button onclick="showAccountModal()" class="' + itemClass + ' text-zinc-300 hover:bg-brand-neon hover:text-white">EDITAR MI CUENTA</button>') +
       '<button onclick="logout()" class="' + itemClass + ' text-red-400 hover:bg-red-950 hover:text-red-300">CERRAR SESION</button>';
   } else {
     if (btnSub) btnSub.classList.remove('!hidden');
@@ -682,18 +660,14 @@ function saveAccount(e) {
   }
 
   // Mark old name as deleted if renamed (so defaults don't re-add)
-  const deleted = JSON.parse(localStorage.getItem('dpw_deleted') || '[]');
-  if (newName !== u.user && !deleted.includes(u.user)) {
-    deleted.push(u.user);
-    localStorage.setItem('dpw_deleted', JSON.stringify(deleted));
-  }
+  if (newName !== u.user) DPWAuth.addDeletedUser(u.user);
 
   const updated = users.map(x => {
     if (x.user !== u.user) return x;
     return {...x, user: newName, pass: newPass};
   });
-  localStorage.setItem('dpw_users', JSON.stringify(updated));
-  sessionStorage.setItem('dpw_session', JSON.stringify({user: newName, role: u.role}));
+  DPWAuth.saveUsers(updated);
+  DPWAuth.setCurrentUser(newName, 'user');
   updateUserUI();
   okEl.classList.remove('hidden');
   setTimeout(() => hideAccountModal(), 1200);
@@ -702,51 +676,28 @@ function saveAccount(e) {
 // ============================================================
 // DOWNLOAD MODAL
 // ============================================================
-function getPoolFiles(poolName, dateKey) {
-  if (typeof MEGA_LINKS === 'undefined') return null;
-  const dateData = MEGA_LINKS[dateKey];
-  if (!dateData) return null;
-  // Try exact match
-  if (dateData[poolName]) return dateData[poolName];
-  // Try alias: LATIN REMIXES <-> LATINREMIXES.COM
-  if (poolName === 'LATIN REMIXES' && dateData['LATINREMIXES.COM']) return dateData['LATINREMIXES.COM'];
-  if (poolName === 'LATINREMIXES.COM' && dateData['LATIN REMIXES']) return dateData['LATIN REMIXES'];
-  return null;
-}
-
-function getTrackList(poolName, dateKey) {
-  if (typeof TRACK_LIST === 'undefined') return null;
-  const dateData = TRACK_LIST[dateKey];
-  if (!dateData) return null;
-  if (dateData[poolName]) return dateData[poolName];
-  if (poolName === 'LATIN REMIXES' && dateData['LATINREMIXES.COM']) return dateData['LATINREMIXES.COM'];
-  if (poolName === 'LATINREMIXES.COM' && dateData['LATIN REMIXES']) return dateData['LATIN REMIXES'];
-  return null;
-}
-
-function showDownloadModal(poolName, day, monthNum) {
+function showDownloadModal(poolName, date) {
   const user = getCurrentUser();
   const linksEl = document.getElementById('dl-modal-links');
   const noAuth = document.getElementById('dl-modal-noauth');
 
   document.getElementById('dl-modal-title').textContent = poolName;
-  document.getElementById('dl-modal-sub').textContent = day + '/' + monthNum + '/2026';
+  document.getElementById('dl-modal-sub').textContent = DPW.formatDate(date);
 
-  const dateKey = day + '_' + monthNum;
-  const trackList = getTrackList(poolName, dateKey);
+  const trackList = getTrackList(poolName, date);
   const trackHtml = trackList && trackList.length > 0
     ? '<div class="mb-4">' +
-        '<button onclick="this.querySelector(\'svg\').classList.toggle(\'open\');this.nextElementSibling.classList.toggle(\'open\')" class="flex items-center gap-2 text-xs font-bold tracking-wider text-zinc-400 hover:text-brand-neon transition-colors w-full text-left py-2">' +
+        '<button type="button" onclick="this.querySelector(\'svg\').classList.toggle(\'open\');this.nextElementSibling.classList.toggle(\'open\')" class="flex items-center gap-2 text-xs font-bold tracking-wider text-zinc-400 hover:text-brand-neon transition-colors w-full text-left py-2">' +
           '<svg class="w-4 h-4 tracklist-toggle transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>' +
           'VER CONTENIDO (' + trackList.length + ' tracks)' +
         '</button>' +
         '<div class="tracklist-content rounded-lg bg-[#0a0a0e] border border-zinc-800/50">' +
           '<div class="p-3 space-y-0.5">' +
-            trackList.map((t,i) =>
+            trackList.map((t, i) =>
               '<div class="flex items-center gap-2 py-1.5 px-2 rounded text-xs text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 transition-colors">' +
-                '<span class="text-zinc-600 font-mono text-[10px] w-5 text-right flex-shrink-0">' + (i+1) + '</span>' +
+                '<span class="text-zinc-600 font-mono text-[10px] w-5 text-right flex-shrink-0">' + (i + 1) + '</span>' +
                 '<svg class="w-3 h-3 text-zinc-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>' +
-                '<span class="whitespace-nowrap">' + t.replace(/\.mp3$/i,'') + '</span>' +
+                '<span class="whitespace-nowrap">' + esc(t.replace(/\.(mp3|wav)$/i, '')) + '</span>' +
               '</div>'
             ).join('') +
           '</div>' +
@@ -760,14 +711,14 @@ function showDownloadModal(poolName, day, monthNum) {
     noAuth.classList.remove('hidden');
   } else {
     noAuth.classList.add('hidden');
-    const poolFiles = getPoolFiles(poolName, dateKey);
+    const poolFiles = DPW.getFiles(DATA, date, poolName);
     let dlHtml = '';
-    if (poolFiles && poolFiles.length > 0) {
+    if (poolFiles.length > 0) {
       dlHtml = poolFiles.map((f, i) =>
-        '<a href="' + f.url + '" target="_blank" rel="noopener" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#0c0c10] border border-zinc-800 hover:border-brand-neon/50 hover:bg-brand-neon/5 transition-all duration-200 group fade-up" style="animation-delay:' + (i*50) + 'ms">' +
+        '<a href="' + esc(f.url) + '" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#0c0c10] border border-zinc-800 hover:border-brand-neon/50 hover:bg-brand-neon/5 transition-all duration-200 group fade-up" style="animation-delay:' + (i * 50) + 'ms">' +
           '<svg class="w-5 h-5 text-brand-neon flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/></svg>' +
           '<div class="flex-1 min-w-0">' +
-            '<p class="text-sm font-bold text-zinc-200 truncate group-hover:text-brand-neon transition-colors">' + f.name + '</p>' +
+            '<p class="text-sm font-bold text-zinc-200 truncate group-hover:text-brand-neon transition-colors">' + esc(f.name) + '</p>' +
             '<p class="text-[10px] text-zinc-600 truncate">mega.nz</p>' +
           '</div>' +
           '<svg class="w-4 h-4 text-zinc-600 group-hover:text-brand-neon group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>' +
@@ -795,41 +746,41 @@ let searchTimeout = null;
 function handleSongSearch(query) {
   clearTimeout(searchTimeout);
   const results = document.getElementById('search-results');
-  if (!query || query.length < 2) {
+  if (!query || query.trim().length < 2) {
     results.classList.add('hidden');
     results.innerHTML = '';
     return;
   }
   searchTimeout = setTimeout(() => {
     if (typeof TRACK_LIST === 'undefined') return;
-    const q = query.toLowerCase();
+    const q = query.trim().toLowerCase();
     const matches = [];
-    for (const dateKey of Object.keys(TRACK_LIST)) {
-      for (const pool of Object.keys(TRACK_LIST[dateKey])) {
-        for (const track of TRACK_LIST[dateKey][pool]) {
+    outer:
+    for (const date of Object.keys(TRACK_LIST).sort().reverse()) {
+      for (const pool of Object.keys(TRACK_LIST[date])) {
+        if (!DPW.getFiles(DATA, date, pool).length) continue;
+        for (const track of TRACK_LIST[date][pool]) {
           if (track.toLowerCase().includes(q)) {
-            matches.push({track, pool: normalizePoolName(pool), dateKey});
-            if (matches.length >= 50) break;
+            matches.push({ track, pool, date });
+            if (matches.length >= 50) break outer;
           }
         }
-        if (matches.length >= 50) break;
       }
-      if (matches.length >= 50) break;
     }
     if (matches.length === 0) {
       results.innerHTML = '<div class="px-4 py-6 text-center text-zinc-500 text-sm">No se encontraron resultados</div>';
     } else {
+      const needle = new RegExp('(' + query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      const highlight = text => text.split(needle).map((part, i) => i % 2 ? '<span class="search-highlight">' + esc(part) + '</span>' : esc(part)).join('');
       results.innerHTML =
         '<div class="px-4 py-2 border-b border-zinc-800 text-[10px] font-bold tracking-widest text-zinc-500">' + matches.length + (matches.length >= 50 ? '+' : '') + ' RESULTADOS</div>' +
         matches.map(m => {
-          const [day, month] = m.dateKey.split('_');
-          const trackName = m.track.replace(/\.mp3$/i,'');
-          const highlighted = trackName.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi'), '<span class="search-highlight">$1</span>');
-          return '<button onclick="hideSearchResults();showDownloadModal(\'' + m.pool.replace(/'/g,"\\'") + '\',\'' + day + '\',\'' + month + '\')" class="flex items-start gap-3 px-4 py-2.5 w-full text-left hover:bg-zinc-800/50 transition-colors">' +
+          const highlighted = highlight(m.track.replace(/\.(mp3|wav)$/i, ''));
+          return '<button type="button" data-action="search-hit" data-pool="' + esc(m.pool) + '" data-date="' + esc(m.date) + '" class="flex items-start gap-3 px-4 py-2.5 w-full text-left hover:bg-zinc-800/50 transition-colors">' +
             '<svg class="w-4 h-4 text-zinc-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>' +
             '<div class="flex-1 min-w-0">' +
               '<p class="text-xs text-zinc-200 truncate">' + highlighted + '</p>' +
-              '<p class="text-[10px] text-zinc-500 mt-0.5">' + m.pool + ' - ' + day + '/' + month + '/2026</p>' +
+              '<p class="text-[10px] text-zinc-500 mt-0.5">' + esc(m.pool) + ' - ' + DPW.formatDate(m.date) + '</p>' +
             '</div>' +
           '</button>';
         }).join('');
@@ -847,7 +798,7 @@ document.addEventListener('click', (e) => {
   if (e.target.id === 'login-modal') hideLoginModal();
   if (e.target.id === 'download-modal') hideDownloadModal();
   if (e.target.id === 'account-modal') hideAccountModal();
-  // Close search results when clicking outside
+  if (e.target.id === 'subscribe-modal') hideSubscribeModal();
   const searchArea = document.getElementById('song-search');
   const searchResults = document.getElementById('search-results');
   if (searchArea && searchResults && !searchArea.contains(e.target) && !searchResults.contains(e.target)) {
@@ -855,119 +806,205 @@ document.addEventListener('click', (e) => {
   }
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { hideLoginModal(); hideDownloadModal(); hideAccountModal(); }
+  if (e.key === 'Escape') { hideLoginModal(); hideDownloadModal(); hideAccountModal(); hideSubscribeModal(); }
 });
 
-// ============================================================
-// RENDERING
-// ============================================================
-let MONTHS_DATA = {};
-let currentMonth = '';
-let currentPool = null;
+// All dynamic buttons use data-action (no data ever goes into inline JS).
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const action = el.dataset.action;
+  if (action === 'month') { e.preventDefault(); closeMobileNav(); switchMonth(el.dataset.value); }
+  else if (action === 'pool') { e.preventDefault(); closeMobileNav(); filterPool(el.dataset.value || null); }
+  else if (action === 'tab') handleTab(el);
+  else if (action === 'download') showDownloadModal(el.dataset.pool, el.dataset.date);
+  else if (action === 'search-hit') { hideSearchResults(); showDownloadModal(el.dataset.pool, el.dataset.date); }
+  else if (action === 'reload') window.location.reload();
+});
 
-function switchMonth(month) {
-  currentMonth = month;
+function closeMobileNav() {
+  const nav = document.getElementById('mobile-nav');
+  if (nav) nav.classList.add('hidden');
+}
+
+// ============================================================
+// RENDERING (one month at a time, most recent day first)
+// ============================================================
+function monthById(id) { return MONTHS.find(m => m.id === id) || null; }
+
+function switchMonth(id, opts) {
+  if (!monthById(id)) return;
+  currentMonth = id;
   currentPool = null;
-  if (!MONTHS_DATA[month]) return;
+  try { history.replaceState(null, '', '#mes=' + id); } catch (e) { /* file:// or sandboxed */ }
   refreshView();
-  window.scrollTo({top:0,behavior:'smooth'});
+  if (!opts || opts.scroll !== false) window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function filterPool(pool) {
   currentPool = pool;
   refreshView();
   const bar = document.getElementById('pool-filter-bar');
-  window.scrollTo({top: bar.getBoundingClientRect().top + window.scrollY - 110, behavior:'smooth'});
+  window.scrollTo({ top: bar.getBoundingClientRect().top + window.scrollY - 110, behavior: 'smooth' });
 }
 
 function refreshView() {
-  const data = MONTHS_DATA[currentMonth];
-  document.getElementById('hero-title').textContent = data.title + ' 2026 | ' + (currentPool || 'POOLS');
-  renderDropdown();
-  renderFilterBar(data);
-  if (!currentPool) { renderSections(data); return; }
-  const dates = data.dates.filter(d => d.pools.includes(currentPool)).map(d => ({...d, pools: [currentPool]}));
-  renderSections({...data, dates});
+  const month = monthById(currentMonth);
+  const days = DPW.monthDays(DATA, currentMonth);
+  if (currentPool && !days.some(d => d.pools.includes(currentPool))) currentPool = null;
+  document.getElementById('hero-title').textContent = month.label + ' | ' + (currentPool || 'POOLS');
+  updateStats(days);
+  renderDropdown(days);
+  renderFilterBar(days, month);
+  const shown = currentPool
+    ? days.filter(d => d.pools.includes(currentPool)).map(d => Object.assign({}, d, { pools: [currentPool] }))
+    : days;
+  renderSections(shown);
+  renderArchiveBottom();
 }
 
-function getMonthPools(month) {
+function updateStats(days) {
+  let files = 0, tracks = 0;
+  const pools = new Set();
+  days.forEach(d => d.pools.forEach(p => {
+    pools.add(p);
+    files += DPW.getFiles(DATA, d.date, p).length;
+    const t = getTrackList(p, d.date);
+    if (t) tracks += t.length;
+  }));
+  document.getElementById('stat-files').textContent = files.toLocaleString();
+  document.getElementById('stat-pools').textContent = pools.size;
+  document.getElementById('stat-dates').textContent = days.length;
+  document.getElementById('stat-tracks').textContent = tracks.toLocaleString();
+}
+
+function monthPools(days) {
   const set = new Set();
-  MONTHS_DATA[month].dates.forEach(d => d.pools.forEach(p => set.add(p)));
-  return [...set].sort();
+  days.forEach(d => d.pools.forEach(p => set.add(p)));
+  return [...set].sort((a, b) => a.localeCompare(b));
 }
 
-function renderFilterBar(data) {
+function renderFilterBar(days, month) {
   const bar = document.getElementById('pool-filter-bar');
-  if (!currentPool) { bar.classList.add('hidden'); bar.innerHTML = ''; return; }
-  const count = data.dates.filter(d => d.pools.includes(currentPool)).length;
+  if (!currentPool) { bar.className = 'hidden'; bar.innerHTML = ''; return; }
+  const count = days.filter(d => d.pools.includes(currentPool)).length;
   bar.className = 'flex flex-wrap items-center justify-between gap-3 px-5 py-3 rounded-xl border border-fuchsia-500/40 bg-fuchsia-500/10 backdrop-blur-sm fade-up';
   bar.innerHTML =
     '<div class="flex items-center gap-2.5 text-xs font-black tracking-widest">' +
       '<svg class="w-4 h-4 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>' +
-      '<span class="text-zinc-400">MOSTRANDO</span><span class="text-fuchsia-400">' + currentPool + '</span>' +
-      '<span class="text-zinc-500">· ' + count + ' FECHAS · ' + data.title + ' 2026</span>' +
+      '<span class="text-zinc-400">MOSTRANDO</span><span class="text-fuchsia-400">' + esc(currentPool) + '</span>' +
+      '<span class="text-zinc-500">· ' + count + ' FECHAS · ' + esc(month.label) + '</span>' +
     '</div>' +
-    '<button onclick="filterPool(null)" class="px-4 py-1.5 rounded-lg border border-zinc-700 text-[11px] font-black tracking-widest text-zinc-300 hover:border-brand-neon hover:text-brand-neon transition-all">VER TODAS LAS POOLS</button>';
+    '<button type="button" data-action="pool" data-value="" class="px-4 py-1.5 rounded-lg border border-zinc-700 text-[11px] font-black tracking-widest text-zinc-300 hover:border-brand-neon hover:text-brand-neon transition-all">VER TODAS LAS POOLS</button>';
 }
 
-function renderDropdown() {
-  const dd = document.getElementById('pools-dropdown');
-  const ad = document.getElementById('archive-dropdown');
-  const mob = document.getElementById('mobile-pools-links');
-  const months = Object.keys(MONTHS_DATA);
-  const pools = getMonthPools(currentMonth);
-  const esc = s => s.replace(/'/g, "\\'");
+const TAG_ICON = '<svg class="w-3 h-3 flex-shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>';
+
+function renderDropdown(days) {
+  const pools = monthPools(days);
+  const month = monthById(currentMonth);
   const poolItem = (p, label) => {
-    const a = p === currentPool;
-    return '<a href="#" onclick="filterPool(' + (p ? '\'' + esc(p) + '\'' : 'null') + ');return false;" class="flex items-center gap-2 px-3 py-2 rounded text-[11px] tracking-wider font-extrabold transition-all duration-150 ' +
-      (a ? 'text-brand-neon bg-brand-neon/10 border-l-2 border-brand-neon' : 'text-zinc-300 hover:bg-brand-neon hover:text-white') + '">' +
-      '<svg class="w-3 h-3 flex-shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>' +
-      (label || p) + '</a>';
+    const active = (p || null) === currentPool;
+    return '<a href="#" data-action="pool" data-value="' + esc(p || '') + '" class="flex items-center gap-2 px-3 py-2 rounded text-[11px] tracking-wider font-extrabold transition-all duration-150 ' +
+      (active ? 'text-brand-neon bg-brand-neon/10 border-l-2 border-brand-neon' : 'text-zinc-300 hover:bg-brand-neon hover:text-white') + '">' +
+      TAG_ICON + esc(label || p) + '</a>';
   };
-  dd.innerHTML =
-    '<div class="px-3 pt-1 pb-2 mb-1 border-b border-zinc-800 flex items-center justify-between">' +
-      '<span class="text-[10px] font-black tracking-widest text-zinc-500">' + pools.length + ' POOLS · ' + MONTHS_DATA[currentMonth].title + ' 2026</span>' +
-    '</div>' +
+  document.getElementById('pools-dropdown').innerHTML =
+    '<div class="px-3 pt-1 pb-2 mb-1 border-b border-zinc-800"><span class="text-[10px] font-black tracking-widest text-zinc-500">' + pools.length + ' POOLS · ' + esc(month.label) + '</span></div>' +
     '<div class="mb-1">' + poolItem(null, 'TODAS LAS POOLS') + '</div>' +
     '<div class="grid grid-cols-2 gap-0.5">' + pools.map(p => poolItem(p)).join('') + '</div>';
 
-  ad.innerHTML = months.map(m => {
-    const a = m === currentMonth;
-    return '<a class="block px-4 py-2.5 text-xs tracking-wider ' + (a ? 'text-brand-neon bg-black/40 border-l-2 border-brand-neon' : 'text-zinc-300 hover:bg-brand-neon hover:text-white') + ' font-extrabold transition-all duration-150 cursor-pointer" href="#" onclick="switchMonth(\'' + m + '\');return false;">' + MONTHS_DATA[m].title + ' 2026</a>';
+  document.getElementById('archive-dropdown').innerHTML = MONTHS.map(m => {
+    const active = m.id === currentMonth;
+    return '<a href="#" data-action="month" data-value="' + esc(m.id) + '" class="block px-4 py-2.5 text-xs tracking-wider ' +
+      (active ? 'text-brand-neon bg-black/40 border-l-2 border-brand-neon' : 'text-zinc-300 hover:bg-brand-neon hover:text-white') +
+      ' font-extrabold transition-all duration-150">' + esc(m.label) + '</a>';
   }).join('');
 
-  const mobLink = (onclick, label, active) => '<a href="#" onclick="' + onclick + ';document.getElementById(\'mobile-nav\').classList.add(\'hidden\');return false;" class="block py-2 text-xs font-bold tracking-widest ' + (active ? 'text-brand-neon' : 'text-zinc-400') + ' hover:text-brand-neon transition-colors">' + label + '</a>';
-  mob.innerHTML =
+  const mobLink = (action, value, label, active) =>
+    '<a href="#" data-action="' + action + '" data-value="' + esc(value) + '" class="block py-2 text-xs font-bold tracking-widest ' + (active ? 'text-brand-neon' : 'text-zinc-400') + ' hover:text-brand-neon transition-colors">' + esc(label) + '</a>';
+  document.getElementById('mobile-pools-links').innerHTML =
     '<p class="pt-3 pb-1 text-[10px] font-black tracking-widest text-zinc-600">POOLS</p>' +
-    '<div class="grid grid-cols-2 gap-x-4">' +
-      mobLink('filterPool(null)', 'TODAS', !currentPool) +
-      pools.map(p => mobLink('filterPool(\'' + esc(p) + '\')', p, p === currentPool)).join('') +
-    '</div>' +
+    '<div class="grid grid-cols-2 gap-x-4">' + mobLink('pool', '', 'TODAS', !currentPool) + pools.map(p => mobLink('pool', p, p, p === currentPool)).join('') + '</div>' +
     '<p class="pt-3 pb-1 text-[10px] font-black tracking-widest text-zinc-600">ARCHIVO</p>' +
-    months.map(m => mobLink('switchMonth(\'' + m + '\')', MONTHS_DATA[m].title + ' 2026', m === currentMonth)).join('');
+    MONTHS.map(m => mobLink('month', m.id, m.label, m.id === currentMonth)).join('');
 }
 
-function renderSections(data) {
+function renderArchiveBottom() {
+  const el = document.getElementById('archive-bottom');
+  if (!el) return;
+  if (MONTHS.length < 1) { el.innerHTML = ''; return; }
+  const i = MONTHS.findIndex(m => m.id === currentMonth);
+  const older = MONTHS[i + 1], newer = MONTHS[i - 1];
+  const navBtn = (m, label, arrowLeft) => m
+    ? '<button type="button" data-action="month" data-value="' + esc(m.id) + '" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-700 bg-[#0c0c14]/70 text-[11px] font-black tracking-widest text-zinc-300 hover:border-brand-neon hover:text-brand-neon transition-all">' +
+        (arrowLeft ? '&larr; ' : '') + label + ' · ' + esc(m.label) + (arrowLeft ? '' : ' &rarr;') + '</button>'
+    : '<span></span>';
+  el.innerHTML =
+    '<div class="neon-line mb-10"></div>' +
+    '<div class="rounded-2xl border border-white/10 bg-[#0c0c14]/70 backdrop-blur-sm p-6 sm:p-8 text-center">' +
+      '<div class="flex items-center justify-center gap-2 mb-1">' +
+        '<svg class="w-5 h-5 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>' +
+        '<h2 class="text-lg sm:text-xl font-black tracking-widest text-white">ARCHIVO</h2>' +
+      '</div>' +
+      '<p class="text-xs text-zinc-500 font-bold tracking-wider mb-6">Fin de ' + esc(monthById(currentMonth).label) + '. Elige otro mes:</p>' +
+      '<div class="flex flex-wrap items-center justify-center gap-2 mb-6">' +
+        MONTHS.map(m => {
+          const active = m.id === currentMonth;
+          return '<button type="button" data-action="month" data-value="' + esc(m.id) + '" class="px-4 py-2 rounded-full text-[11px] font-black tracking-widest transition-all ' +
+            (active ? 'bg-brand-neon text-white shadow-[0_0_15px_rgba(37,99,235,.4)]' : 'border border-zinc-700 text-zinc-400 hover:border-fuchsia-400 hover:text-fuchsia-300') + '">' + esc(m.label) + '</button>';
+        }).join('') +
+      '</div>' +
+      '<div class="flex flex-wrap items-center justify-between gap-3">' + navBtn(older, 'MES ANTERIOR', true) + navBtn(newer, 'MES SIGUIENTE', false) + '</div>' +
+    '</div>';
+}
+
+function renderStatus(html) {
+  document.getElementById('sections-container').innerHTML =
+    '<div class="rounded-2xl border border-white/10 bg-[#0c0c14]/80 backdrop-blur-sm py-16 px-6 text-center">' + html + '</div>';
+}
+
+function renderLoading() {
+  renderStatus('<div class="inline-block w-8 h-8 border-2 border-brand-neon border-t-transparent rounded-full animate-spin mb-4"></div>' +
+    '<p class="text-sm font-bold tracking-widest text-zinc-400">CARGANDO POOLS...</p>');
+}
+
+function renderLoadError() {
+  renderStatus('<p class="text-sm font-bold tracking-widest text-red-400 mb-4">NO SE PUDIERON CARGAR LAS POOLS</p>' +
+    '<button type="button" data-action="reload" class="px-5 py-2 rounded-lg border border-zinc-700 text-xs font-black tracking-widest text-zinc-300 hover:border-brand-neon hover:text-brand-neon">REINTENTAR</button>');
+}
+
+function renderEmpty() {
+  document.getElementById('hero-title').textContent = 'DJ POOL WORLD | POOLS';
+  updateStats([]);
+  renderStatus('<p class="text-sm font-bold tracking-widest text-zinc-400">TODAVIA NO HAY POOLS PUBLICADAS</p>');
+}
+
+function renderSections(dates) {
   const c = document.getElementById('sections-container');
+  if (!dates.length) {
+    renderStatus('<p class="text-sm font-bold tracking-widest text-zinc-400">NO HAY PUBLICACIONES EN ESTE MES</p>');
+    return;
+  }
   c.innerHTML = '';
 
-  data.dates.forEach((dt, idx) => {
+  dates.forEach((dt, idx) => {
     const first = dt.pools[0];
-    const card = POOL_CARDS[first] || {bg:'bg-zinc-800 text-white',html:'<span class="font-black text-lg">' + first + '</span>'};
+    const card = cardFor(first);
 
-    const tabs = dt.pools.map((p,i) => {
-      const cls = i===0
+    const tabs = dt.pools.map((p, i) => {
+      const cls = i === 0
         ? 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-brand-neon border border-brand-neon rounded bg-brand-neon/5 tab-glow transition-all duration-200'
         : 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-zinc-400 hover:text-white rounded border border-transparent tab-glow transition-all duration-200';
-      return '<button class="' + cls + '" data-pool="' + p + '" data-idx="' + idx + '" data-day="' + dt.day + '" data-month="' + dt.m + '" type="button">' + p + '</button>';
+      return '<button class="' + cls + '" data-action="tab" data-pool="' + esc(p) + '" data-idx="' + idx + '" data-date="' + dt.date + '" type="button">' + esc(p) + '</button>';
     }).join('');
 
     c.insertAdjacentHTML('beforeend',
-    '<section class="space-y-4 reveal" data-delay="' + (idx*80) + '">' +
+    '<section class="space-y-4 reveal" data-delay="' + Math.min(idx * 80, 400) + '" data-date="' + dt.date + '">' +
       '<div class="neon-line"></div>' +
       '<div class="flex items-center justify-center py-2">' +
         '<div class="inline-flex items-center justify-center px-6 py-1.5 text-sm sm:text-base font-extrabold tracking-widest text-zinc-100">' +
-          '<span>' + dt.day + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.month + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.year + '</span>' +
+          '<span>' + dt.day + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.monthName + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.year.slice(2) + '</span>' +
         '</div>' +
       '</div>' +
       '<div class="relative rounded-3xl border border-brand-neon bg-[#0c0c14]/85 backdrop-blur-sm p-3 sm:p-5 lg:p-6 shadow-[0_0_25px_rgba(37,99,235,0.15),0_0_40px_rgba(236,72,153,0.06)] card-hover overflow-hidden">' +
@@ -987,7 +1024,7 @@ function renderSections(data) {
             '<div class="w-48 h-48 sm:w-56 sm:h-56 ' + card.bg + ' rounded-lg shadow-2xl flex flex-col items-center justify-center p-4 pool-card-inner hover:scale-105 transition-transform duration-300 fade-scale" id="card-' + idx + '">' + card.html + '</div>' +
           '</div>' +
           '<div class="mt-7">' +
-            '<button onclick="showDownloadModal(\'' + first.replace(/'/g,"\\'") + '\',\'' + dt.day + '\',\'' + dt.m + '\')" class="download-btn inline-flex items-center gap-2.5 text-sm sm:text-base font-black tracking-widest uppercase text-white px-6 py-3 rounded-lg border border-zinc-700 hover:border-brand-neon/50 group transition-all duration-300" id="dlbtn-' + idx + '" data-pool="' + first + '" data-day="' + dt.day + '" data-month="' + dt.m + '">' +
+            '<button type="button" data-action="download" data-pool="' + esc(first) + '" data-date="' + dt.date + '" class="download-btn inline-flex items-center gap-2.5 text-sm sm:text-base font-black tracking-widest uppercase text-white px-6 py-3 rounded-lg border border-zinc-700 hover:border-brand-neon/50 group transition-all duration-300" id="dlbtn-' + idx + '">' +
               '<span>DESCARGAR</span>' +
               '<svg class="w-4 h-4 text-brand-neon group-hover:translate-y-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>' +
             '</button>' +
@@ -997,10 +1034,9 @@ function renderSections(data) {
     '</section>');
   });
 
-  document.querySelectorAll('.pool-tab').forEach(t => t.addEventListener('click', handleTab));
   requestAnimationFrame(() => {
     observeReveals();
-    data.dates.forEach((_, idx) => updateTabArrows(String(idx)));
+    dates.forEach((_, idx) => updateTabArrows(String(idx)));
   });
 }
 
@@ -1029,20 +1065,17 @@ function updateTabArrows(idx) {
   rightArr.classList.toggle('pointer-events-auto', canRight);
 }
 
-function handleTab(e) {
-  const tab = e.currentTarget;
+function handleTab(tab) {
   const idx = tab.dataset.idx;
   const pool = tab.dataset.pool;
-  const day = tab.dataset.day;
-  const monthNum = tab.dataset.month;
 
-  document.querySelectorAll('button[data-idx="' + idx + '"]').forEach(t => {
+  document.querySelectorAll('#tabs-' + idx + ' .pool-tab').forEach(t => {
     t.className = 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-zinc-400 hover:text-white rounded border border-transparent tab-glow transition-all duration-200';
   });
   tab.className = 'pool-tab px-3.5 py-2.5 text-[11px] font-black tracking-wider uppercase text-brand-neon border border-brand-neon rounded bg-brand-neon/5 tab-glow transition-all duration-200';
 
   const cardEl = document.getElementById('card-' + idx);
-  const data = POOL_CARDS[pool] || {bg:'bg-zinc-800 text-white',html:'<span class="font-black text-lg">' + pool + '</span>'};
+  const data = cardFor(pool);
 
   cardEl.style.opacity = '0';
   cardEl.style.transform = 'scale(0.88) rotateY(8deg)';
@@ -1054,9 +1087,7 @@ function handleTab(e) {
     cardEl.style.transform = 'scale(1) rotateY(0)';
   }, 150);
 
-  const dlBtn = document.getElementById('dlbtn-' + idx);
-  dlBtn.dataset.pool = pool;
-  dlBtn.onclick = () => showDownloadModal(pool, day, monthNum);
+  document.getElementById('dlbtn-' + idx).dataset.pool = pool;
 }
 
 // ============================================================
@@ -1073,6 +1104,17 @@ function observeReveals() {
     });
   }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    document.querySelectorAll('[id^="tabs-scroll-"]').forEach(el => updateTabArrows(el.id.slice('tabs-scroll-'.length)));
+  }, 150);
+});
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => document.querySelectorAll('[id^="tabs-scroll-"]').forEach(el => updateTabArrows(el.id.slice('tabs-scroll-'.length))));
 }
 
 window.addEventListener('scroll', () => {
@@ -1093,6 +1135,13 @@ window.addEventListener('scroll', () => {
 // ============================================================
 // INIT
 // ============================================================
+function startView() {
+  MONTHS = DPW.listMonths(DATA);
+  if (!MONTHS.length) { renderEmpty(); return; }
+  const fromHash = (window.location.hash.match(/mes=(\d{4}-\d{2})/) || [])[1];
+  switchMonth(monthById(fromHash) ? fromHash : MONTHS[0].id, { scroll: false });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // ?reset limpia localStorage y recarga limpio
   if (window.location.search.includes('reset')) {
@@ -1104,29 +1153,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   getUsers();
   updateUserUI();
+  renderLoading();
 
-  const result = buildMonthsData();
-  MONTHS_DATA = result.months;
-
-  // Update stats
-  document.getElementById('stat-files').textContent = result.totalFiles;
-  document.getElementById('stat-pools').textContent = result.totalPools;
-  document.getElementById('stat-dates').textContent = result.totalDates;
-
-  // Count total tracks
-  if (typeof TRACK_LIST !== 'undefined') {
-    let totalTracks = 0;
-    for (const dk of Object.keys(TRACK_LIST)) {
-      for (const p of Object.keys(TRACK_LIST[dk])) totalTracks += TRACK_LIST[dk][p].length;
-    }
-    document.getElementById('stat-tracks').textContent = totalTracks.toLocaleString();
-  }
-
-  // Start with the most recent month
-  const monthOrder = Object.keys(MONTHS_DATA);
-  if (monthOrder.length > 0) {
-    switchMonth(monthOrder[0]);
-  }
+  loadData()
+    .then(data => { DATA = data; startView(); })
+    .catch(err => { console.error('[DPW] No se pudo cargar ' + DPW.DATA_PATH, err); renderLoadError(); });
 });
 </script>
 </body>
