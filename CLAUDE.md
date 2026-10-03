@@ -8,7 +8,14 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - **Pagina principal:** https://failsgamergt-arch.github.io/pools.html
 - **Admin panel:** https://failsgamergt-arch.github.io/admin.html
 - **Repo:** https://github.com/failsgamergt-arch/failsgamergt-arch.github.io
+- **Repo de datos (pools + admins cifrados):** https://github.com/failsgamergt-arch/dpw-data (creado oct 2026, publico, Pages activado en `main` /)
+- **Datos publicados:** https://failsgamergt-arch.github.io/dpw-data/pools.json
 - **Usuario GitHub:** failsgamergt-arch
+
+## Estado actual (oct 2026)
+- **Publicacion desde el panel: PENDIENTE DE ACTIVAR.** Todavia no existe `access.json` → **no hay ningun admin**. Al abrir admin.html sale "ACTIVAR PUBLICACION": el dueño crea la llave de GitHub (solo repo `dpw-data`, Contents: Read and write, sin caducidad) y crea su usuario/contraseña de admin. Luego añade al socio en ADMINS.
+- Los antiguos admins `admin/admin2026` y `sharkmusic/shark-music_2026` ya NO existen (sus contraseñas estaban en el codigo publico).
+- Comprobar admins actuales: `node tools/pools-cli.js admins`.
 
 ## Webs enlazadas (navbar + footer)
 1. **Blog** → https://djpoolworld.blogspot.com/ (EDM, pools, packs, latin remix)
@@ -174,8 +181,11 @@ CLAUDE.md           -- Este archivo
 - Dominio `websysoluciones.es` disponible para subdominios gratis (CNAME a GitHub Pages)
 
 ## Deploy
-- Push a `main` → GitHub Pages despliega automaticamente
-- Forzar rebuild: `gh api repos/failsgamergt-arch/failsgamergt-arch.github.io/pages/builds -X POST`
+- Push a `main` → GitHub Pages despliega automaticamente (web y repo `dpw-data` por separado, ~1 min cada uno)
+- Forzar rebuild web: `gh api repos/failsgamergt-arch/failsgamergt-arch.github.io/pages/builds -X POST`
+- Forzar rebuild datos: `gh api repos/failsgamergt-arch/dpw-data/pages/builds -X POST`
+- Imagenes que cambian (p.ej. `fondo.jpg`): subir el `?v=N` de su URL en el CSS para que los navegadores no muestren la vieja
+- Los cambios de pools NO van en el repo principal: los hace el panel o `tools/pools-cli.js` directamente en `dpw-data`
 - GitHub CLI en `C:\Program Files\GitHub CLI`
 - Autenticado (token expuesto, pendiente de renovar)
 
