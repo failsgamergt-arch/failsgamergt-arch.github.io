@@ -12,10 +12,11 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - **Datos publicados:** https://failsgamergt-arch.github.io/dpw-data/pools.json
 - **Usuario GitHub:** failsgamergt-arch
 
-## Estado actual (oct 2026)
-- **Publicacion desde el panel: PENDIENTE DE ACTIVAR.** Todavia no existe `access.json` → **no hay ningun admin**. Al abrir admin.html sale "ACTIVAR PUBLICACION": el dueño crea la llave de GitHub (solo repo `dpw-data`, Contents: Read and write, sin caducidad) y crea su usuario/contraseña de admin. Luego añade al socio en ADMINS.
-- Los antiguos admins `admin/admin2026` y `sharkmusic/shark-music_2026` ya NO existen (sus contraseñas estaban en el codigo publico).
-- Comprobar admins actuales: `node tools/pools-cli.js admins`.
+## Estado actual (17 oct 2026)
+- **Publicacion activada** el 04/10/2026. Admins en `access.json`: **admin** (añadir mas desde admin.html → ADMINS). Verlos: `node tools/pools-cli.js admins`.
+- **Web:** SEPTIEMBRE 2026 es el mes actual (27 dias, 375 enlaces, 27 artistas). AGOSTO 2026 sigue visible en ARCHIVO pero **sus enlaces MEGA ya no funcionan** (se borraron de MEGA para hacer sitio a septiembre). La unica copia de agosto es `C:\Users\Javier\Desktop\PENDRIVE_DPW` (155 GB).
+- **MEGA:** las 9 cuentas contienen SOLO septiembre (ver "Septiembre 2026").
+- Los antiguos admins del codigo (`admin/admin2026`, `sharkmusic/shark-music_2026`) ya NO valen; el admin `admin` actual tiene otra contraseña, guardada cifrada.
 
 ## Webs enlazadas (navbar + footer)
 1. **Blog** → https://djpoolworld.blogspot.com/ (EDM, pools, packs, latin remix)
@@ -78,7 +79,7 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - **Botones dinamicos sin JS inline:** todo lo que lleva datos usa `data-action` (`month`, `pool`, `tab`, `download`, `search-hit`, `reload`) + un listener delegado; textos siempre escapados con `DPW.esc`
 - **Artistas sin diseno en `POOL_CARDS`:** `cardFor()` genera una card con degradado automatico y el nombre (un artista nuevo nunca rompe la seccion)
 - **Filtro por pool:** menu POOLS lista las pools del mes en 2 columnas (+ "TODAS LAS POOLS"); `filterPool(name)` re-renderiza solo las fechas de esa pool con una unica tab, muestra barra `#pool-filter-bar` ("MOSTRANDO X · N FECHAS" + boton "VER TODAS LAS POOLS") y el titulo pasa a "AGOSTO 2026 | X". `filterPool(null)` quita el filtro. Estado en `currentMonth` / `currentPool`, render en `refreshView()`
-- **Contenido actual:** agosto 2026 → 26 fechas, 25 artistas, 365 enlaces, 17,131 tracks (`LATINREMIXES.COM` ya fusionado en `LATIN REMIXES` durante la migracion; `POOL_ALIASES` eliminado)
+- **Contenido actual:** septiembre 2026 (27 fechas, 375 enlaces, 27 artistas) + agosto 2026 en ARCHIVO (26 fechas, 365 enlaces; enlaces MEGA borrados). Canciones en `pools-tracks.js`: 34.938 (agosto + septiembre)
 - **Tabs por fecha:** click cambia card visual + boton descarga con flip 3D
 - **Flechas de tabs:** `scrollTabs(idx, dir)` desplaza 250px, `updateTabArrows(idx)` muestra/oculta flechas segun scroll position (gradiente fade con bg del card container)
 - **28 pool cards visuales:** definidos en `POOL_CARDS` con bg/html unicos por pool
@@ -364,6 +365,17 @@ CLAUDE.md           -- Este archivo
 10. Publicar en Blogger → pendiente (copiar HTML de `blogpost_agosto_2026_links.html`)
 11. **Web DJ Pool World** → `pools.html` + `dpw-data/pools.json` (antes `pools-links.js`) + `pools-tracks.js` + `admin.html` (plataforma completa con auth, busqueda, tracklists)
 12. **Meses siguientes:** subir los enlaces MEGA desde admin → SUBIR POOLS (PEGADO RAPIDO detecta dia y artista solos) o con `tools/pools-cli.js add`
+
+## Septiembre 2026 (COMPLETADO 17/10/2026)
+- **Origen:** pendrive KINGSTON (H:), 375 packs (246 RAR + 129 ZIP, ~157 GB). Se proceso directamente EN el pendrive (sin copia en SSD); agosto ya no esta en el pendrive.
+- **Scripts** en `C:\Users\Javier\OneDrive\Desktop\prueba\septiembre\` (todos reanudables):
+  1. `rename_sep.py` — renombra a `Pool DD MM 2026 - Dj Pool World [DPW].ext` (formatos `#Pool DDMM`, `DD-SEP-26-POOL`, `Pool DD MM 2026`, y coletilla ` - Category_ Latin Music`). Genera `H:\TRACKLIST djpoolworld SEPTIEMBRE 2026.txt`.
+  2. `tag_sep.py` — portada `cover_dpw2026.jpg` + album en cada MP3 y recomprime en el sitio (6 hilos, temp `C:\_ts`, timeout 3 h por archivo); guarda las canciones de cada pack en `H:\_tracks_sep.json`; hechos en `H:\_tagged_ok.txt`. Resultado 375/375 (Bpm Supreme 16/09, 3,2 GB, necesito reintento).
+  3. `upload_sep.py` — por cuenta: borra `/DjPoolWorld` (mes anterior) + papelera, comprueba 0 GB, sube packs editados hasta **19 GB** (a ~19,4 GB MEGA deja la subida colgada) y saca cada enlace con `mega-export -a -f` (sin `-f` se cuelga pidiendo aceptar terminos). Comprueba con `mega-ls` antes de subir para no duplicar. Estado `H:\_upload_sep.json`, enlaces `H:\_mega_links_sep.json`.
+  4. `publish_sep.js` — publica en `dpw-data/pools.json` via gh (dia + artista desde el nombre con `DPW.matchArtistInfo`; crea artistas nuevos: EXTENDED LATINO, INTENSA MUSIC) y añade las canciones a `pools-tracks.js`. `--dry-run` para previsualizar.
+  5. `progreso.py` — ventana con barras EDITADAS / SUBIDAS / enlaces.
+- **Cuentas MEGA (9):** djpoolworldmega, djpoolworldmega2, djpoolworldmega3, djpoolworldmega4, djpoolworld54, djpoolworld52, djpoolworld53, djpoolworld51 (~19 GB cada una) + **failsgamergt@gmail.com / Ossas_1234** (3,95 GB).
+- **Para octubre:** copiar la carpeta `septiembre` a `octubre`, cambiar textos y nombres de los archivos de estado, y repetir 1→4 (el paso 3 borra septiembre de MEGA; si se quiere conservar, hacen falta cuentas nuevas).
 
 ## Nuevos Pools Agosto 2026 (5 pools, 13 carpetas)
 - **Carpetas SSD:** `C:\Users\Javier\Desktop\PENDRIVE_DPW\NUEVOS\`

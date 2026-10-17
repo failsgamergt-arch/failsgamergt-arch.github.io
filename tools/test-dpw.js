@@ -30,7 +30,7 @@ test('real data/pools.json is valid', () => {
 });
 
 test('real data round-trips through serialize unchanged', () => {
-  const text = fs.readFileSync(path.join(__dirname, '..', 'dpw-data', 'pools.json'), 'utf8');
+  const text = fs.readFileSync(path.join(__dirname, '..', 'dpw-data', 'pools.json'), 'utf8').replace(/\r\n/g, '\n');
   assert.strictEqual(DPW.serialize(JSON.parse(text)), text);
 });
 
