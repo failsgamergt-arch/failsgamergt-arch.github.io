@@ -28,7 +28,7 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Tailwind CSS v3 via CDN con config custom (brand colors, Montserrat font)
 - Fuente: Montserrat (400-900)
 - Vanilla JS: IntersectionObserver (scroll reveal), localStorage/sessionStorage (auth)
-- Datos: `dpw-data/pools.json` (repo aparte dpw-data, UNICA fuente de las publicaciones: artistas + dias → artista → enlaces MEGA), `pools-tracks.js` (17,131 tracks por fecha+artista, solo para "VER CONTENIDO" y buscador)
+- Datos: `dpw-data/pools.json` (repo aparte dpw-data, UNICA fuente de las publicaciones: artistas + dias → artista → enlaces MEGA), `pools-tracks.js` (34.938 tracks de agosto + septiembre por fecha+artista, solo para "VER CONTENIDO" y buscador)
 - Modulos JS: `js/dpw-data.js` (modelo de datos + validacion, compartido web/admin/Node), `js/dpw-github.js` (publicar desde el admin via API de GitHub), `js/dpw-mega.js` (leer nombre de archivo de un enlace MEGA)
 - Herramientas: `tools/pools-cli.js` (editar pools por codigo), `tools/test-dpw.js` (tests)
 - Logo: `logo-dpw.png` (LOGO FINAL: circulo con globo terraqueo real azul/verde, auriculares, notas musicales; PNG 512x512 con esquinas transparentes, generado desde `OneDrive\Desktop\LOGO FINAL.jpeg`). Usado en header (junto a WORLD) y hero (grande a la derecha)
@@ -88,7 +88,7 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - **Stats en hero:** archivos, pools, fechas y tracks DEL MES mostrado (de `dpw-data/pools.json` + `TRACK_LIST`)
 - **Buscador de canciones:**
   - Input en hero section con debounce 250ms
-  - Busca en `TRACK_LIST` (17,131 tracks, todos los meses, mas recientes primero; solo tracks de publicaciones que existen) por nombre de cancion, artista o remix
+  - Busca en `TRACK_LIST` (34.938 tracks, todos los meses, mas recientes primero; solo tracks de publicaciones que existen) por nombre de cancion, artista o remix
   - Max 50 resultados, con highlight del texto buscado
   - Click en resultado abre el modal de descarga del pool/fecha correspondiente
   - Dropdown `z-50` dentro del hero `z-20` para aparecer encima de las secciones de abajo
@@ -166,7 +166,7 @@ js/dpw-mega.js      -- Lee nombre/tamano de un enlace MEGA (autorrelleno en admi
 tools/pools-cli.js  -- CLI para editar pools por codigo (remoto via gh, o --file local)
 tools/test-dpw.js   -- Tests del modelo, del cifrado y de los datos reales (node tools/test-dpw.js)
 .gitignore          -- ignora dpw-data/
-pools-tracks.js     -- 17,131 tracks (const TRACK_LIST, claves "YYYY-MM-DD" -> artista -> [tracks])
+pools-tracks.js     -- 34.938 tracks (agosto 17.131 + septiembre 17.807) (const TRACK_LIST, claves "YYYY-MM-DD" -> artista -> [tracks])
 logo-dpw.png        -- LOGO FINAL circular con fondo transparente (header + hero)
 logo-dpw.jpg        -- Logo antiguo (altavoces + mesa, no usado)
 logodpw.png         -- Logo antiguo recortado (no usado)
@@ -343,7 +343,8 @@ CLAUDE.md           -- Este archivo
 - **Generado desde:** extraccion de nombres de archivo dentro de los ZIP/RAR de cada pool
 - **Formato (desde oct 2026):** `const TRACK_LIST = { "YYYY-MM-DD": { "ARTISTA": ["track1.mp3", ...] } }` — mismas claves de fecha y artista que `dpw-data/pools.json` (solo se muestran tracks de publicaciones que existen). Las tracklists NO se suben desde el admin (opcionales; las subidas nuevas no las necesitan)
 - **Toilet Break:** la clave aparte `THEMASHUP - TOILET BREAK` (23 tracks en 6 fechas) se fusiono en `THEMASHUP`, porque su enlace es parte de esa publicacion
-- **17,131 tracks** distribuidos en 26 fechas y 25 artistas (oct 2026: +789 tracks de 19 entradas que faltaban: Latin Box x6, Elite Remix x2, Urban Zone x2, Unlimited Latin x2, Dirty Sounds, Beatfreakz x3, Beezo BeeHive 13/08, Da Zone 22/08 y 24/08, extraidos de los ZIP/RAR de `PENDRIVE_DPW` y `PENDRIVE_DPW\NUEVOS`)
+- **Septiembre: 17.807 tracks** en 27 fechas y 27 artistas (de `H:\_tracks_sep.json` via `publish_sep.js`). Total en el archivo: 34.938
+- **Agosto: 17,131 tracks** en 26 fechas y 25 artistas (oct 2026: +789 tracks de 19 entradas que faltaban: Latin Box x6, Elite Remix x2, Urban Zone x2, Unlimited Latin x2, Dirty Sounds, Beatfreakz x3, Beezo BeeHive 13/08, Da Zone 22/08 y 24/08, extraidos de los ZIP/RAR de `PENDRIVE_DPW` y `PENDRIVE_DPW\NUEVOS`)
 - **Sin tracklist:** solo `MP3 Mixes Pool 04 08` (ZIP corrupto)
 - **Usado por:** buscador de canciones (`handleSongSearch`), tracklist accordion en modal de descarga (`getTrackList`)
 - **Encoding fix aplicado (sep 2026):** 180 caracteres Unicode corruptos reparados. Tres patrones de corrupcion de WinRAR UnRAR.exe corregidos: cp437→Latin-1 (¡→í, ¤→ñ, Æ→ã), NFD combining via cp437 (╠ü→acute, ╠â→tilde), cp1252→cp437 (‚→é, †→å, ‰→ë, ‹→ï, "→ö, ™→Ö). Tambien: NBSP→espacio, ├ÿ→Ø, NFC normalization.
@@ -370,10 +371,15 @@ CLAUDE.md           -- Este archivo
 - **Origen:** pendrive KINGSTON (H:), 375 packs (246 RAR + 129 ZIP, ~157 GB). Se proceso directamente EN el pendrive (sin copia en SSD); agosto ya no esta en el pendrive.
 - **Scripts** en `C:\Users\Javier\OneDrive\Desktop\prueba\septiembre\` (todos reanudables):
   1. `rename_sep.py` — renombra a `Pool DD MM 2026 - Dj Pool World [DPW].ext` (formatos `#Pool DDMM`, `DD-SEP-26-POOL`, `Pool DD MM 2026`, y coletilla ` - Category_ Latin Music`). Genera `H:\TRACKLIST djpoolworld SEPTIEMBRE 2026.txt`.
-  2. `tag_sep.py` — portada `cover_dpw2026.jpg` + album en cada MP3 y recomprime en el sitio (6 hilos, temp `C:\_ts`, timeout 3 h por archivo); guarda las canciones de cada pack en `H:\_tracks_sep.json`; hechos en `H:\_tagged_ok.txt`. Resultado 375/375 (Bpm Supreme 16/09, 3,2 GB, necesito reintento).
+  2. `tag_sep.py` — portada `cover_dpw2026.jpg` + album en cada MP3 y recomprime en el sitio (6 hilos, temp `C:\_ts`, timeout 3 h por archivo); guarda las canciones de cada pack en `H:\_tracks_sep.json`; hechos en `H:\_tagged_ok.txt`. Resultado 375/375 (Bpm Supreme 16/09, 3,2 GB, necesitó reintento).
   3. `upload_sep.py` — por cuenta: borra `/DjPoolWorld` (mes anterior) + papelera, comprueba 0 GB, sube packs editados hasta **19 GB** (a ~19,4 GB MEGA deja la subida colgada) y saca cada enlace con `mega-export -a -f` (sin `-f` se cuelga pidiendo aceptar terminos). Comprueba con `mega-ls` antes de subir para no duplicar. Estado `H:\_upload_sep.json`, enlaces `H:\_mega_links_sep.json`.
   4. `publish_sep.js` — publica en `dpw-data/pools.json` via gh (dia + artista desde el nombre con `DPW.matchArtistInfo`; crea artistas nuevos: EXTENDED LATINO, INTENSA MUSIC) y añade las canciones a `pools-tracks.js`. `--dry-run` para previsualizar.
   5. `progreso.py` — ventana con barras EDITADAS / SUBIDAS / enlaces.
+  6. `blogpost_sep.js` — genera el post de Blogger desde la plantilla de agosto (`prueba\blogpost_agosto_2026_links.html`: misma imagen y orden por pool) con los enlaces de `H:\_mega_links_sep.json`. Pools nuevas sin imagen (EXTENDED LATINO, INTENSA MUSIC) salen con titulo de texto. Boton PayPal al final.
+- **Posts de Blogger (en el Escritorio de OneDrive):**
+  - `blogpost_septiembre_2026.txt` — con los 375 enlaces MEGA (cabecera antigua).
+  - `blogpost_septiembre_2026_sin_enlaces.txt` — mismo post SIN enlaces MEGA (solo nombres de los packs), con la cabecera nueva de septiembre que subio el usuario a Blogger (`.../s1600/image.png`, 1254x1254). 375 packs, 30 imagenes, PayPal.
+  - Para quitar enlaces de otro post: sustituir `<a href="https://mega.nz/..." target="_blank">NOMBRE</a>` por `NOMBRE`.
 - **Cuentas MEGA (9):** djpoolworldmega, djpoolworldmega2, djpoolworldmega3, djpoolworldmega4, djpoolworld54, djpoolworld52, djpoolworld53, djpoolworld51 (~19 GB cada una) + **failsgamergt@gmail.com / Ossas_1234** (3,95 GB).
 - **Para octubre:** copiar la carpeta `septiembre` a `octubre`, cambiar textos y nombres de los archivos de estado, y repetir 1→4 (el paso 3 borra septiembre de MEGA; si se quiere conservar, hacen falta cuentas nuevas).
 
@@ -408,5 +414,5 @@ CLAUDE.md           -- Este archivo
 - **Usuarios compartidos entre dispositivos:** los usuarios viven en el `localStorage` de cada navegador (los defaults estan en el codigo). Un usuario creado en el admin NO existe en el movil del suscriptor → hace falta un sistema real (p.ej. Firebase Auth/Supabase) para que las suscripciones funcionen de verdad.
 - **Audio preview 30s:** Vista previa de 30 segundos via Deezer API (gratis, CORS, sin auth). Prerequisito Unicode ya completado. Implementacion revertida anteriormente por encoding roto, lista para reimplementar.
 - **Contador de descargas por pool:** Tracking de descargas por pool/fecha
-- **Publicar blogpost en Blogger:** Copiar HTML de `blogpost_agosto_2026_links.html` al blog
+- **Publicar blogpost en Blogger:** septiembre listo en el Escritorio (`blogpost_septiembre_2026.txt` con enlaces / `blogpost_septiembre_2026_sin_enlaces.txt` sin enlaces): copiar y pegar en Blogger en vista HTML
 - **Estrategia de almacenamiento largo plazo:** Cloudflare R2 evaluado (10GB gratis permanente, egress gratis, ~$2.70/mes para 180GB a 2 anos). Alternativa: Deezer API para previews sin hosting propio.
