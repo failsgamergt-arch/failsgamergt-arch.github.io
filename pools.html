@@ -276,6 +276,7 @@ body::after{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradi
       <li>Se te creara un usuario con acceso completo a la web y las descargas</li>
     </ol>
   </div>
+  <p class="text-[11px] text-zinc-500 leading-relaxed mb-5">Al suscribirte aceptas las <a href="legal.html#condiciones" target="_blank" class="text-zinc-300 underline hover:text-brand-neon">condiciones de la suscripcion</a> y la <a href="legal.html#privacidad" target="_blank" class="text-zinc-300 underline hover:text-brand-neon">politica de privacidad</a>.</p>
   <button onclick="hideSubscribeModal()" class="w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200">ENTENDIDO</button>
 </div>
 </div>
@@ -294,35 +295,6 @@ body::after{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradi
     <p class="text-zinc-400 font-bold text-sm mb-4">Inicia sesion para descargar</p>
     <button onclick="hideDownloadModal(); showLoginModal();" class="px-6 py-2.5 rounded-lg bg-brand-neon text-black font-black tracking-widest text-xs hover:bg-brand-neonHover transition-all">INICIAR SESION</button>
   </div>
-</div>
-</div>
-
-<!-- ========== ACCOUNT EDIT MODAL ========== -->
-<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="account-modal">
-<div class="modal-content bg-[#14141a] border border-zinc-700/80 rounded-2xl p-8 w-full max-w-sm mx-4 shadow-2xl relative">
-  <button onclick="hideAccountModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-  </button>
-  <h2 class="text-xl font-black text-brand-neon tracking-wider mb-6">MI CUENTA</h2>
-  <form onsubmit="saveAccount(event)">
-    <div class="space-y-4">
-      <div>
-        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">USUARIO</label>
-        <input type="text" id="acc-user" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all">
-      </div>
-      <div>
-        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">NUEVA PASSWORD</label>
-        <input type="password" id="acc-pass" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" placeholder="********">
-      </div>
-      <div>
-        <label class="block text-xs font-bold tracking-wider text-zinc-400 mb-1.5">CONFIRMAR PASSWORD</label>
-        <input type="password" id="acc-pass2" required class="w-full bg-[#0c0c10] border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-brand-neon focus:ring-1 focus:ring-brand-neon/50 outline-none transition-all" placeholder="********">
-      </div>
-    </div>
-    <p class="text-red-500 text-xs mt-3 hidden" id="acc-error"></p>
-    <p class="text-emerald-400 text-xs mt-3 hidden" id="acc-success">Cuenta actualizada correctamente</p>
-    <button type="submit" class="mt-6 w-full py-3 rounded-lg bg-brand-neon text-black font-black tracking-widest text-sm hover:bg-brand-neonHover transition-all duration-200 hover:shadow-[0_0_20px_rgba(37,99,235,.3)]">GUARDAR CAMBIOS</button>
-  </form>
 </div>
 </div>
 
@@ -403,11 +375,18 @@ body::after{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradi
     <a class="hover:text-brand-neon transition-colors duration-200 hidden" href="admin.html" id="footer-admin">Admin</a>
   </div>
 </div>
+<div class="max-w-[1560px] mx-auto px-4 mt-6 flex flex-wrap items-center justify-center sm:justify-end gap-x-5 gap-y-2 text-[11px] text-zinc-500">
+  <a class="hover:text-brand-neon transition-colors" href="legal.html#aviso-legal">Aviso legal</a>
+  <a class="hover:text-brand-neon transition-colors" href="legal.html#privacidad">Privacidad</a>
+  <a class="hover:text-brand-neon transition-colors" href="legal.html#cookies">Cookies</a>
+  <a class="hover:text-brand-neon transition-colors" href="legal.html#condiciones">Condiciones de la suscripcion</a>
+</div>
 </footer>
 
 <!-- ========== DATA ========== -->
 <script src="js/dpw-data.js"></script>
 <script src="js/dpw-vault.js"></script>
+<script src="js/dpw-keys.js"></script>
 <script src="js/dpw-github.js"></script>
 <script src="js/dpw-auth.js"></script>
 <script src="pools-tracks.js"></script>
@@ -457,16 +436,60 @@ let MONTHS = [];
 let currentMonth = '';
 let currentPool = null;
 
+// Public catalogue: pools.json has no download links (they are encrypted in pools.enc, see loadLinks).
 function loadData() {
   return fetch(DPW.DATA_PATH + '?t=' + Date.now(), { cache: 'no-store' })
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(json => {
-      const v = DPW.validate(json);
+      const v = DPW.validate(json, { public: true });
       if (v.ok) return json;
-      console.warn('[DPW] data/pools.json tiene errores; se muestran solo las partes validas:', v.errors);
-      return DPW.sanitize(json);
+      console.warn('[DPW] pools.json tiene errores; se muestran solo las partes validas:', v.errors);
+      return DPW.sanitize(json, { public: true });
     });
 }
+
+// Download links of a logged-in user: pools.enc decrypted with the key opened at login.
+let LINKS = null;
+let linksPromise = null;
+function sessionExpired() {
+  const e = new Error('Tu sesion ha caducado. Vuelve a iniciar sesion.');
+  e.expired = true;
+  return e;
+}
+function loadLinks() {
+  if (!getCurrentUser()) { dropLinks(); return Promise.reject(sessionExpired()); }
+  const c = DPWGitHub.getCk() || {};
+  if (LINKS) return Promise.resolve(LINKS);
+  if (!linksPromise) {
+    linksPromise = Promise.all([DPWGitHub.fetchKeysPublic(), DPWGitHub.fetchEncPublic()])
+      .then(async ([keys, box]) => {
+        if (!keys) throw new Error('Los enlaces no estan disponibles ahora mismo.');
+        let ck = c.ck;
+        // keys.json may come from a stale Pages copy while pools.enc is already fresh (or the other way round).
+        if (keys.kid !== c.kid && box.kid === c.kid) keys = Object.assign({}, keys, { kid: c.kid, history: {} });
+        if (keys.kid !== c.kid) {
+          // The key changed after login (a subscriber was removed): admins re-open it, users log in again.
+          const s = DPWGitHub.session();
+          if (!s || !s.mk) throw sessionExpired();
+          const r = await DPWKeys.unlockAdmin(keys, s.mk);
+          if (r.status !== 'ok') throw new Error('Tu acceso de admin a los enlaces todavia no esta activado (entra en el PANEL ADMIN).');
+          ck = r.ck;
+          DPWGitHub.setCk(ck, keys.kid);
+        }
+        let text;
+        try { text = await DPWKeys.decryptPools(keys, ck, box); } catch (e) { throw sessionExpired(); }
+        LINKS = DPW.sanitize(JSON.parse(text));
+        return LINKS;
+      })
+      .catch(err => {
+        linksPromise = null;
+        if (err.expired) { DPWAuth.logout(); updateUserUI(); }
+        throw err;
+      });
+  }
+  return linksPromise;
+}
+function dropLinks() { LINKS = null; linksPromise = null; }
 
 // Caratulas reales (img/pools/<artista-en-minusculas-con-guiones>.jpg, cuadradas). Tienen prioridad sobre POOL_CARDS.
 const POOL_LOGOS = new Set(['AREYOUKIDY', 'BEATFREAKZ', 'BEEZO BEEHIVE', 'BPM LATINO', 'BPM SUPREME', 'CLUB KILLERS', 'CRACK 4 DJS',
@@ -505,9 +528,8 @@ function getTrackList(pool, date) {
 }
 
 // ============================================================
-// AUTH (js/dpw-auth.js: admins verified against dpw-data/access.json, users in localStorage)
+// AUTH (js/dpw-auth.js: admins -> dpw-data/access.json, subscribers -> dpw-data/keys.json)
 // ============================================================
-const getUsers = DPWAuth.getUsers;
 const getCurrentUser = DPWAuth.getCurrentUser;
 let loginBusy = false;
 async function handleLogin(e) {
@@ -522,8 +544,10 @@ async function handleLogin(e) {
   try {
     const r = await DPWAuth.login(document.getElementById('login-user').value, document.getElementById('login-pass').value);
     if (r.ok) {
+      dropLinks();
       hideLoginModal();
       updateUserUI();
+      loadLinks().catch(() => {});
     } else {
       errEl.textContent = r.error;
       errEl.classList.remove('hidden');
@@ -539,6 +563,7 @@ async function handleLogin(e) {
 }
 function logout() {
   DPWAuth.logout();
+  dropLinks();
   updateUserUI();
 }
 function updateUserUI() {
@@ -571,12 +596,13 @@ function updateUserUI() {
     dd.innerHTML =
       '<div class="px-4 py-3 border-b border-zinc-800">' +
         '<p class="text-sm font-black text-white">' + u.user.toUpperCase() + '</p>' +
-        '<p class="text-[10px] text-zinc-500 font-bold tracking-widest mt-0.5">' + (isAdmin ? 'ADMINISTRADOR' : 'USUARIO') + '</p>' +
+        '<p class="text-[10px] text-zinc-500 font-bold tracking-widest mt-0.5">' + (isAdmin ? 'ADMINISTRADOR' : 'SUSCRIPTOR') + '</p>' +
+        (!isAdmin && u.exp ? '<p class="text-[10px] text-zinc-400 font-bold tracking-wider mt-1.5">ACTIVA HASTA ' + esc(DPW.formatDate(u.exp)) + '</p>' : '') +
       '</div>' +
       (isAdmin
         ? '<a href="admin.html" class="' + itemClass + ' text-brand-neon hover:bg-brand-neon hover:text-white">PANEL ADMIN</a>' +
           '<a href="admin.html#admins" class="' + itemClass + ' text-zinc-300 hover:bg-brand-neon hover:text-white">CAMBIAR MI CONTRASEÑA</a>'
-        : '<button onclick="showAccountModal()" class="' + itemClass + ' text-zinc-300 hover:bg-brand-neon hover:text-white">EDITAR MI CUENTA</button>') +
+        : '<p class="px-4 py-2.5 text-[11px] leading-snug text-zinc-500">¿Cambiar la contraseña? Escribe a <a class="text-zinc-300 hover:text-brand-neon" href="mailto:djpoolworld@gmail.com">djpoolworld@gmail.com</a></p>') +
       '<button onclick="logout()" class="' + itemClass + ' text-red-400 hover:bg-red-950 hover:text-red-300">CERRAR SESION</button>';
   } else {
     if (btnSub) btnSub.classList.remove('!hidden');
@@ -611,79 +637,6 @@ function showLoginModal() {
 function hideLoginModal() {
   const m = document.getElementById('login-modal');
   m.classList.add('hidden'); m.classList.remove('flex');
-}
-
-// ============================================================
-// ACCOUNT MODAL
-// ============================================================
-function showAccountModal() {
-  const u = getCurrentUser();
-  if (!u) return;
-  const users = getUsers();
-  const full = users.find(x => x.user === u.user);
-  if (!full) return;
-  document.getElementById('acc-user').value = full.user;
-  document.getElementById('acc-pass').value = '';
-  document.getElementById('acc-pass2').value = '';
-  document.getElementById('acc-error').classList.add('hidden');
-  document.getElementById('acc-success').classList.add('hidden');
-  const m = document.getElementById('account-modal');
-  m.classList.remove('hidden'); m.classList.add('flex');
-  document.getElementById('acc-user').focus();
-}
-function hideAccountModal() {
-  const m = document.getElementById('account-modal');
-  m.classList.add('hidden'); m.classList.remove('flex');
-}
-function saveAccount(e) {
-  e.preventDefault();
-  const errEl = document.getElementById('acc-error');
-  const okEl = document.getElementById('acc-success');
-  errEl.classList.add('hidden');
-  okEl.classList.add('hidden');
-
-  const u = getCurrentUser();
-  if (!u) return;
-
-  const newName = document.getElementById('acc-user').value.trim();
-  const newPass = document.getElementById('acc-pass').value;
-  const newPass2 = document.getElementById('acc-pass2').value;
-
-  if (!newName || newName.length < 3) {
-    errEl.textContent = 'El usuario debe tener al menos 3 caracteres';
-    errEl.classList.remove('hidden');
-    return;
-  }
-  if (!newPass) {
-    errEl.textContent = 'Introduce una password';
-    errEl.classList.remove('hidden');
-    return;
-  }
-  if (newPass !== newPass2) {
-    errEl.textContent = 'Las passwords no coinciden';
-    errEl.classList.remove('hidden');
-    return;
-  }
-
-  const users = getUsers();
-  if (newName !== u.user && users.some(x => x.user.toLowerCase() === newName.toLowerCase())) {
-    errEl.textContent = 'Ese nombre de usuario ya existe';
-    errEl.classList.remove('hidden');
-    return;
-  }
-
-  // Mark old name as deleted if renamed (so defaults don't re-add)
-  if (newName !== u.user) DPWAuth.addDeletedUser(u.user);
-
-  const updated = users.map(x => {
-    if (x.user !== u.user) return x;
-    return {...x, user: newName, pass: newPass};
-  });
-  DPWAuth.saveUsers(updated);
-  DPWAuth.setCurrentUser(newName, 'user');
-  updateUserUI();
-  okEl.classList.remove('hidden');
-  setTimeout(() => hideAccountModal(), 1200);
 }
 
 // ============================================================
@@ -722,9 +675,23 @@ function showDownloadModal(poolName, date) {
     linksEl.innerHTML = trackHtml;
     linksEl.classList.remove('hidden');
     noAuth.classList.remove('hidden');
+  } else if (!LINKS) {
+    noAuth.classList.add('hidden');
+    linksEl.innerHTML = trackHtml + '<p class="text-zinc-500 text-sm text-center py-6" id="dl-links-wait">Cargando enlaces...</p>';
+    linksEl.classList.remove('hidden');
+    const token = {};
+    showDownloadModal.pending = token;
+    loadLinks().then(() => {
+      if (showDownloadModal.pending === token && !document.getElementById('download-modal').classList.contains('hidden')) showDownloadModal(poolName, date);
+    }, err => {
+      if (showDownloadModal.pending !== token) return;
+      const w = document.getElementById('dl-links-wait');
+      if (w) { w.textContent = err.message; w.className = 'text-red-400 text-sm text-center py-6'; }
+      if (err.expired) { noAuth.classList.remove('hidden'); }
+    });
   } else {
     noAuth.classList.add('hidden');
-    const poolFiles = DPW.getFiles(DATA, date, poolName);
+    const poolFiles = DPW.getFiles(LINKS, date, poolName);
     let dlHtml = '';
     if (poolFiles.length > 0) {
       dlHtml = poolFiles.map((f, i) =>
@@ -810,7 +777,6 @@ function hideSearchResults() {
 document.addEventListener('click', (e) => {
   if (e.target.id === 'login-modal') hideLoginModal();
   if (e.target.id === 'download-modal') hideDownloadModal();
-  if (e.target.id === 'account-modal') hideAccountModal();
   if (e.target.id === 'subscribe-modal') hideSubscribeModal();
   const searchArea = document.getElementById('song-search');
   const searchResults = document.getElementById('search-results');
@@ -819,7 +785,7 @@ document.addEventListener('click', (e) => {
   }
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { hideLoginModal(); hideDownloadModal(); hideAccountModal(); hideSubscribeModal(); }
+  if (e.key === 'Escape') { hideLoginModal(); hideDownloadModal(); hideSubscribeModal(); }
 });
 
 // All dynamic buttons use data-action (no data ever goes into inline JS).
@@ -1156,17 +1122,9 @@ function startView() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // ?reset limpia localStorage y recarga limpio
-  if (window.location.search.includes('reset')) {
-    localStorage.removeItem('dpw_users');
-    localStorage.removeItem('dpw_deleted');
-    window.location.replace(window.location.pathname);
-    return;
-  }
-
-  getUsers();
   updateUserUI();
   renderLoading();
+  if (getCurrentUser()) loadLinks().catch(() => {});
 
   loadData()
     .then(data => { DATA = data; startView(); })

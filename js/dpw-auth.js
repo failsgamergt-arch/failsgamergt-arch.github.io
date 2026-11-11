@@ -1,60 +1,37 @@
-/* Login shared by pools.html and admin.html.
- * - Admins: verified against access.json (dpw-vault.js). Correct password = the publishing key is
- *   decrypted into this tab's session; admin passwords are not stored anywhere in plain text.
- * - Regular users: local list in localStorage (unchanged behaviour). They can never be admins. */
+/* Login shared by pools.html and admin.html. Nothing is checked against data stored in the browser:
+ * - Admins: their slot in access.json (dpw-vault.js). The right password decrypts the publishing key and the
+ *   content key of the links into this tab's session.
+ * - Subscribers: their slot in keys.json (dpw-keys.js), created by an admin. Works on any device; the right
+ *   password decrypts the content key, which is what opens the download links (pools.enc).
+ * Plain passwords are never stored anywhere. */
 (function (root) {
   'use strict';
 
-  var DEFAULT_USERS = [
-    { user: 'prueba1', pass: 'prueba_1', role: 'user', active: true, created: '2026-09-15' },
-    { user: 'demo', pass: 'demo123', role: 'user', active: true, created: '2026-09-01' }
-  ];
+  var SESSION = 'dpw_session';
 
-  function readJson(storage, key, fallback) {
-    try { var v = storage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
-  }
+  // Old builds kept download users with plain passwords in localStorage: wipe them.
+  try { localStorage.removeItem('dpw_users'); localStorage.removeItem('dpw_deleted'); } catch (e) { /* ignore */ }
 
-  function getDeletedUsers() { return readJson(localStorage, 'dpw_deleted', []); }
-
-  function addDeletedUser(username) {
-    var deleted = getDeletedUsers();
-    if (deleted.indexOf(username) === -1) {
-      deleted.push(username);
-      localStorage.setItem('dpw_deleted', JSON.stringify(deleted));
-    }
-  }
-
-  // Old builds stored admin accounts (with plain passwords) here: they are dropped, admins live in access.json now.
-  function getUsers() {
-    var stored = readJson(localStorage, 'dpw_users', null);
-    var users = (Array.isArray(stored) ? stored : []).filter(function (u) { return u && u.role !== 'admin'; });
-    var deleted = getDeletedUsers();
-    DEFAULT_USERS.forEach(function (def) {
-      if (deleted.indexOf(def.user) === -1 && !users.some(function (u) { return u.user === def.user; })) users.push(Object.assign({}, def));
-    });
-    if (!Array.isArray(stored) || stored.length !== users.length) localStorage.setItem('dpw_users', JSON.stringify(users));
-    return users;
-  }
-
-  function saveUsers(users) {
-    localStorage.setItem('dpw_users', JSON.stringify(users.map(function (u) { return Object.assign({}, u, { role: 'user' }); })));
+  function readSession() {
+    try { var v = sessionStorage.getItem(SESSION); return v ? JSON.parse(v) : null; } catch (e) { return null; }
   }
 
   function getCurrentUser() {
-    var s = readJson(sessionStorage, 'dpw_session', null);
+    var s = readSession();
     if (!s || !s.user) return null;
-    // An admin session without its decrypted key is not an admin session (e.g. stale tab).
-    if (s.role === 'admin' && !(root.DPWGitHub && root.DPWGitHub.hasToken())) return { user: s.user, role: 'user', stale: true };
+    // A session without its decrypted keys is not a session (e.g. a tab restored by the browser).
+    if (s.role === 'admin' && !root.DPWGitHub.hasToken()) return null;
+    if (s.role === 'user' && !root.DPWGitHub.getCk()) return null;
     return s;
   }
 
-  function setCurrentUser(user, role) {
-    sessionStorage.setItem('dpw_session', JSON.stringify({ user: user, role: role }));
+  function setCurrentUser(user, role, extra) {
+    sessionStorage.setItem(SESSION, JSON.stringify(Object.assign({ user: user, role: role }, extra || {})));
   }
 
   function logout() {
-    sessionStorage.removeItem('dpw_session');
-    if (root.DPWGitHub) root.DPWGitHub.clearSession();
+    try { sessionStorage.removeItem(SESSION); } catch (e) { /* ignore */ }
+    root.DPWGitHub.clearSession();
   }
 
   var accessCache = null;
@@ -65,34 +42,55 @@
     return accessCache;
   }
 
+  function today() { return root.DPW.todayISO(); }
+
+  function loginAdmin(access, name, pass) {
+    return root.DPWVault.unlock(access, name, pass).then(function (k) {
+      if (!k) return { ok: false, error: 'Usuario o contraseña incorrectos' };
+      root.DPWGitHub.clearSession();
+      root.DPWGitHub.setSession({ user: k.user, token: k.token, mk: k.mk });
+      setCurrentUser(k.user, 'admin');
+      // Content key for the links: best effort (the admin panel finishes the setup when it is pending).
+      return root.DPWGitHub.fetchKeysPublic().then(function (keys) {
+        if (!keys) return;
+        return root.DPWKeys.unlockAdmin(keys, k.mk).then(function (r) { if (r.status === 'ok') root.DPWGitHub.setCk(r.ck, keys.kid); });
+      }).catch(function () { /* the panel retries */ }).then(function () {
+        return { ok: true, role: 'admin', user: k.user };
+      });
+    });
+  }
+
+  function loginMember(name, pass) {
+    return root.DPWGitHub.fetchKeysPublic().then(function (keys) {
+      if (!keys) return { ok: false, error: 'Usuario o contraseña incorrectos' };
+      return root.DPWKeys.unlockMember(keys, name, pass, today()).then(function (r) {
+        if (r.status === 'wrong') return { ok: false, error: 'Usuario o contraseña incorrectos' };
+        if (r.status === 'expired') return { ok: false, error: 'Tu suscripcion caduco el ' + root.DPW.formatDate(r.exp) + '. Renuevala para seguir descargando (djpoolworld@gmail.com).' };
+        if (r.status === 'pending') return { ok: false, error: 'Tu cuenta se esta activando. Prueba de nuevo en unos minutos.' };
+        root.DPWGitHub.clearSession();
+        root.DPWGitHub.setCk(r.ck, keys.kid);
+        var user = root.DPWKeys.normUser(name);
+        setCurrentUser(user, 'user', { exp: r.exp });
+        return { ok: true, role: 'user', user: user, exp: r.exp };
+      });
+    });
+  }
+
   // -> Promise<{ ok, role?, user?, error? }>
   function login(username, password) {
     var name = String(username == null ? '' : username).trim();
     var pass = String(password == null ? '' : password);
-    if (!name || !pass) return Promise.resolve({ ok: false, error: 'Escribe usuario y password' });
+    if (!name || !pass) return Promise.resolve({ ok: false, error: 'Escribe usuario y contraseña' });
     return getAccess().then(function (access) { return { access: access }; }, function (err) { return { access: null, accessError: err }; })
       .then(function (r) {
-        if (r.access && root.DPWVault.hasAdmin(r.access, name)) {
-          return root.DPWVault.unlock(r.access, name, pass).then(function (k) {
-            if (!k) return { ok: false, error: 'Usuario o password incorrectos' };
-            root.DPWGitHub.setSession({ user: k.user, token: k.token, mk: k.mk });
-            setCurrentUser(k.user, 'admin');
-            return { ok: true, role: 'admin', user: k.user };
-          });
-        }
-        var found = getUsers().filter(function (u) { return u.user === name && u.pass === pass && u.active; })[0];
-        if (found) {
-          if (root.DPWGitHub) root.DPWGitHub.clearSession();
-          setCurrentUser(found.user, 'user');
-          return { ok: true, role: 'user', user: found.user };
-        }
-        if (r.accessError) return { ok: false, error: 'No se pudo comprobar el usuario (sin conexion). Intentalo de nuevo.' };
-        return { ok: false, error: 'Usuario o password incorrectos' };
+        if (r.access && root.DPWVault.hasAdmin(r.access, name)) return loginAdmin(r.access, name, pass);
+        return loginMember(name, pass).catch(function (err) {
+          return { ok: false, error: r.accessError ? 'No se pudo comprobar el usuario (sin conexion). Intentalo de nuevo.' : err.message };
+        });
       });
   }
 
   root.DPWAuth = {
-    getUsers: getUsers, saveUsers: saveUsers, getDeletedUsers: getDeletedUsers, addDeletedUser: addDeletedUser,
     getCurrentUser: getCurrentUser, setCurrentUser: setCurrentUser, logout: logout, login: login, getAccess: getAccess
   };
 })(typeof self !== 'undefined' ? self : this);

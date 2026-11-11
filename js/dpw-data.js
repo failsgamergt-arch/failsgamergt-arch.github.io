@@ -1,5 +1,6 @@
 /* DJ POOL WORLD - data model shared by pools.html, admin.html and tools/pools-cli.js.
- * Canonical store: data/pools.json -> { version, updated, artists: [..], days: { "YYYY-MM-DD": { "ARTIST": [{name, url}] } } }
+ * Full data (admins / subscribers, encrypted in pools.enc): { version, updated, artists: [..], days: { "YYYY-MM-DD": { "ARTIST": [{name, url}] } } }
+ * Public catalogue (pools.json): the same without links -> files are [{name}] (publicView). validate(data, {public:true}).
  * Every mutation is pure (returns a new object) and every write must pass validate(). */
 (function (root, factory) {
   var api = factory();
@@ -95,7 +96,8 @@
   }
 
   function isValidFileName(n) {
-    return typeof n === 'string' && n.trim().length > 0 && n.length <= MAX_NAME && !/[<>]/.test(n);
+    // No links inside names either: the public catalogue must never carry one.
+    return typeof n === 'string' && n.trim().length > 0 && n.length <= MAX_NAME && !/[<>]/.test(n) && !/https?:\/\/|mega\.(nz|co\.nz|io)/i.test(n);
   }
 
   // ---------------------------------------------------------------- shape
@@ -107,7 +109,7 @@
     Object.keys(data.days || {}).sort().reverse().forEach(function (date) {
       var day = data.days[date], nd = {};
       Object.keys(day).sort(function (a, b) { return a.localeCompare(b); }).forEach(function (artist) {
-        nd[artist] = day[artist].map(function (f) { return { name: f.name, url: f.url }; });
+        nd[artist] = day[artist].map(function (f) { return f.url === undefined ? { name: f.name } : { name: f.name, url: f.url }; });
       });
       if (Object.keys(nd).length) out.days[date] = nd;
     });
@@ -116,7 +118,20 @@
 
   function serialize(data) { return JSON.stringify(canonicalize(data), null, 2) + '\n'; }
 
-  function validate(data) {
+  // Catalogue without download links (what pools.json publishes to everyone).
+  function publicView(data) {
+    var out = canonicalize(data);
+    Object.keys(out.days).forEach(function (date) {
+      Object.keys(out.days[date]).forEach(function (a) {
+        out.days[date][a] = out.days[date][a].map(function (f) { return { name: f.name }; });
+      });
+    });
+    return out;
+  }
+
+  // opts.public: catalogue without links (a link present is an error: it must never be published).
+  function validate(data, opts) {
+    var pub = !!(opts && opts.public);
     var errors = [], warnings = [];
     if (!data || typeof data !== 'object' || Array.isArray(data)) return { ok: false, errors: ['El archivo no es un objeto JSON'], warnings: warnings };
     if (data.version !== SCHEMA_VERSION) errors.push('version debe ser ' + SCHEMA_VERSION);
@@ -146,6 +161,10 @@
         files.forEach(function (f, i) {
           if (!f || typeof f !== 'object') { errors.push(where + ' #' + (i + 1) + ': entrada no valida'); return; }
           if (!isValidFileName(f.name)) errors.push(where + ' #' + (i + 1) + ': nombre no valido');
+          if (pub) {
+            if (f.url !== undefined) errors.push(where + ' #' + (i + 1) + ': el catalogo publico no puede llevar enlaces');
+            return;
+          }
           if (typeof f.url !== 'string' || !MEGA_URL_RE.test(f.url)) errors.push(where + ' #' + (i + 1) + ': enlace MEGA no valido');
           if (local[f.url]) errors.push(where + ': enlace repetido');
           local[f.url] = true;
@@ -157,8 +176,8 @@
     return { ok: errors.length === 0, errors: errors, warnings: warnings };
   }
 
-  function assertValid(data) {
-    var r = validate(data);
+  function assertValid(data, opts) {
+    var r = validate(data, opts);
     if (!r.ok) {
       var e = new Error('Datos no validos:\n- ' + r.errors.slice(0, 15).join('\n- ') + (r.errors.length > 15 ? '\n- ... (' + (r.errors.length - 15) + ' mas)' : ''));
       e.validation = r;
@@ -174,7 +193,8 @@
   }
 
   // Keeps only valid parts so the public site can still render if the file was hand-edited badly.
-  function sanitize(data) {
+  function sanitize(data, opts) {
+    var pub = !!(opts && opts.public);
     if (!data || typeof data !== 'object') return emptyData();
     var out = emptyData();
     out.updated = data.updated || null;
@@ -189,8 +209,8 @@
       Object.keys(days[date]).forEach(function (artist) {
         if (typeof artist !== 'string' || !ARTIST_RE.test(artist)) return;
         var files = (Array.isArray(days[date][artist]) ? days[date][artist] : []).filter(function (f) {
-          return f && isValidFileName(f.name) && typeof f.url === 'string' && MEGA_URL_RE.test(f.url);
-        }).map(function (f) { return { name: f.name, url: f.url }; });
+          return f && isValidFileName(f.name) && (pub || (typeof f.url === 'string' && MEGA_URL_RE.test(f.url)));
+        }).map(function (f) { return pub ? { name: f.name } : { name: f.name, url: f.url }; });
         if (files.length) {
           nd[artist] = files;
           if (!artists[artist]) { artists[artist] = true; out.artists.push(artist); }
@@ -480,7 +500,7 @@
     esc: esc, clone: clone, isValidDate: isValidDate, todayISO: todayISO, addDays: addDays, monthOf: monthOf, monthLabel: monthLabel,
     formatDate: formatDate, normalizeArtistName: normalizeArtistName, artistKey: artistKey, defaultFileName: defaultFileName,
     normalizeMegaUrl: normalizeMegaUrl, isValidFileName: isValidFileName,
-    emptyData: emptyData, canonicalize: canonicalize, serialize: serialize, validate: validate, assertValid: assertValid, parse: parse, sanitize: sanitize,
+    emptyData: emptyData, canonicalize: canonicalize, serialize: serialize, publicView: publicView, validate: validate, assertValid: assertValid, parse: parse, sanitize: sanitize,
     listMonths: listMonths, monthDays: monthDays, getFiles: getFiles, artistUsage: artistUsage, findUrl: findUrl,
     addArtist: addArtist, renameArtist: renameArtist, removeArtist: removeArtist, addEntries: addEntries,
     updateFile: updateFile, removeFile: removeFile, removeEntry: removeEntry, removeDay: removeDay, touch: touch,

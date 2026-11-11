@@ -133,7 +133,7 @@ input.inp::placeholder,textarea.inp::placeholder{color:#52525b}
     <button class="tab-btn" data-tab="artists">ARTISTAS</button>
     <button class="tab-btn" data-tab="history">HISTORIAL</button>
     <button class="tab-btn" data-tab="admins">ADMINS</button>
-    <button class="tab-btn" data-tab="users">USUARIOS</button>
+    <button class="tab-btn" data-tab="users">SUSCRIPTORES</button>
   </nav>
 
   <div id="gh-banner"></div>
@@ -266,42 +266,44 @@ input.inp::placeholder,textarea.inp::placeholder{color:#52525b}
     </details>
   </section>
 
-  <!-- ===================== USUARIOS ===================== -->
+  <!-- ===================== SUSCRIPTORES ===================== -->
   <section class="tab-panel hidden space-y-6" id="tab-users">
     <div class="grid grid-cols-3 gap-4">
-      <div class="card p-5 text-center"><p class="text-3xl font-black text-brand-neon" id="stat-total">0</p><p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">USUARIOS</p></div>
-      <div class="card p-5 text-center"><p class="text-3xl font-black text-emerald-400" id="stat-active">0</p><p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">ACTIVOS</p></div>
-      <div class="card p-5 text-center"><p class="text-3xl font-black text-red-400" id="stat-inactive">0</p><p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">INACTIVOS</p></div>
+      <div class="card p-5 text-center"><p class="text-3xl font-black text-brand-neon" id="stat-total">-</p><p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">SUSCRIPTORES</p></div>
+      <div class="card p-5 text-center"><p class="text-3xl font-black text-emerald-400" id="stat-active">-</p><p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">ACTIVOS</p></div>
+      <div class="card p-5 text-center"><p class="text-3xl font-black text-red-400" id="stat-inactive">-</p><p class="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">CADUCADOS</p></div>
     </div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-xl font-black tracking-wider text-brand-neon uppercase">Usuarios (descargas)</h1>
-        <p class="text-[11px] text-zinc-500 mt-1">Los administradores se gestionan en ADMINS.</p>
+        <h1 class="text-xl font-black tracking-wider text-brand-neon uppercase">Suscriptores</h1>
+        <p class="text-[11px] text-zinc-500 mt-1 max-w-xl">Entran en la web con su usuario y contraseña desde cualquier dispositivo y solo ellos ven los enlaces. Los administradores se gestionan en ADMINS.</p>
       </div>
       <div class="flex items-center gap-3 w-full sm:w-auto">
         <div class="relative flex-1 sm:flex-initial">
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <input type="text" id="search-input" placeholder="Buscar usuario..." class="inp sm:w-56 pl-10" oninput="renderTable()">
+          <input type="text" id="search-input" placeholder="Buscar suscriptor..." class="inp sm:w-56 pl-10">
         </div>
-        <button onclick="openModal()" class="btn btn-primary">+ NUEVO</button>
+        <button data-action="member-new" class="btn btn-primary">+ NUEVO</button>
       </div>
     </div>
+    <div id="members-expired"></div>
     <div class="card overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-zinc-800 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
-              <th class="text-left px-5 py-4">Usuario</th>
+              <th class="text-left px-5 py-4">Suscriptor</th>
               <th class="text-left px-5 py-4">Estado</th>
-              <th class="text-left px-5 py-4">Creado</th>
+              <th class="text-left px-5 py-4">Alta</th>
               <th class="text-right px-5 py-4">Acciones</th>
             </tr>
           </thead>
           <tbody id="users-tbody"></tbody>
         </table>
       </div>
-      <div id="empty-state" class="hidden text-center py-12"><p class="text-zinc-500 text-sm font-bold">No hay usuarios</p></div>
+      <div id="empty-state" class="hidden text-center py-12"><p class="text-zinc-500 text-sm font-bold" id="empty-text">No hay suscriptores</p></div>
     </div>
+    <p class="text-[11px] text-zinc-500 leading-relaxed">Al <b class="text-zinc-300">quitar</b> a alguien se cambia la clave de los enlaces: esa persona deja de poder verlos y los demas siguen entrando igual (si tenian la web abierta, solo tendran que volver a iniciar sesion). Los caducados no pueden entrar, pero conviene quitarlos con el boton QUITAR CADUCADOS.</p>
   </section>
 </main>
 
@@ -358,48 +360,46 @@ input.inp::placeholder,textarea.inp::placeholder{color:#52525b}
 </div>
 </div>
 
-<!-- USER MODAL -->
-<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="user-modal">
-<div class="modal-content card p-8 w-full max-w-md mx-4 shadow-2xl relative">
-  <button onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-  </button>
-  <h2 class="text-lg font-black text-brand-neon tracking-wider mb-6" id="modal-title">NUEVO USUARIO</h2>
-  <form onsubmit="saveUser(event)">
-    <div class="space-y-4">
-      <div><label class="lbl">USUARIO</label><input type="text" id="m-user" required class="inp" placeholder="nombre de usuario"></div>
-      <div><label class="lbl">PASSWORD</label><input type="text" id="m-pass" required class="inp" placeholder="password"></div>
-      <div class="flex items-center gap-3">
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" id="m-active" checked class="sr-only peer">
-          <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-neon"></div>
-        </label>
-        <span class="text-xs font-bold tracking-wider text-zinc-400">ACTIVO</span>
-      </div>
+<!-- MEMBER (SUBSCRIBER) MODAL -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="member-modal">
+<div class="modal-content card p-7 w-full max-w-md mx-4 shadow-2xl">
+  <h3 class="text-base font-black tracking-wider text-brand-neon mb-5" id="mm-title">NUEVO SUSCRIPTOR</h3>
+  <div class="space-y-4">
+    <div id="mm-user-box"><label class="lbl" for="mm-user">USUARIO (PARA ENTRAR EN LA WEB)</label><input id="mm-user" class="inp" autocapitalize="none" spellcheck="false" placeholder="ej. djpepe" maxlength="30"></div>
+    <div id="mm-info-box" class="grid grid-cols-2 gap-3">
+      <div><label class="lbl" for="mm-email">EMAIL (OPCIONAL)</label><input id="mm-email" class="inp" type="email" maxlength="120"></div>
+      <div><label class="lbl" for="mm-exp">ACTIVA HASTA</label><input id="mm-exp" class="inp" type="date"></div>
+      <div class="col-span-2"><label class="lbl" for="mm-note">NOTA (OPCIONAL, SOLO LA VEIS LOS ADMINS)</label><input id="mm-note" class="inp" maxlength="200" placeholder="ej. pago PayPal 11/11/2026"></div>
     </div>
-    <p class="text-red-500 text-xs mt-3 hidden" id="modal-error"></p>
-    <div class="flex gap-3 mt-6">
-      <button type="submit" class="btn btn-primary flex-1 py-3">GUARDAR</button>
-      <button type="button" onclick="closeModal()" class="btn btn-ghost px-6 py-3">CANCELAR</button>
+    <div>
+      <label class="lbl" for="mm-pass">CONTRASEÑA</label>
+      <div class="flex gap-2"><input id="mm-pass" type="text" class="inp font-mono" autocomplete="off"><button type="button" class="btn btn-ghost" data-action="gen-pass" data-target="mm-pass">GENERAR</button></div>
     </div>
-  </form>
+  </div>
+  <p class="text-xs text-red-400 mt-3 hidden whitespace-pre-line" id="mm-error"></p>
+  <div class="flex gap-3 mt-6">
+    <button class="btn btn-primary flex-1 py-3" data-action="member-save" id="mm-save">CREAR</button>
+    <button class="btn btn-ghost flex-1 py-3" data-action="modal-close" data-modal="member-modal">CANCELAR</button>
+  </div>
 </div>
 </div>
 
-<!-- DELETE USER CONFIRM MODAL -->
-<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="delete-modal">
-<div class="modal-content card border-red-900/50 p-8 w-full max-w-sm mx-4 shadow-2xl text-center">
-  <h3 class="text-lg font-black text-red-500 tracking-wider mb-2">ELIMINAR USUARIO</h3>
-  <p class="text-zinc-400 text-sm mb-6">Eliminar a <strong class="text-white" id="delete-name"></strong>? Esta accion no se puede deshacer.</p>
-  <div class="flex gap-3">
-    <button onclick="confirmDelete()" class="btn flex-1 py-3 bg-red-600 text-white hover:bg-red-500">ELIMINAR</button>
-    <button onclick="closeDeleteModal()" class="btn btn-ghost flex-1 py-3">CANCELAR</button>
+<!-- CREDENTIALS (shown once after creating a subscriber / new password) -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center modal-backdrop" id="cred-modal">
+<div class="modal-content card p-7 w-full max-w-md mx-4 shadow-2xl">
+  <h3 class="text-base font-black tracking-wider text-emerald-400 mb-2">LISTO</h3>
+  <p class="text-xs text-zinc-400 mb-4">Copia este mensaje y envíaselo por un canal privado. La contraseña no se vuelve a mostrar (si la pierde, ponle una nueva).</p>
+  <textarea id="cred-text" class="inp font-mono text-xs" rows="7" readonly></textarea>
+  <div class="flex gap-3 mt-5">
+    <button class="btn btn-primary flex-1 py-3" data-action="cred-copy">COPIAR</button>
+    <button class="btn btn-ghost flex-1 py-3" data-action="modal-close" data-modal="cred-modal">CERRAR</button>
   </div>
 </div>
 </div>
 
 <script src="js/dpw-data.js"></script>
 <script src="js/dpw-vault.js"></script>
+<script src="js/dpw-keys.js"></script>
 <script src="js/dpw-github.js"></script>
 <script src="js/dpw-auth.js"></script>
 <script src="js/dpw-mega.js"></script>
@@ -549,6 +549,8 @@ async function submitSetup(e) {
 function logout() {
   DPWAuth.logout();
   STATE = { data: DPW.emptyData(), source: 'none', loaded: false, error: '', broken: false, repaired: false };
+  MEMBERS = { list: [], loaded: false, error: '' };
+  KEYSTATE = { status: 'unknown', error: '' };
   openGate();
 }
 
@@ -558,151 +560,230 @@ function enterPanel() {
   $('btn-logout').classList.remove('hidden');
   $('admin-user').textContent = me().toUpperCase();
   $('me-name').textContent = me().toUpperCase();
-  updateStats();
-  renderTable();
   const fromHash = (location.hash.match(/^#(upload|manage|artists|history|admins|users)$/) || [])[1];
   showTab(fromHash || currentTab());
   renderUpload();
-  loadContent();
+  ensureKeyAccess().then(() => { loadContent(); if (currentTab() === 'users') loadMembers(); });
 }
 
 // ============================================================
-// USERS (download accounts, localStorage of this browser)
+// ACCESS TO THE LINKS (keys.json): this admin's key + pending principals
 // ============================================================
-const getUsers = DPWAuth.getUsers;
-const saveUsers = DPWAuth.saveUsers;
+let KEYSTATE = { status: 'unknown', error: '' }; // ok | pending | legacy | error
 
-function updateStats() {
-  const users = getUsers();
-  $('stat-total').textContent = users.length;
-  $('stat-active').textContent = users.filter(u => u.active).length;
-  $('stat-inactive').textContent = users.filter(u => !u.active).length;
+async function ensureKeyAccess() {
+  const s = DPWGitHub.session();
+  if (!s || !s.mk) return;
+  try {
+    const snap = await DPWGitHub.loadKeys();
+    if (!snap.keys) { KEYSTATE = { status: 'legacy', error: '' }; return; }
+    const r = await DPWKeys.unlockAdmin(snap.keys, s.mk);
+    if (r.status === 'ok') {
+      DPWGitHub.setCk(r.ck, snap.keys.kid);
+      KEYSTATE = { status: 'ok', error: '' };
+      // Pending accesses are NOT granted from here: only the owner approves them by name (pools-cli keys-sync --ids).
+      return;
+    }
+    if (r.status === 'missing' || r.status === 'foreign') {
+      await DPWGitHub.commitKeys(keys => DPWKeys.registerAdmin(keys, s.mk).then(k => ({ keys: k })), 'admin(' + me() + '): pedir acceso a los enlaces');
+    }
+    KEYSTATE = { status: 'pending', error: '' };
+  } catch (err) {
+    KEYSTATE = { status: 'error', error: err.message };
+  }
 }
 
-function renderTable() {
-  const users = getUsers();
+// ============================================================
+// SUBSCRIBERS (keys.json: one encrypted slot each; details sealed for admins)
+// ============================================================
+let MEMBERS = { list: [], loaded: false, error: '' };
+let memberEdit = null; // null = new, else { id, user }
+
+function plusOneYear(from) {
+  const today = DPW.todayISO();
+  const base = from && from > today ? from : today;
+  const d = new Date(base + 'T12:00:00Z');
+  d.setUTCFullYear(d.getUTCFullYear() + 1);
+  return d.toISOString().slice(0, 10);
+}
+function mk() { return (DPWGitHub.session() || {}).mk; }
+
+async function loadMembers() {
+  if (!MEMBERS.loaded) $('users-tbody').innerHTML = '<tr><td colspan="4" class="px-5 py-6 text-xs text-zinc-500">Cargando...</td></tr>';
+  try {
+    const snap = await DPWGitHub.loadKeys();
+    if (!snap.keys) { MEMBERS = { list: [], loaded: true, error: 'Los enlaces todavia no estan protegidos (migracion pendiente).' }; renderMembers(); return; }
+    const meta = await DPWKeys.readMeta(snap.keys, mk());
+    MEMBERS = {
+      loaded: true, error: '',
+      list: DPWKeys.members(snap.keys).map(m => Object.assign({ user: '(sin nombre)', email: '', note: '', created: '' }, meta[m.id] || {}, m))
+        .sort((a, b) => a.user.localeCompare(b.user))
+    };
+  } catch (err) {
+    MEMBERS = Object.assign({}, MEMBERS, { error: err.message });
+  }
+  renderMembers();
+}
+
+function renderMembers() {
+  const today = DPW.todayISO();
+  const list = MEMBERS.list;
+  const expired = list.filter(m => m.exp < today);
+  $('stat-total').textContent = list.length;
+  $('stat-active').textContent = list.length - expired.length;
+  $('stat-inactive').textContent = expired.length;
+  $('members-expired').innerHTML = expired.length
+    ? '<div class="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-xs font-bold text-red-300 flex flex-wrap items-center justify-between gap-3"><span>' + expired.length + ' suscripcion(es) caducada(s): ya no pueden entrar, pero hasta que las quites (se cambia la clave) alguien que se hubiera guardado la clave podria seguir leyendo enlaces nuevos.</span><button class="btn btn-danger" data-action="members-purge">QUITAR CADUCADOS</button></div>'
+    : '';
+  const tbody = $('users-tbody'), empty = $('empty-state');
+  if (MEMBERS.error) {
+    tbody.innerHTML = '<tr><td colspan="4" class="px-5 py-6 text-xs text-red-400">' + esc(MEMBERS.error) + '</td></tr>';
+    empty.classList.add('hidden');
+    return;
+  }
   const search = ($('search-input').value || '').toLowerCase();
-  const filtered = search ? users.filter(u => u.user.toLowerCase().includes(search)) : users;
-  const tbody = $('users-tbody');
-  const empty = $('empty-state');
-
-  if (filtered.length === 0) {
+  const rows = search ? list.filter(m => (m.user + ' ' + m.email + ' ' + m.note).toLowerCase().includes(search)) : list;
+  if (!rows.length) {
     tbody.innerHTML = '';
+    $('empty-text').textContent = list.length ? 'Ningun suscriptor coincide con la busqueda' : 'Todavia no hay suscriptores: pulsa + NUEVO';
     empty.classList.remove('hidden');
     return;
   }
   empty.classList.add('hidden');
-
-  const icon = d => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + d + '"/></svg>';
-  tbody.innerHTML = filtered.map((u, i) => `
-    <tr class="border-b border-zinc-800/50 hover:bg-zinc-900/30 transition-colors" style="animation:fadeUp .3s ease-out ${i * 40}ms both">
-      <td class="px-5 py-4">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black uppercase">${esc(u.user.charAt(0))}</div>
-          <div>
-            <p class="font-bold text-white">${esc(u.user)}</p>
-            <p class="text-[10px] text-zinc-600 font-mono">${esc(u.pass)}</p>
-          </div>
-        </div>
-      </td>
-      <td class="px-5 py-4">
-        <span class="inline-flex items-center gap-1.5 text-xs font-bold">
-          <span class="w-2 h-2 rounded-full ${u.active ? 'bg-emerald-400' : 'bg-red-500'}"></span>
-          <span class="${u.active ? 'text-emerald-400' : 'text-red-400'}">${u.active ? 'Activo' : 'Inactivo'}</span>
-        </span>
-      </td>
-      <td class="px-5 py-4 text-zinc-500 text-xs font-mono">${esc(u.created || '-')}</td>
-      <td class="px-5 py-4">
-        <div class="flex items-center justify-end gap-2">
-          <button data-action="user-toggle" data-user="${esc(u.user)}" title="${u.active ? 'Desactivar' : 'Activar'}" class="p-2 rounded-lg hover:bg-zinc-800 transition-colors ${u.active ? 'text-emerald-400' : 'text-red-400'}">${icon(u.active ? 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z')}</button>
-          <button data-action="user-edit" data-user="${esc(u.user)}" title="Editar" class="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-brand-neon transition-colors">${icon('M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z')}</button>
-          <button data-action="user-delete" data-user="${esc(u.user)}" title="Eliminar" class="p-2 rounded-lg text-zinc-400 hover:bg-red-950 hover:text-red-400 transition-colors">${icon('M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16')}</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = rows.map((m, i) => {
+    const active = m.exp >= today;
+    const soon = active && m.exp <= DPW.addDays(today, 30);
+    const color = active ? (soon ? 'amber' : 'emerald') : 'red';
+    return '<tr class="border-b border-zinc-800/50 hover:bg-zinc-900/30 transition-colors" style="animation:fadeUp .3s ease-out ' + (i * 30) + 'ms both">' +
+      '<td class="px-5 py-4"><div class="flex items-center gap-3">' +
+        '<div class="w-9 h-9 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black uppercase">' + esc(m.user.charAt(0)) + '</div>' +
+        '<div class="min-w-0"><p class="font-bold text-white">' + esc(m.user) + '</p>' +
+        '<p class="text-[10px] text-zinc-500 truncate max-w-[260px]">' + esc([m.email, m.note].filter(Boolean).join(' · ') || '-') + '</p></div>' +
+      '</div></td>' +
+      '<td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 text-xs font-bold">' +
+        '<span class="w-2 h-2 rounded-full bg-' + color + '-400"></span>' +
+        '<span class="text-' + color + '-400">' + (active ? 'Activa hasta ' : 'Caducada el ') + esc(DPW.formatDate(m.exp)) + '</span>' +
+      '</span></td>' +
+      '<td class="px-5 py-4 text-zinc-500 text-xs font-mono">' + esc(m.created ? DPW.formatDate(m.created) : '-') + '</td>' +
+      '<td class="px-5 py-4"><div class="flex items-center justify-end gap-2 flex-wrap">' +
+        '<button class="btn btn-ghost !py-1.5" data-action="member-renew" data-id="' + esc(m.id) + '">+1 AÑO</button>' +
+        '<button class="btn btn-ghost !py-1.5" data-action="member-edit" data-id="' + esc(m.id) + '">EDITAR</button>' +
+        '<button class="btn btn-danger !py-1.5" data-action="member-del" data-id="' + esc(m.id) + '">QUITAR</button>' +
+      '</div></td></tr>';
+  }).join('');
 }
 
-let editingUser = null;
-let deletingUser = null;
-
-function toggleActive(username) {
-  saveUsers(getUsers().map(u => u.user === username ? { ...u, active: !u.active } : u));
-  renderTable();
-  updateStats();
-}
-
-function openModal(username) {
-  editingUser = username || null;
-  $('modal-error').classList.add('hidden');
-  if (editingUser) {
-    const u = getUsers().find(x => x.user === editingUser);
-    if (!u) return;
-    $('modal-title').textContent = 'EDITAR USUARIO';
-    $('m-user').value = u.user;
-    $('m-pass').value = u.pass;
-    $('m-active').checked = u.active;
-  } else {
-    $('modal-title').textContent = 'NUEVO USUARIO';
-    $('m-user').value = '';
-    $('m-pass').value = '';
-    $('m-active').checked = true;
+// mutate(keys, ck, meta) -> Promise<{ keys, ck?, meta? }>; details are re-sealed when meta is returned.
+async function membersChange(busyText, mutate, message) {
+  if (!mk()) { openGate('Tu sesion ha caducado: vuelve a entrar.'); return false; }
+  setBusy(busyText);
+  try {
+    await DPWGitHub.commitKeys(async (keys, ck) => {
+      if (!ck) throw new Error('Tu acceso a los enlaces todavia no esta activado: no puedes gestionar suscriptores.');
+      const meta = await DPWKeys.readMeta(keys, mk());
+      const r = await mutate(keys, ck, meta);
+      const out = r.meta ? await DPWKeys.writeMeta(r.keys, mk(), r.meta) : r.keys;
+      return { keys: out, ck: r.ck };
+    }, 'admin(' + me() + '): ' + message);
+    await loadMembers();
+    return true;
+  } catch (err) {
+    toast(err.message, 'err');
+    return false;
+  } finally {
+    setBusy(null);
   }
-  openModalEl('user-modal');
 }
 
-function closeModal() {
-  closeModalEl('user-modal');
-  editingUser = null;
+function findMember(id) { return MEMBERS.list.find(m => m.id === id); }
+
+function openMemberModal(id) {
+  const m = id ? findMember(id) : null;
+  memberEdit = m ? { id: m.id, user: m.user } : null;
+  $('mm-title').textContent = m ? 'EDITAR ' + m.user.toUpperCase() : 'NUEVO SUSCRIPTOR';
+  $('mm-save').textContent = m ? 'GUARDAR' : 'CREAR';
+  $('mm-user-box').classList.toggle('hidden', !!m);
+  $('mm-user').value = '';
+  $('mm-email').value = m ? m.email : '';
+  $('mm-note').value = m ? m.note : '';
+  $('mm-exp').value = m ? m.exp : plusOneYear();
+  $('mm-pass').value = m ? '' : DPWVault.generatePassword();
+  $('mm-pass').placeholder = m ? 'Vacio = no cambiarla' : '';
+  showError('mm-error', '');
+  openModalEl('member-modal');
+  setTimeout(() => (m ? $('mm-email') : $('mm-user')).focus(), 50);
 }
 
-function saveUser(e) {
-  e.preventDefault();
-  const errEl = $('modal-error');
-  const username = $('m-user').value.trim();
-  const pass = $('m-pass').value;
-  const active = $('m-active').checked;
-  const fail = msg => { errEl.textContent = msg; errEl.classList.remove('hidden'); };
+function showCredentials(user, pass, exp) {
+  $('cred-text').value = 'Tu acceso a DJ POOL WORLD\n' +
+    'Web: ' + location.origin + location.pathname.replace(/admin\.html$/, 'pools.html') + '\n' +
+    'Usuario: ' + user + '\n' +
+    'Contraseña: ' + pass + '\n' +
+    'Activa hasta: ' + DPW.formatDate(exp);
+  openModalEl('cred-modal');
+}
 
-  if (!username || !pass) return fail('Todos los campos son obligatorios');
-  if (username.length < 3) return fail('El usuario debe tener al menos 3 caracteres');
-  const users = getUsers();
-  const clash = users.some(u => u.user.toLowerCase() === username.toLowerCase() && u.user !== editingUser);
-  if (clash) return fail('Ese nombre de usuario ya existe');
-
-  if (editingUser) {
-    if (username !== editingUser) DPWAuth.addDeletedUser(editingUser);
-    saveUsers(users.map(u => u.user !== editingUser ? u : { ...u, user: username, pass, active }));
-  } else {
-    saveUsers([...users, { user: username, pass, role: 'user', active, created: new Date().toISOString().split('T')[0] }]);
+async function saveMember() {
+  const email = $('mm-email').value.trim(), note = $('mm-note').value.trim(), exp = $('mm-exp').value, pass = $('mm-pass').value;
+  if (!DPW.isValidDate(exp)) { showError('mm-error', 'Elige hasta cuando esta activa la suscripcion.'); return; }
+  if (email && !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)) { showError('mm-error', 'Ese email no parece valido.'); return; }
+  if (memberEdit) {
+    const { id, user } = memberEdit;
+    if (pass) { const p = DPWVault.passwordProblem(pass, user); if (p) { showError('mm-error', p); return; } }
+    closeModalEl('member-modal');
+    const ok = await membersChange('GUARDANDO...', async (keys, ck, meta) => {
+      let k = DPWKeys.setMemberExp(keys, id, exp), newCk;
+      // New password = new content key (the old slot stays readable in the repo history).
+      if (pass) { const r = await DPWKeys.putMember(k, ck, user, pass, exp, true); k = r.keys; newCk = r.ck; }
+      return { keys: k, ck: newCk, meta: Object.assign({}, meta, { [id]: Object.assign({}, meta[id] || { user }, { email, note }) }) };
+    }, 'editar suscriptor ' + user);
+    if (ok) { toast('Suscriptor ' + user + ' guardado', 'ok'); if (pass) showCredentials(user, pass, exp); }
+    return;
   }
-  closeModal();
-  renderTable();
-  updateStats();
+  const user = DPWKeys.normUser($('mm-user').value);
+  const problem = DPWKeys.userProblem(user) || DPWVault.passwordProblem(pass, user);
+  if (problem) { showError('mm-error', problem); return; }
+  try {
+    const access = await DPWAuth.getAccess();
+    if (access && DPWVault.hasAdmin(access, user)) { showError('mm-error', 'Ese nombre lo usa un administrador: elige otro.'); return; }
+  } catch (e) { /* no connection: GitHub rejects duplicates on save anyway */ }
+  if (MEMBERS.list.some(m => m.user === user)) { showError('mm-error', 'Ya existe un suscriptor ' + user + '.'); return; }
+  closeModalEl('member-modal');
+  const id = await DPWKeys.memberId(user);
+  const ok = await membersChange('CREANDO SUSCRIPTOR...', async (keys, ck, meta) => ({
+    keys: (await DPWKeys.putMember(keys, ck, user, pass, exp, false)).keys,
+    meta: Object.assign({}, meta, { [id]: { user, email, note, created: DPW.todayISO() } })
+  }), 'nuevo suscriptor ' + user);
+  if (ok) showCredentials(user, pass, exp);
 }
 
-function deleteUser(username) {
-  deletingUser = username;
-  $('delete-name').textContent = username;
-  openModalEl('delete-modal');
+async function renewMember(id) {
+  const m = findMember(id);
+  if (!m) return;
+  const exp = plusOneYear(m.exp);
+  const ok = await confirmBox('RENOVAR ' + m.user.toUpperCase(), '<p>La suscripcion quedara activa hasta el <b class="text-white">' + esc(DPW.formatDate(exp)) + '</b>.</p>', 'RENOVAR');
+  if (!ok) return;
+  if (await membersChange('RENOVANDO...', async keys => ({ keys: DPWKeys.setMemberExp(keys, id, exp) }), 'renovar ' + m.user + ' hasta ' + exp)) {
+    toast(m.user + ' renovado hasta el ' + DPW.formatDate(exp), 'ok');
+  }
 }
 
-function closeDeleteModal() {
-  closeModalEl('delete-modal');
-  deletingUser = null;
-}
-
-function confirmDelete() {
-  if (!deletingUser) return;
-  DPWAuth.addDeletedUser(deletingUser);
-  saveUsers(getUsers().filter(u => u.user !== deletingUser));
-  closeDeleteModal();
-  renderTable();
-  updateStats();
+async function removeMembersFlow(ids, title) {
+  if (!ids.length) return;
+  const names = ids.map(id => (findMember(id) || { user: id }).user);
+  const ok = await confirmBox(title, '<p>' + names.map(n => '<b class="text-white">' + esc(n) + '</b>').join(', ') + ' dejara(n) de poder ver los enlaces.</p><p class="text-xs text-zinc-500 mt-3">Se cambia la clave de los enlaces; los demas suscriptores siguen entrando con su contraseña de siempre.</p>', 'QUITAR', true);
+  if (!ok) return;
+  const done = await membersChange('QUITANDO Y CAMBIANDO LA CLAVE...', async (keys, ck, meta) => {
+    const r = await DPWKeys.removeMembers(keys, ck, ids);
+    const rest = Object.assign({}, meta);
+    ids.forEach(id => { delete rest[id]; });
+    return { keys: r.keys, ck: r.ck, meta: rest };
+  }, 'quitar suscriptor(es) ' + names.join(', '));
+  if (done) toast('Quitado(s): ' + names.join(', '), 'ok');
 }
 
 // ============================================================
-// CONTENT STATE (dpw-data/pools.json)
+// CONTENT STATE (dpw-data/pools.enc, decrypted)
 // ============================================================
 let STATE = { data: DPW.emptyData(), source: 'none', loaded: false, error: '', broken: false, repaired: false };
 let LEARNED = {};
@@ -717,14 +798,14 @@ async function loadContent() {
     STATE.data = r.data;
     STATE.broken = r.broken;
     STATE.repaired = r.repaired;
-    STATE.source = 'github';
+    STATE.source = r.legacy ? 'site' : 'github';
     STATE.loaded = true;
   } catch (err) {
     STATE.error = err.message;
     if (err.status === 401 || !DPWGitHub.hasToken()) STATE.source = 'none';
     try {
       const res = await fetch(DPW.DATA_PATH + '?t=' + Date.now(), { cache: 'no-store' });
-      if (res.ok) { STATE.data = DPW.sanitize(await res.json()); STATE.source = 'site'; STATE.loaded = true; }
+      if (res.ok) { STATE.data = DPW.sanitize(await res.json(), { public: true }); STATE.source = 'site'; STATE.loaded = true; }
     } catch (e) { /* keep what we have */ }
   }
   renderAll();
@@ -760,7 +841,11 @@ function renderBanner() {
   const tab = currentTab();
   if (tab === 'users' || tab === 'admins') { el.innerHTML = ''; return; }
   const box = (color, html) => '<div class="rounded-xl border border-' + color + '-500/40 bg-' + color + '-500/10 px-4 py-3 text-xs font-bold text-' + color + '-300 flex flex-wrap items-center justify-between gap-3">' + html + '</div>';
-  if (STATE.broken) {
+  if (KEYSTATE.status === 'pending') {
+    el.innerHTML = box('amber', '<span>Tu acceso a los enlaces esta pendiente de activar (es la primera vez que entras desde que los enlaces van cifrados). Avisa a Claude para que lo active y vuelve a entrar. Mientras, solo puedes ver las pools.</span><button class="btn btn-ghost" data-action="logout">SALIR</button>');
+  } else if (KEYSTATE.status === 'legacy') {
+    el.innerHTML = box('amber', '<span>Los enlaces todavia no estan protegidos (migracion pendiente): no se puede publicar hasta terminarla.</span>');
+  } else if (STATE.broken) {
     el.innerHTML = box('red', '<span>El archivo de pools en GitHub esta dañado. Ve a HISTORIAL y restaura la ultima version buena (la web publica sigue funcionando).</span><button class="btn btn-ghost" data-action="tab" data-value="history">HISTORIAL</button>');
   } else if (STATE.error) {
     el.innerHTML = box('red', '<span>' + esc(STATE.error) + '</span><button class="btn btn-ghost" data-action="reload">REINTENTAR</button>');
@@ -791,6 +876,7 @@ function showTab(tab) {
   renderBanner();
   if (tab === 'history') loadHistory();
   if (tab === 'admins') loadAdmins();
+  if (tab === 'users' && DPWGitHub.session()) loadMembers();
 }
 
 // ============================================================
@@ -1148,7 +1234,7 @@ function renderManage() {
       return '<tr class="border-t border-zinc-800/60">' +
         '<td class="px-4 py-2.5 text-xs font-black text-white whitespace-nowrap">' + esc(p) + '</td>' +
         '<td class="px-4 py-2.5 text-xs text-zinc-300 max-w-[280px] truncate" title="' + esc(f.name) + '">' + esc(f.name) + '</td>' +
-        '<td class="px-4 py-2.5 text-[11px] font-mono text-zinc-500 max-w-[220px] truncate"><a class="hover:text-brand-neon" href="' + esc(f.url) + '" target="_blank" rel="noopener noreferrer">' + esc(f.url.replace('https://', '')) + '</a></td>' +
+        '<td class="px-4 py-2.5 text-[11px] font-mono text-zinc-500 max-w-[220px] truncate">' + (f.url ? '<a class="hover:text-brand-neon" href="' + esc(f.url) + '" target="_blank" rel="noopener noreferrer">' + esc(f.url.replace('https://', '')) + '</a>' : '<span class="text-zinc-600">enlace protegido</span>') + '</td>' +
         '<td class="px-4 py-2.5 text-right whitespace-nowrap">' +
           '<button class="btn btn-ghost !px-2.5 !py-1.5" data-action="entry-edit" data-date="' + d.date + '" data-artist="' + esc(p) + '" data-url="' + esc(f.url) + '"' + dis + '>EDITAR</button> ' +
           '<button class="btn btn-danger !px-2.5 !py-1.5" data-action="entry-del" data-date="' + d.date + '" data-artist="' + esc(p) + '" data-url="' + esc(f.url) + '"' + dis + '>BORRAR</button>' +
@@ -1351,13 +1437,17 @@ async function addAdminFlow() {
   const user = DPWVault.normUser($('na-user').value), pass = $('na-pass').value;
   const problem = DPWVault.userProblem(user) || DPWVault.passwordProblem(pass, user);
   if (problem) { toast(problem, 'err'); return; }
+  try {
+    const snap = await DPWGitHub.loadKeys();
+    if (snap.keys && DPWKeys.find(snap.keys, await DPWKeys.memberId(user))) { toast('Ese nombre lo usa un suscriptor: elige otro.', 'err'); return; }
+  } catch (e) { /* keys.json unavailable: nothing to collide with */ }
   const r = await accessChange('CREANDO ADMIN...', (access, mk) => DPWVault.addAdmin(access, mk, user, pass), 'anadir admin ' + user);
   if (r) { $('na-user').value = ''; $('na-pass').value = ''; toast('Admin ' + user + ' creado. Ya puede entrar con su usuario y contraseña.', 'ok'); }
 }
 
 async function removeAdminFlow(user) {
   const self = user === me();
-  const ok = await confirmBox('QUITAR ADMIN', '<p><b class="text-white">' + esc(user.toUpperCase()) + '</b> ya no podra entrar al panel ni publicar.' + (self ? ' Eres tu: se cerrara tu sesion.' : '') + '</p>', 'QUITAR', true);
+  const ok = await confirmBox('QUITAR ADMIN', '<p><b class="text-white">' + esc(user.toUpperCase()) + '</b> ya no podra entrar al panel ni publicar.' + (self ? ' Eres tu: se cerrara tu sesion.' : '') + '</p><p class="text-xs text-amber-300 mt-3">Ojo: si esa persona ya no es de confianza, esto no basta (los admins comparten la clave maestra). Pide a Claude que cambie todas las llaves (llave de GitHub nueva + cuentas de admin nuevas).</p>', 'QUITAR', true);
   if (!ok) return;
   const r = await accessChange('QUITANDO ADMIN...', access => DPWVault.removeAdmin(access, user), 'quitar admin ' + user);
   if (r) { toast('Admin ' + user + ' quitado', 'ok'); if (self) logout(); }
@@ -1399,8 +1489,6 @@ async function renewKey() {
 // EVENTS
 // ============================================================
 document.addEventListener('click', e => {
-  if (e.target.id === 'user-modal') closeModal();
-  if (e.target.id === 'delete-modal') closeDeleteModal();
   if (e.target.id === 'entry-modal') closeModalEl('entry-modal');
   const tabBtn = e.target.closest('.tab-btn');
   if (tabBtn) { showTab(tabBtn.dataset.tab); return; }
@@ -1470,9 +1558,18 @@ document.addEventListener('click', e => {
     case 'admin-del': removeAdminFlow(d.user); break;
     case 'pw-change': changeMyPassword(); break;
     case 'key-renew': renewKey(); break;
-    case 'user-toggle': toggleActive(d.user); break;
-    case 'user-edit': openModal(d.user); break;
-    case 'user-delete': deleteUser(d.user); break;
+    case 'member-new': openMemberModal(null); break;
+    case 'member-edit': openMemberModal(d.id); break;
+    case 'member-save': saveMember(); break;
+    case 'member-renew': renewMember(d.id); break;
+    case 'member-del': removeMembersFlow([d.id], 'QUITAR SUSCRIPTOR'); break;
+    case 'members-purge': removeMembersFlow(MEMBERS.list.filter(m => m.exp < DPW.todayISO()).map(m => m.id), 'QUITAR CADUCADOS'); break;
+    case 'cred-copy': {
+      const t = $('cred-text');
+      t.select();
+      (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).then(() => toast('Copiado', 'ok'), () => { document.execCommand('copy'); toast('Copiado', 'ok'); });
+      break;
+    }
   }
 });
 
@@ -1487,6 +1584,7 @@ document.addEventListener('change', e => {
 document.addEventListener('input', e => {
   const t = e.target;
   if (t.id === 'm-filter') renderManage();
+  if (t.id === 'search-input') renderMembers();
   // Pasting a link applies it at once; typing or deleting waits until the field loses focus (or Enter),
   // so a half-edited link never gets saved.
   if (t.dataset.field === 'url' && t.dataset.id) {
@@ -1500,7 +1598,7 @@ document.addEventListener('input', e => {
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.dataset && e.target.dataset.field && e.target.tagName === 'INPUT') { e.preventDefault(); e.target.blur(); return; }
   if (e.key !== 'Escape') return;
-  closeModal(); closeDeleteModal(); closeModalEl('entry-modal');
+  closeModalEl('entry-modal'); closeModalEl('member-modal'); closeModalEl('cred-modal');
   ['confirm-modal', 'prompt-modal'].forEach(id => {
     const m = $(id);
     if (!m.classList.contains('hidden')) {
@@ -1518,12 +1616,6 @@ window.addEventListener('beforeunload', e => {
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.location.search.includes('reset')) {
-    localStorage.removeItem('dpw_users');
-    localStorage.removeItem('dpw_deleted');
-    window.location.replace(window.location.pathname);
-    return;
-  }
   $('setup-link').href = KEY_URL;
   $('renew-link').href = KEY_URL;
   $('login-screen').addEventListener('submit', submitLogin);

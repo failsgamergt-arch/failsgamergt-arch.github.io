@@ -8,8 +8,9 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - **Pagina principal:** https://failsgamergt-arch.github.io/pools.html
 - **Admin panel:** https://failsgamergt-arch.github.io/admin.html
 - **Repo:** https://github.com/failsgamergt-arch/failsgamergt-arch.github.io
-- **Repo de datos (pools + admins cifrados):** https://github.com/failsgamergt-arch/dpw-data (creado oct 2026, publico, Pages activado en `main` /)
-- **Datos publicados:** https://failsgamergt-arch.github.io/dpw-data/pools.json
+- **Repo de datos (catalogo + enlaces cifrados + accesos):** https://github.com/failsgamergt-arch/dpw-data (creado oct 2026, publico, Pages activado en `main` /)
+- **Datos publicados:** https://failsgamergt-arch.github.io/dpw-data/pools.json (catalogo SIN enlaces) + `pools.enc` (enlaces cifrados) + `keys.json` (quien puede abrirlos)
+- **Textos legales:** https://failsgamergt-arch.github.io/legal.html (aviso legal, privacidad, cookies, condiciones)
 - **Usuario GitHub:** failsgamergt-arch
 
 ## Estado actual (17 oct 2026)
@@ -17,6 +18,8 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - **Web:** SEPTIEMBRE 2026 es el mes actual (27 dias, 375 enlaces, 27 artistas). AGOSTO 2026 sigue visible en ARCHIVO pero **sus enlaces MEGA ya no funcionan** (se borraron de MEGA para hacer sitio a septiembre). La unica copia de agosto es `C:\Users\Javier\Desktop\PENDRIVE_DPW` (155 GB).
 - **MEGA:** las 9 cuentas contienen SOLO septiembre (ver "Septiembre 2026").
 - Los antiguos admins del codigo (`admin/admin2026`, `sharkmusic/shark-music_2026`) ya NO valen; el admin `admin` actual tiene otra contraseña, guardada cifrada.
+- **Enlaces protegidos (nov 2026):** los enlaces MEGA ya no estan en ningun archivo publico: van cifrados en `dpw-data/pools.enc`. Solo los abren los admins y los **suscriptores** (cuentas reales creadas en admin.html → SUSCRIPTORES, valen en cualquier dispositivo). Ver "Enlaces protegidos y suscriptores". Ya no existen usuarios en el navegador ni los de prueba `prueba1`/`demo`.
+- **Pendiente antes de abrir al publico:** rellenar en `legal.html` los datos del titular (marcados en amarillo: nombre, NIF, direccion).
 
 ## Webs enlazadas (navbar + footer)
 1. **Blog** → https://djpoolworld.blogspot.com/ (EDM, pools, packs, latin remix)
@@ -29,8 +32,8 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Fuente: Montserrat (400-900)
 - Vanilla JS: IntersectionObserver (scroll reveal), localStorage/sessionStorage (auth)
 - Datos: `dpw-data/pools.json` (repo aparte dpw-data, UNICA fuente de las publicaciones: artistas + dias → artista → enlaces MEGA), `pools-tracks.js` (34.938 tracks de agosto + septiembre por fecha+artista, solo para "VER CONTENIDO" y buscador)
-- Modulos JS: `js/dpw-data.js` (modelo de datos + validacion, compartido web/admin/Node), `js/dpw-github.js` (publicar desde el admin via API de GitHub), `js/dpw-mega.js` (leer nombre de archivo de un enlace MEGA)
-- Herramientas: `tools/pools-cli.js` (editar pools por codigo), `tools/test-dpw.js` (tests)
+- Modulos JS: `js/dpw-data.js` (modelo de datos + validacion, compartido web/admin/Node), `js/dpw-keys.js` (cifrado de enlaces + suscriptores), `js/dpw-vault.js` (cuentas de admin), `js/dpw-auth.js` (login), `js/dpw-github.js` (publicar desde el admin via API de GitHub), `js/dpw-mega.js` (leer nombre de archivo de un enlace MEGA)
+- Herramientas: `tools/pools-cli.js` (editar pools por codigo), `tools/dpw-store.js` (acceso del PC a los datos cifrados), `tools/test-dpw.js` (tests), `tools/e2e-dpw.js` (prueba de navegador contra un GitHub simulado)
 - Logo: `logo-dpw.png` (LOGO FINAL: circulo con globo terraqueo real azul/verde, auriculares, notas musicales; PNG 512x512 con esquinas transparentes, generado desde `OneDrive\Desktop\LOGO FINAL.jpeg`). Usado en header (junto a WORLD) y hero (grande a la derecha)
 - Logos antiguos sin uso: `logo-dpw.jpg`, `logodpw.png`
 
@@ -61,20 +64,20 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - Frase hero (literal, pedida asi): "Descarga Las Mejores Record DJ Pools Del Mundo"
 
 ## Sistema de usuarios
-- **Login compartido:** `js/dpw-auth.js` (`DPWAuth.login`) en pools.html y admin.html.
+- **Login compartido:** `js/dpw-auth.js` (`DPWAuth.login`) en pools.html y admin.html. Nada se comprueba contra datos del navegador.
 - **Administradores (reales, en cualquier dispositivo):** cuentas en `dpw-data/access.json` (ver "Cuentas de admin y llave de publicacion"). Las contraseñas de admin NO estan en el codigo (antes `admin/admin2026` y `sharkmusic/shark-music_2026` eran visibles para cualquiera: eliminadas). Solo se es admin abriendo tu hueco cifrado con tu contraseña.
-- **Usuarios normales (descargas):** localStorage (`dpw_users`, `dpw_deleted`) + sessionStorage (`dpw_session`), solo de ese navegador. Defaults: `prueba1` / `prueba_1`, `demo` / `demo123`. Nunca pueden ser admin (entradas antiguas con rol admin en localStorage se descartan).
-- **Sync de defaults:** `DPWAuth.getUsers()` inyecta defaults que no esten en `dpw_deleted`
-- **Reset:** Anadir `?reset` a la URL limpia localStorage y recarga
+- **Suscriptores (descargas, en cualquier dispositivo):** cuentas en `dpw-data/keys.json`, creadas por un admin en admin.html → SUSCRIPTORES (usuario + contraseña generada + caducidad, por defecto 1 año). Ver "Enlaces protegidos y suscriptores". Al entrar se abre su clave y la web descifra los enlaces. Sesion en sessionStorage (`dpw_session` + `dpw_ck`), se borra al cerrar la pestaña.
+- **Eliminado (nov 2026):** usuarios en localStorage (`dpw_users`/`dpw_deleted`, se borran solos del navegador), los de prueba `prueba1`/`demo`, `?reset` y el modal "EDITAR MI CUENTA" (un suscriptor no puede escribir en GitHub: el cambio de contraseña lo hace un admin).
 - **Dropdown de cuenta:**
   - Sin sesion: "No has iniciado sesion" + boton login
-  - Usuario: nombre + "EDITAR MI CUENTA" + "CERRAR SESION"
+  - Suscriptor: nombre + "SUSCRIPTOR" + "ACTIVA HASTA dd/mm/aaaa" + "¿Cambiar la contraseña? Escribe a djpoolworld@gmail.com" + "CERRAR SESION"
   - Admin: nombre + "PANEL ADMIN" + "CAMBIAR MI CONTRASEÑA" (→ `admin.html#admins`) + "CERRAR SESION"
-- **Editar cuenta (usuarios normales):** Modal para cambiar nombre y password (con confirmacion)
-- **Suscripcion:** Modal con precio **100€/año** (NO al mes), enlace PayPal directo (`paypal.com/paypalme/djpoolworld/100`), enviar comprobante a `djpoolworld@gmail.com` para que se cree el usuario. Beneficios: todas las pools, actualizaciones mensuales, **acceso a descargas de años anteriores**, usuario personalizado. Boton visible solo sin sesion activa.
+- **Suscripcion:** Modal con precio **100€/año** (NO al mes), enlace PayPal directo (`paypal.com/paypalme/djpoolworld/100`), enviar comprobante a `djpoolworld@gmail.com` para que se cree el usuario. Beneficios: todas las pools, actualizaciones mensuales, **acceso a descargas de años anteriores**, usuario personalizado. Boton visible solo sin sesion activa. Texto "Al suscribirte aceptas las condiciones y la politica de privacidad" (→ `legal.html`).
+- **Textos legales:** `legal.html` (#aviso-legal, #privacidad, #cookies, #condiciones), enlazado en el footer de pools.html. Datos del titular PENDIENTES (marcados `.fill` en amarillo).
 
 ## Pagina de Pools (pools.html)
-- **Carga de datos:** `fetch('dpw-data/pools.json?t=<timestamp>', {cache:'no-store'})` (repo aparte `dpw-data`, servido por GitHub Pages en `/dpw-data/`) al abrir la pagina (sin cache → lo que publica el admin se ve en cuanto GitHub Pages despliega, ~1 min). Si el JSON trae errores se valida con `DPW.validate` y se pinta solo lo valido (`DPW.sanitize`); si no carga, mensaje "NO SE PUDIERON CARGAR LAS POOLS" + REINTENTAR (la web nunca queda en blanco)
+- **Carga de datos:** `fetch('dpw-data/pools.json?t=<timestamp>', {cache:'no-store'})` (repo aparte `dpw-data`, servido por GitHub Pages en `/dpw-data/`) al abrir la pagina (sin cache → lo que publica el admin se ve en cuanto GitHub Pages despliega, ~1 min). Es el **catalogo publico sin enlaces** (`DPW.validate(json, {public:true})`; si trae errores se pinta solo lo valido con `DPW.sanitize(json, {public:true})`); si no carga, mensaje "NO SE PUDIERON CARGAR LAS POOLS" + REINTENTAR (la web nunca queda en blanco)
+- **Enlaces (`loadLinks`):** solo con sesion. Descarga `dpw-data/pools.enc` + `keys.json` y los descifra con la clave de la sesion → `LINKS` (el modal de descarga usa `LINKS`, nunca `DATA`). Si la clave cambio despues de entrar (se quito a un suscriptor): un admin la reabre solo; un suscriptor tiene que volver a entrar
 - **Por meses:** se muestra UN mes, del dia mas reciente al dia 1 (`DPW.monthDays`). Mes por defecto = el mas reciente con publicaciones. Cambio de mes desde ARCHIVO (header), bloque ARCHIVO al final de la pagina (`#archive-bottom`: chips de meses + MES ANTERIOR / MES SIGUIENTE) o menu movil. El mes va en la URL: `pools.html#mes=2026-08`
 - **Botones dinamicos sin JS inline:** todo lo que lleva datos usa `data-action` (`month`, `pool`, `tab`, `download`, `search-hit`, `reload`) + un listener delegado; textos siempre escapados con `DPW.esc`
 - **Artistas sin diseno en `POOL_CARDS`:** `cardFor()` genera una card con degradado automatico y el nombre (un artista nuevo nunca rompe la seccion)
@@ -98,9 +101,9 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 
 ## Admin Panel (admin.html)
 - **Entrada:** pantalla propia de login (usuario + contraseña de admin). Si la publicacion nunca se activo (GitHub dice que no existe `access.json`) muestra "ACTIVAR PUBLICACION" (una sola vez). Si GitHub no responde, muestra el login con el error (nunca la activacion por error).
-- **Pestañas:** SUBIR POOLS | GESTIONAR | ARTISTAS | HISTORIAL | ADMINS | USUARIOS (la ultima abierta se recuerda en `sessionStorage.dpw_admin_tab`; `admin.html#admins` abre ADMINS)
-- **Ver secciones "Subida y edicion de pools (CMS)" y "Cuentas de admin y llave de publicacion".** USUARIOS = cuentas de descarga de ese navegador (stats total/activos/inactivos, busqueda, crear/editar/activar/borrar; sin rol admin).
-- **Renombrar usuarios:** marca nombre antiguo en `dpw_deleted` para evitar re-add de defaults
+- **Pestañas:** SUBIR POOLS | GESTIONAR | ARTISTAS | HISTORIAL | ADMINS | SUSCRIPTORES (la ultima abierta se recuerda en `sessionStorage.dpw_admin_tab`; `admin.html#admins` abre ADMINS, `#users` SUSCRIPTORES)
+- **Ver secciones "Subida y edicion de pools (CMS)", "Cuentas de admin y llave de publicacion" y "Enlaces protegidos y suscriptores".**
+- **SUSCRIPTORES:** stats (total/activos/caducados), busqueda, + NUEVO (usuario, email, nota, ACTIVA HASTA = +1 año, contraseña GENERAR) → muestra un mensaje listo para copiar con web/usuario/contraseña/caducidad (la contraseña no se vuelve a ver). Por fila: +1 AÑO, EDITAR (email, nota, caducidad, contraseña nueva opcional), QUITAR (cambia la clave). Aviso + QUITAR CADUCADOS cuando hay caducados. Un suscriptor no puede llamarse igual que un admin.
 
 ## Subida y edicion de pools (CMS)
 La web es estatica (GitHub Pages, sin servidor). Para que lo que sube un admin lo vean todos, el panel **escribe `pools.json` en el repo aparte `failsgamergt-arch/dpw-data`** con la API de GitHub; GitHub Pages lo publica en `https://failsgamergt-arch.github.io/dpw-data/pools.json` (~1 min). El admin solo usa usuario y contraseña.
@@ -108,11 +111,15 @@ La web es estatica (GitHub Pages, sin servidor). Para que lo que sube un admin l
 - **Por que un repo aparte:** la llave de publicacion solo tiene acceso a `dpw-data` (datos). Aunque alguien la consiguiera, no podria tocar el codigo de la web, y todo dato se valida y escapa al pintarse.
 - **En local:** `dpw-data/` es una carpeta (en `.gitignore` del repo principal) con `pools.json`, `access.json` (cuando exista), `.nojekyll` y `README.md`; es el clon del repo de datos, asi `python -m http.server` sirve la web igual que en produccion.
 
-### Formato de `dpw-data/pools.json`
+### Formato de los datos
+Datos completos (en memoria del panel/CLI y, cifrados, en `pools.enc`):
 ```json
 { "version": 1, "updated": "ISO", "artists": ["AREYOUKIDY", "BPM SUPREME", ...],
   "days": { "2026-08-31": { "BPM SUPREME": [ { "name": "Bpm Supreme 31 08 2026 - Dj Pool World [DPW]", "url": "https://mega.nz/file/XXXX#KEY" } ] } } }
 ```
+- `dpw-data/pools.json` (publico) = lo mismo SIN `url` (`DPW.publicView`): `[{ "name": "..." }]`. Un `url` en pools.json es un error de validacion (`validate(d, {public:true})`) y el test lo comprueba.
+- `dpw-data/pools.enc` = `{version, kid, iv, ct}`: los datos completos cifrados (AES-256-GCM) con la clave de contenido `kid`.
+- pools.json y pools.enc se escriben SIEMPRE juntos en un solo commit (Git Data API: tree + commit + ref sin force; si otro admin guardo a la vez → 422 → se reintenta sobre lo nuevo).
 - Una **seccion** de la web = un dia; cada **artista** del dia = una pestana; cada enlace = una descarga del modal (puede haber varias por artista/dia).
 - Reglas (en `DPW.validate`, se aplican SIEMPRE antes de guardar): fecha real `YYYY-MM-DD`; artista en MAYUSCULAS registrado en `artists` (`^[A-Z0-9ÁÉÍÓÚÑÜÇ][A-Z0-9ÁÉÍÓÚÑÜÇ .&+\-!]{0,39}$`); enlace solo `https://mega.nz/file|folder/...#clave` (formatos antiguos `#!` se convierten); nombre 1-200 caracteres sin `< >`; sin enlaces repetidos en el mismo artista/dia.
 - Se guarda canonico (`DPW.serialize`): dias de mas nuevo a mas viejo, artistas y pools en orden alfabetico, 2 espacios. Todas las operaciones son puras (no mutan).
@@ -125,9 +132,9 @@ La web es estatica (GitHub Pages, sin servidor). Para que lo que sube un admin l
   3. Revisar (listos / con problemas / avisos / fechas futuras) → PUBLICAR. Solo se suben las filas validas; si el artista ya tenia publicacion ese dia, el enlace se anade como descarga extra (nunca se borra nada al subir).
 - **GESTIONAR:** por mes y filtro de artista; EDITAR (dia, artista, nombre, enlace — mover de dia/artista incluido; si falla, el modal se queda abierto con el error), BORRAR enlace, + ANADIR a un dia, BORRAR DIA (solo borra lo que se mostro; lo que otro admin añadiera mientras tanto se queda). Las referencias se buscan por URL en la version mas reciente.
 - **ARTISTAS:** anadir, renombrar (cambia todas sus publicaciones; las tracklists antiguas de `pools-tracks.js` quedan con el nombre viejo), borrar solo si tiene 0 publicaciones.
-- **HISTORIAL:** ultimos 30 cambios de `pools.json` (commits del repo dpw-data) con RESTAURAR (deja los datos como en esa version, como cambio nuevo → tambien se puede deshacer). Funciona aunque el archivo actual este dañado.
+- **HISTORIAL:** ultimos 30 cambios de `pools.enc` (commits del repo dpw-data) con RESTAURAR (las versiones cifradas con claves antiguas se abren gracias a `keys.history`) (deja los datos como en esa version, como cambio nuevo → tambien se puede deshacer). Funciona aunque el archivo actual este dañado.
 - **ADMINS:** cambiar mi contraseña, añadir/quitar admins (nunca el ultimo), renovar la llave de publicacion.
-- **Seguridad de escritura (`DPWGitHub.commit`):** cada cambio relee la ultima version de GitHub, aplica la operacion, valida y hace PUT con el `sha`; si otro admin guardo a la vez (409/422) reintenta hasta 3 veces sobre los datos frescos. Si el archivo tiene errores (editado a mano) se trabaja sobre su parte valida y el siguiente guardado lo repara; si no es JSON valido, solo se puede RESTAURAR. Commits con mensaje `admin(<usuario>): <accion>`.
+- **Seguridad de escritura (`DPWGitHub.commit`):** cada cambio relee la ultima version de GitHub (descifrada), aplica la operacion, valida y escribe pools.enc + pools.json en un solo commit encima del que leyo; si otro admin guardo a la vez (409/422) reintenta hasta 3 veces sobre los datos frescos. Si el archivo tiene errores (editado a mano) se trabaja sobre su parte valida y el siguiente guardado lo repara; si no es JSON valido, solo se puede RESTAURAR. Commits con mensaje `admin(<usuario>): <accion>`.
 
 ### Cuentas de admin y llave de publicacion (sin tokens para los admins)
 - **Para el admin:** entra con usuario y contraseña (en `admin.html` o en el login de la web) y publica. Desde cualquier ordenador o movil. Nada mas.
@@ -138,8 +145,23 @@ La web es estatica (GitHub Pages, sin servidor). Para que lo que sube un admin l
 - **Olvido de contraseña:** otro admin le crea una nueva (quitar + añadir). Si se pierde la ultima contraseña de admin: el dueño borra `access.json` del repo `dpw-data` en github.com (o `gh api -X DELETE repos/failsgamergt-arch/dpw-data/contents/access.json -f message=reset -f sha=<sha>`) y vuelve a ACTIVAR con una llave nueva (y revoca la vieja en GitHub → Settings → Developer settings → Fine-grained tokens).
 - `node tools/pools-cli.js admins` lista los admins actuales.
 
+### Enlaces protegidos y suscriptores (`js/dpw-keys.js`, nov 2026)
+- **Idea:** los enlaces van en `pools.enc` cifrados con una **clave de contenido** aleatoria. `keys.json` (publico) guarda esa clave "envuelta" para cada **principal** con criptografia de clave publica (ECDH P-256 + HKDF + AES-GCM), asi que solo su dueño la abre:
+  - `admins`: un par de claves comun a todos los admins; su clave privada va sellada con la clave maestra del vault (la que abre cada admin con su contraseña).
+  - `m-<hash>` (suscriptor): su clave privada va sellada con su contraseña (PBKDF2-SHA256 600.000). El id es un hash del usuario: `keys.json` no muestra nombres. Lleva `exp` (caducidad).
+  - `cli-<pc>`: el PC del dueño; su clave privada esta SOLO en `C:\Users\Javier\.dpw\cli-key.json` (no subirla nunca; si se pierde, un admin con acceso puede dar acceso a una llave nueva con `keys-sync` desde otro sitio o entrando al panel).
+  - `meta`: nombre, email, nota y fecha de alta de cada suscriptor, cifrados con la clave maestra (solo los ven los admins).
+- **Quitar un suscriptor = rotar:** clave de contenido nueva, envuelta solo para los que quedan, y pools.enc re-cifrado en el mismo commit. El quitado no puede leer nada de lo que se publique despues. Las claves viejas quedan en `keys.history` (cifradas con la actual) para poder RESTAURAR versiones antiguas.
+- **Caducidad:** quien ha caducado no puede entrar (comprobacion al entrar). La revocacion real es QUITAR (o QUITAR CADUCADOS), que cambia la clave.
+- **Firma de cada acceso (`auth`):** HMAC con la clave de contenido sobre id+tipo+clave publica. Al rotar solo se renuevan los firmados, asi que alguien que solo tenga la llave de GitHub y meta un acceso suyo en keys.json nunca recibe la clave.
+- **Accesos pendientes:** un principal sin la clave actual esta pendiente y NUNCA se activa solo: el dueño lo aprueba por nombre con `node tools/pools-cli.js keys-sync --ids <id>`. Pasa con un admin la primera vez tras la migracion: el panel registra `admins` y muestra "acceso pendiente" hasta el keys-sync. Los suscriptores no quedan pendientes (el admin les da acceso al crearlos).
+- **Nueva contraseña de un suscriptor = clave nueva** (la ranura vieja sigue en el historial de git).
+- **Quitar un ADMIN no es revocacion completa:** todos los admins comparten la clave maestra del vault (abre la llave de GitHub, los enlaces y los emails). Si un admin deja de ser de confianza: llave de GitHub nueva (y revocar la vieja en GitHub) + vault nuevo (access.json nuevo, admins con contraseñas nuevas) + registrar `admins` de nuevo + keys-sync. Pendiente de automatizar.
+- **Nombres:** no pueden llevar URLs (`isValidFileName`), para que ningun enlace acabe en el catalogo publico.
+- **Limites conocidos:** un suscriptor activo puede copiar los enlaces que ve; los enlaces que estuvieron publicos antes de la migracion (septiembre 2026) los pudo copiar cualquiera que los mirase entonces.
+
 ### Edicion por codigo (CLI, sin abrir el panel)
-Desde la carpeta del repo (o pidiendoselo a Claude). Trabaja **directamente sobre el repo `dpw-data` en GitHub** con el `gh` ya autenticado de este PC (sin clonar, sin conflictos con lo que publican los admins; visible en la web en ~1 min). `--file dpw-data/pools.json` para trabajar sobre la copia local:
+Desde la carpeta del repo (o pidiendoselo a Claude). Trabaja **directamente sobre el repo `dpw-data` en GitHub** con el `gh` ya autenticado de este PC y la llave de este PC (`~/.dpw/cli-key.json`) para abrir los enlaces cifrados (sin clonar, sin conflictos con lo que publican los admins; visible en la web en ~1 min). `--file <archivo>` trabaja sobre un JSON local en claro (pruebas):
 ```
 node tools/pools-cli.js validate                      # comprueba pools.json
 node tools/pools-cli.js months                        # meses con dias/enlaces
@@ -149,23 +171,33 @@ node tools/pools-cli.js edit --date 2026-09-01 --artist "BPM SUPREME" [--index 1
 node tools/pools-cli.js remove --date 2026-09-01 [--artist "BPM SUPREME" [--index 1]]
 node tools/pools-cli.js artists | artist-add "NOMBRE" | artist-rename "VIEJO" "NUEVO" | artist-remove "NOMBRE"
 node tools/pools-cli.js admins                        # lista admins de access.json
+node tools/pools-cli.js keys                          # quien puede abrir los enlaces (admins, suscriptores con caducidad, PCs; pendientes)
+node tools/pools-cli.js keys-sync [--ids admins]      # sin --ids lista los pendientes; con --ids da acceso SOLO a esos (p.ej. el admin la 1a vez)
+node tools/pools-cli.js repair-public                 # rehace pools.json sin enlaces (si una herramienta antigua los metio)
+node tools/pools-cli.js migrate                       # (hecho nov 2026) cifrar enlaces que esten en claro en pools.json
 ```
-- `--dry-run` en cualquier comando de escritura para previsualizar. Usa las mismas reglas que el panel; nunca guarda datos invalidos. En remoto hace commit `cli: <accion>` con el sha (si otro admin guardo justo a la vez, falla y se repite).
+- Scripts propios en Node: `const { data, save } = await require('<repo>/tools/dpw-store.js').open(); await save(nuevo, 'mensaje')` (lo usa `publish_sep.js`). NUNCA escribir pools.json a mano con enlaces.
+- `--dry-run` en cualquier comando de escritura para previsualizar. Usa las mismas reglas que el panel; nunca guarda datos invalidos. En remoto hace commit `cli: <accion>` encima del commit que leyo (si otro admin guardo justo a la vez, falla y se repite el comando).
+- **Tests:** `node tools/test-dpw.js` (modelo, vault, cifrado, y que el pools.json real NO lleve enlaces) y `node tools/e2e-dpw.js` (Chrome headless contra un GitHub simulado: admin, suscriptores, quitar/caducados, historial; 38 comprobaciones).
 - `gh` se busca en `DPW_GH`, `C:/Program Files/GitHub CLI/gh.exe` o el PATH.
 
 ## Estructura
 ```
 index.html          -- Redirect a pools.html (meta refresh + JS)
 pools.html          -- Web publica (lee dpw-data/pools.json)
-admin.html          -- Panel admin: login/activacion, subir/gestionar pools, artistas, historial, admins, usuarios
-dpw-data/           -- (gitignored) clon del repo failsgamergt-arch/dpw-data: pools.json, access.json, .nojekyll, README.md
-js/dpw-data.js      -- Modelo + validacion + operaciones (web, admin y Node)
+admin.html          -- Panel admin: login/activacion, subir/gestionar pools, artistas, historial, admins, suscriptores
+legal.html          -- Aviso legal, privacidad, cookies y condiciones de la suscripcion
+dpw-data/           -- (gitignored) clon del repo failsgamergt-arch/dpw-data: pools.json (sin enlaces), pools.enc, keys.json, access.json, .nojekyll, README.md
+js/dpw-data.js      -- Modelo + validacion + operaciones (web, admin y Node); publicView = catalogo sin enlaces
 js/dpw-vault.js     -- Cuentas de admin + llave de publicacion cifrada (access.json)
-js/dpw-auth.js      -- Login compartido (admins via access.json, usuarios via localStorage)
-js/dpw-github.js    -- Publicar en el repo dpw-data via API de GitHub (solo admins con sesion)
+js/dpw-keys.js      -- Enlaces cifrados (pools.enc) + accesos (keys.json): admins, suscriptores, PC del dueño
+js/dpw-auth.js      -- Login compartido (admins via access.json, suscriptores via keys.json)
+js/dpw-github.js    -- Leer/publicar en el repo dpw-data via API de GitHub (commits de varios archivos)
 js/dpw-mega.js      -- Lee nombre/tamano de un enlace MEGA (autorrelleno en admin)
 tools/pools-cli.js  -- CLI para editar pools por codigo (remoto via gh, o --file local)
+tools/dpw-store.js  -- Acceso del PC a los datos cifrados (lo usan el CLI y los scripts de publicacion)
 tools/test-dpw.js   -- Tests del modelo, del cifrado y de los datos reales (node tools/test-dpw.js)
+tools/e2e-dpw.js    -- Prueba de navegador contra un GitHub simulado (node tools/e2e-dpw.js)
 .gitignore          -- ignora dpw-data/
 pools-tracks.js     -- 34.938 tracks (agosto 17.131 + septiembre 17.807) (const TRACK_LIST, claves "YYYY-MM-DD" -> artista -> [tracks])
 img/pools/          -- Caratulas de cada pool/artista (27 jpg)
@@ -375,7 +407,7 @@ CLAUDE.md           -- Este archivo
   1. `rename_sep.py` — renombra a `Pool DD MM 2026 - Dj Pool World [DPW].ext` (formatos `#Pool DDMM`, `DD-SEP-26-POOL`, `Pool DD MM 2026`, y coletilla ` - Category_ Latin Music`). Genera `H:\TRACKLIST djpoolworld SEPTIEMBRE 2026.txt`.
   2. `tag_sep.py` — portada `cover_dpw2026.jpg` + album en cada MP3 y recomprime en el sitio (6 hilos, temp `C:\_ts`, timeout 3 h por archivo); guarda las canciones de cada pack en `H:\_tracks_sep.json`; hechos en `H:\_tagged_ok.txt`. Resultado 375/375 (Bpm Supreme 16/09, 3,2 GB, necesitó reintento).
   3. `upload_sep.py` — por cuenta: borra `/DjPoolWorld` (mes anterior) + papelera, comprueba 0 GB, sube packs editados hasta **19 GB** (a ~19,4 GB MEGA deja la subida colgada) y saca cada enlace con `mega-export -a -f` (sin `-f` se cuelga pidiendo aceptar terminos). Comprueba con `mega-ls` antes de subir para no duplicar. Estado `H:\_upload_sep.json`, enlaces `H:\_mega_links_sep.json`.
-  4. `publish_sep.js` — publica en `dpw-data/pools.json` via gh (dia + artista desde el nombre con `DPW.matchArtistInfo`; crea artistas nuevos: EXTENDED LATINO, INTENSA MUSIC) y añade las canciones a `pools-tracks.js`. `--dry-run` para previsualizar.
+  4. `publish_sep.js` — publica en dpw-data con `tools/dpw-store.js` (enlaces cifrados en pools.enc, catalogo en pools.json; dia + artista desde el nombre con `DPW.matchArtistInfo`; crea artistas nuevos: EXTENDED LATINO, INTENSA MUSIC) y añade las canciones a `pools-tracks.js` (luego commit + push del repo de la web). `--dry-run` para previsualizar. (Adaptado en nov 2026 al cifrado.)
   5. `progreso.py` — ventana con barras EDITADAS / SUBIDAS / enlaces.
   6. `blogpost_sep.js` — genera el post de Blogger desde la plantilla de agosto (`prueba\blogpost_agosto_2026_links.html`: misma imagen y orden por pool) con los enlaces de `H:\_mega_links_sep.json`. Pools nuevas sin imagen (EXTENDED LATINO, INTENSA MUSIC) salen con titulo de texto. Boton PayPal al final.
 - **Posts de Blogger (en el Escritorio de OneDrive):**
@@ -413,8 +445,8 @@ CLAUDE.md           -- Este archivo
   4. **Otros** (27 fixes): ΓÇô→–, ├ÿ→Ø, NBSP→espacio, ´→apostrofo, Jaÿ-Z→Jay-Z, NFC normalization
 
 ## Funcionalidades pendientes
-- **Usuarios compartidos entre dispositivos:** los usuarios viven en el `localStorage` de cada navegador (los defaults estan en el codigo). Un usuario creado en el admin NO existe en el movil del suscriptor → hace falta un sistema real (p.ej. Firebase Auth/Supabase) para que las suscripciones funcionen de verdad.
 - **Audio preview 30s:** Vista previa de 30 segundos via Deezer API (gratis, CORS, sin auth). Prerequisito Unicode ya completado. Implementacion revertida anteriormente por encoding roto, lista para reimplementar.
 - **Contador de descargas por pool:** Tracking de descargas por pool/fecha
+- **Antes de abrir al publico:** rellenar datos del titular en `legal.html`; ocultar o volver a subir AGOSTO (sus enlaces MEGA no funcionan); renovar el token de gh de este PC (expuesto); conectar el dominio (CNAME).
 - **Publicar blogpost en Blogger:** septiembre listo en el Escritorio (`blogpost_septiembre_2026.txt` con enlaces / `blogpost_septiembre_2026_sin_enlaces.txt` sin enlaces): copiar y pegar en Blogger en vista HTML
 - **Estrategia de almacenamiento largo plazo:** Cloudflare R2 evaluado (10GB gratis permanente, egress gratis, ~$2.70/mes para 180GB a 2 anos). Alternativa: Deezer API para previews sin hosting propio.

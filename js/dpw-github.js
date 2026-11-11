@@ -1,23 +1,36 @@
 /* Publishing through the GitHub REST API (browser only).
- * Data lives in the separate repo "dpw-data" (pools.json + access.json), published by GitHub Pages at
- * /dpw-data/. The publishing key only has access to that repo, so it can never touch the site's code.
- * The key is never typed by admins: it is decrypted at login from access.json (see dpw-vault.js) and
- * kept in sessionStorage for the current tab only. */
+ * Data lives in the separate repo "dpw-data", published by GitHub Pages at /dpw-data/:
+ *   pools.json  public catalogue (days, artists, file names) - NO download links
+ *   pools.enc   full data with the MEGA links, encrypted (js/dpw-keys.js)
+ *   keys.json   who can decrypt pools.enc (admins, subscribers, owner's PC)
+ *   access.json admin accounts + encrypted publishing key (js/dpw-vault.js)
+ * pools.json and pools.enc are always written together in ONE commit (Git Data API), on top of the commit
+ * they were read from, so a concurrent change by another admin is detected (422) and retried on fresh data.
+ * The publishing key and the decrypted content key live in sessionStorage for the current tab only. */
 (function (root) {
   'use strict';
   var DPW = root.DPW;
-  var CFG = { owner: 'failsgamergt-arch', repo: 'dpw-data', branch: 'main', pools: 'pools.json', access: 'access.json' };
+  var CFG = { owner: 'failsgamergt-arch', repo: 'dpw-data', branch: 'main', pools: 'pools.json', enc: 'pools.enc', keys: 'keys.json', access: 'access.json' };
   var SESSION_KEY = 'dpw_pub';
+  var CK_KEY = 'dpw_ck';
   var API = 'https://api.github.com';
 
-  // ---------------------------------------------------------------- session (decrypted key)
-  function session() {
-    try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); } catch (e) { return null; }
+  // ---------------------------------------------------------------- session (decrypted keys)
+  function readSession(key) {
+    try { return JSON.parse(sessionStorage.getItem(key) || 'null'); } catch (e) { return null; }
   }
+  function session() { return readSession(SESSION_KEY); }
   function setSession(s) { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ user: s.user, token: s.token, mk: s.mk })); }
-  function clearSession() { try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* ignore */ } }
+  function clearSession() {
+    try { sessionStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(CK_KEY); } catch (e) { /* ignore */ }
+  }
   function getToken() { var s = session(); return (s && s.token) || ''; }
   function hasToken() { return !!getToken(); }
+
+  // Content key that opens pools.enc (admins and subscribers).
+  function getCk() { return readSession(CK_KEY); }
+  function setCk(ck, kid) { sessionStorage.setItem(CK_KEY, JSON.stringify({ ck: ck, kid: kid })); }
+  function clearCk() { try { sessionStorage.removeItem(CK_KEY); } catch (e) { /* ignore */ } }
 
   // ---------------------------------------------------------------- utils
   function b64encodeUtf8(str) {
@@ -64,7 +77,7 @@
   }
 
   function repoPath(suffix) { return '/repos/' + CFG.owner + '/' + CFG.repo + suffix; }
-  function contentsUrl(path, ref) { return repoPath('/contents/' + path + (ref ? '?ref=' + encodeURIComponent(ref) : '?ref=' + CFG.branch)); }
+  function contentsUrl(path, ref) { return repoPath('/contents/' + path + '?ref=' + encodeURIComponent(ref || CFG.branch)); }
 
   // -> { sha, text } or null (404 with opts.allow404)
   function readFile(path, ref, opts) {
@@ -83,44 +96,124 @@
     return request('PUT', repoPath('/contents/' + path), body, { token: token });
   }
 
-  // ---------------------------------------------------------------- pools.json
-  // Lenient: a hand-edited file with errors loads its valid part (the next save repairs it);
-  // an unparseable file loads as broken=true so only a restore can overwrite it.
-  function load(ref) {
-    return readFile(CFG.pools, ref).then(function (r) {
-      var parsed = null, broken = false;
-      try { parsed = JSON.parse(r.text); } catch (e) { broken = true; }
-      if (broken) return { sha: r.sha, text: r.text, data: DPW.emptyData(), broken: true, repaired: false, errors: ['JSON mal formado'] };
-      var check = DPW.validate(parsed);
-      return { sha: r.sha, text: r.text, data: check.ok ? parsed : DPW.sanitize(parsed), broken: false, repaired: !check.ok, errors: check.errors };
+  function headSha() {
+    return request('GET', repoPath('/git/ref/heads/' + CFG.branch)).then(function (r) { return r.object.sha; });
+  }
+
+  // Several files in ONE commit on top of `parent`. files: { path: text }. 422 if the branch moved meanwhile.
+  function writeFiles(parent, files, message) {
+    return request('GET', repoPath('/git/commits/' + parent)).then(function (c) {
+      var tree = Object.keys(files).map(function (p) { return { path: p, mode: '100644', type: 'blob', content: files[p] }; });
+      return request('POST', repoPath('/git/trees'), { base_tree: c.tree.sha, tree: tree });
+    }).then(function (t) {
+      return request('POST', repoPath('/git/commits'), { message: message, tree: t.sha, parents: [parent] });
+    }).then(function (c) {
+      return request('PATCH', repoPath('/git/refs/heads/' + CFG.branch), { sha: c.sha, force: false }).then(function () { return c; });
     });
   }
+
+  function parseKeys(text) {
+    var k;
+    try { k = JSON.parse(text); } catch (e) { throw new Error('keys.json no es JSON valido'); }
+    return root.DPWKeys.assertKeys(k);
+  }
+
+  // Everything at one commit (the head when ref is omitted).
+  function snapshot(ref) {
+    return (ref ? Promise.resolve(ref) : headSha()).then(function (head) {
+      return Promise.all([
+        readFile(CFG.keys, head, { allow404: true }),
+        readFile(CFG.enc, head, { allow404: true }),
+        readFile(CFG.pools, head, { allow404: true })
+      ]).then(function (r) {
+        return { head: head, keys: r[0] ? parseKeys(r[0].text) : null, encText: r[1] ? r[1].text : null, poolsText: r[2] ? r[2].text : null };
+      });
+    });
+  }
+
+  function lockedError() {
+    var e = new Error('Tu acceso a los enlaces todavia no esta activado. Avisa a Claude (o al dueño) para que lo active con "node tools/pools-cli.js keys-sync" y vuelve a entrar.');
+    e.code = 'LOCKED';
+    return e;
+  }
+
+  // Content key matching `keys`. Admins re-derive it when another admin rotated the key meanwhile.
+  function contentKey(keys) {
+    var c = getCk();
+    if (c && c.kid === keys.kid) return Promise.resolve(c.ck);
+    var s = session();
+    if (!s || !s.mk) return Promise.reject(lockedError());
+    return root.DPWKeys.unlockAdmin(keys, s.mk).then(function (r) {
+      if (r.status !== 'ok') throw lockedError();
+      setCk(r.ck, keys.kid);
+      return r.ck;
+    });
+  }
+
+  function decodeData(text) {
+    var parsed = null;
+    try { parsed = JSON.parse(text); } catch (e) { return { data: DPW.emptyData(), broken: true, repaired: false, errors: ['JSON mal formado'] }; }
+    var check = DPW.validate(parsed);
+    return { data: check.ok ? parsed : DPW.sanitize(parsed), broken: false, repaired: !check.ok, errors: check.errors };
+  }
+
+  // ---------------------------------------------------------------- pools (full data, decrypted)
+  // Lenient: a hand-edited file with errors loads its valid part (the next save repairs it);
+  // an unparseable one loads as broken=true so only a restore can overwrite it.
+  // legacy=true: links not protected yet (no keys.json / pools.enc): read-only until migrated.
+  function load() {
+    return snapshot().then(function (s) {
+      if (!s.keys || !s.encText) {
+        if (!s.poolsText) throw new Error('No se encontraron los datos de las pools en GitHub.');
+        return Object.assign({ head: s.head, keys: null, legacy: true }, decodeData(s.poolsText));
+      }
+      return contentKey(s.keys).then(function (ck) {
+        return root.DPWKeys.decryptPools(s.keys, ck, JSON.parse(s.encText));
+      }).then(function (text) {
+        return Object.assign({ head: s.head, keys: s.keys, legacy: false }, decodeData(text));
+      });
+    });
+  }
+
+  function encodeFiles(keys, ck, data) {
+    var full = DPW.serialize(data);
+    var pub = DPW.publicView(data);
+    DPW.assertValid(pub, { public: true });
+    return root.DPWKeys.encryptPools(keys, ck, full).then(function (box) {
+      var files = {};
+      files[CFG.enc] = JSON.stringify(box) + '\n';
+      files[CFG.pools] = DPW.serialize(pub);
+      return files;
+    });
+  }
+
+  function retryable(err) { return err.status === 409 || err.status === 422; }
 
   // mutate(freshData) -> newData (may throw a user-facing Error). Returns { data, commit, unchanged }.
   function commit(mutate, message, opts, attempt) {
     opts = opts || {};
     attempt = attempt || 1;
     return load().then(function (current) {
+      if (current.legacy) throw new Error('Los enlaces todavia no estan protegidos (migracion pendiente): no se puede publicar hasta terminarla.');
       if (current.broken && !opts.allowBroken) {
         throw new Error('El archivo de pools en GitHub esta dañado (no es JSON valido). Ve a HISTORIAL y restaura la ultima version buena.');
       }
       var next = DPW.touch(mutate(DPW.clone(current.data)));
       DPW.assertValid(next);
-      var text = DPW.serialize(next);
-      if (!current.broken && !current.repaired && text === DPW.serialize(DPW.touch(current.data, next.updated))) {
+      if (!current.broken && !current.repaired && DPW.serialize(next) === DPW.serialize(DPW.touch(current.data, next.updated))) {
         return { data: current.data, commit: null, unchanged: true };
       }
-      return putFile(CFG.pools, text, current.sha, message).then(function (res) {
-        return { data: JSON.parse(text), commit: res && res.commit ? res.commit : null, unchanged: false };
-      });
+      return contentKey(current.keys).then(function (ck) { return encodeFiles(current.keys, ck, next); })
+        .then(function (files) { return writeFiles(current.head, files, message); })
+        .then(function (c) { return { data: JSON.parse(DPW.serialize(next)), commit: c, unchanged: false }; });
     }).catch(function (err) {
-      if ((err.status === 409 || err.status === 422) && attempt < 4) return commit(mutate, message, opts, attempt + 1);
+      if (retryable(err) && attempt < 4) return commit(mutate, message, opts, attempt + 1);
       throw err;
     });
   }
 
   function history(limit) {
-    return request('GET', repoPath('/commits?path=' + encodeURIComponent(CFG.pools) + '&sha=' + CFG.branch + '&per_page=' + (limit || 25)))
+    return request('GET', repoPath('/commits?path=' + encodeURIComponent(CFG.enc) + '&sha=' + CFG.branch + '&per_page=' + (limit || 25)))
       .then(function (list) {
         return (list || []).map(function (c) {
           return {
@@ -135,10 +228,80 @@
       });
   }
 
+  // Old pools.enc versions are opened with the CURRENT keys (older content keys are kept in keys.history).
   function restore(sha, message) {
-    return load(sha).then(function (old) {
+    return Promise.all([snapshot(), readFile(CFG.enc, sha)]).then(function (r) {
+      var cur = r[0];
+      if (!cur.keys) throw new Error('Los enlaces todavia no estan protegidos (migracion pendiente).');
+      return contentKey(cur.keys).then(function (ck) { return root.DPWKeys.decryptPools(cur.keys, ck, JSON.parse(r[1].text)); });
+    }).then(function (text) {
+      var old = decodeData(text);
       if (old.broken) throw new Error('Esa version tampoco es JSON valido; elige otra.');
       return commit(function () { return old.data; }, message || ('admin: restaurar version ' + sha.slice(0, 7)), { allowBroken: true });
+    });
+  }
+
+  // ---------------------------------------------------------------- keys.json (who can open the links)
+  function loadKeys() { return snapshot(); }
+
+  // mutate(keys, currentCk|null) -> Promise<{ keys, ck? }>. Returning ck (a rotation) re-encrypts pools.enc
+  // in the same commit. currentCk is null while this admin's access to the links is still pending.
+  function commitKeys(mutate, message, attempt) {
+    attempt = attempt || 1;
+    var rotated = null;
+    return snapshot().then(function (s) {
+      if (!s.keys) throw new Error('Los enlaces todavia no estan protegidos (migracion pendiente).');
+      return contentKey(s.keys).then(null, function (err) { if (err.code === 'LOCKED') return null; throw err; }).then(function (ck) {
+        return mutate(JSON.parse(JSON.stringify(s.keys)), ck);
+      }).then(function (r) {
+        root.DPWKeys.assertKeys(r.keys);
+        var files = {};
+        files[CFG.keys] = JSON.stringify(r.keys, null, 2) + '\n';
+        if (!r.ck) return writeFiles(s.head, files, message).then(function () { return r; });
+        rotated = r;
+        return contentKey(s.keys).then(function (oldCk) { return root.DPWKeys.decryptPools(s.keys, oldCk, JSON.parse(s.encText)); })
+          .then(function (text) { return root.DPWKeys.encryptPools(r.keys, r.ck, text); })
+          .then(function (box) { files[CFG.enc] = JSON.stringify(box) + '\n'; return writeFiles(s.head, files, message); })
+          .then(function () { setCk(r.ck, r.keys.kid); return r; });
+      });
+    }).catch(function (err) {
+      if (retryable(err) && attempt < 4) return commitKeys(mutate, message, attempt + 1);
+      throw err;
+    }).then(function (r) { return r.keys; }, function (err) { if (rotated) clearCk(); throw err; });
+  }
+
+  // ---------------------------------------------------------------- public reads (no key needed)
+  // GitHub API first (always fresh); if it is unavailable or rate limited (60/h per IP), the Pages copy.
+  // Resolves null ONLY when the file does not exist.
+  function fetchPublic(path, label) {
+    var apiFailure = null;
+    return request('GET', contentsUrl(path), null, { token: null, allow404: true, accept: 'application/vnd.github.raw+json' })
+      .then(null, function (err) {
+        apiFailure = err;
+        return fetch('dpw-data/' + path + '?t=' + Date.now(), { cache: 'no-store' }).then(function (r) {
+          if (r.status === 404) return null;
+          if (!r.ok) throw new Error('No se pudo comprobar ' + label + ': ' + (apiFailure.message || 'sin conexion con GitHub.'));
+          return r.text();
+        }, function () {
+          throw new Error('No se pudo comprobar ' + label + ' (sin conexion). Intentalo de nuevo.');
+        });
+      });
+  }
+
+  function fetchKeysPublic() {
+    return fetchPublic(CFG.keys, 'el acceso').then(function (text) { return text == null ? null : parseKeys(text); });
+  }
+
+  // pools.enc is large: the Pages copy first (no API quota), the API if Pages does not have it yet.
+  function fetchEncPublic() {
+    return fetch('dpw-data/' + CFG.enc + '?t=' + Date.now(), { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(null, function () {
+      return fetchPublic(CFG.enc, 'los enlaces').then(function (text) {
+        if (text == null) throw new Error('No se encontraron los enlaces.');
+        return JSON.parse(text);
+      });
     });
   }
 
@@ -149,21 +312,10 @@
     return root.DPWVault.assertAccess(a);
   }
 
-  // Public read used at login (no key yet). Resolves null ONLY when GitHub says the file does not exist
-  // (publishing never activated); any other problem rejects, so the setup screen is never shown by mistake.
+  // Resolves null ONLY when GitHub says the file does not exist (publishing never activated);
+  // any other problem rejects, so the setup screen is never shown by mistake.
   function fetchAccessPublic() {
-    var apiFailure = null;
-    return request('GET', contentsUrl(CFG.access), null, { token: null, allow404: true, accept: 'application/vnd.github.raw+json' })
-      .then(function (text) { return text == null ? null : parseAccess(text); }, function (err) {
-        apiFailure = err;
-        // API unavailable or rate limited (60/h per IP): use the Pages copy (may lag ~1 min behind).
-        return fetch('dpw-data/' + CFG.access + '?t=' + Date.now(), { cache: 'no-store' }).then(function (r) {
-          if (!r.ok) throw new Error('No se pudo comprobar el acceso de administrador: ' + (apiFailure.message || 'sin conexion con GitHub.'));
-          return r.text().then(parseAccess);
-        }, function () {
-          throw new Error('No se pudo comprobar el acceso de administrador (sin conexion). Intentalo de nuevo.');
-        });
-      });
+    return fetchPublic(CFG.access, 'el acceso de administrador').then(function (text) { return text == null ? null : parseAccess(text); });
   }
 
   function loadAccess() {
@@ -179,7 +331,7 @@
         return putFile(CFG.access, JSON.stringify(next, null, 2) + '\n', cur.sha, message).then(function () { return next; });
       });
     }).catch(function (err) {
-      if ((err.status === 409 || err.status === 422) && attempt < 4) return commitAccess(mutate, message, attempt + 1);
+      if (retryable(err) && attempt < 4) return commitAccess(mutate, message, attempt + 1);
       throw err;
     });
   }
@@ -215,7 +367,9 @@
 
   root.DPWGitHub = {
     CFG: CFG, session: session, setSession: setSession, clearSession: clearSession, getToken: getToken, hasToken: hasToken,
+    getCk: getCk, setCk: setCk, clearCk: clearCk,
     load: load, commit: commit, history: history, restore: restore,
+    loadKeys: loadKeys, commitKeys: commitKeys, fetchKeysPublic: fetchKeysPublic, fetchEncPublic: fetchEncPublic,
     fetchAccessPublic: fetchAccessPublic, loadAccess: loadAccess, commitAccess: commitAccess, commitAccessWithToken: commitAccessWithToken,
     checkKey: checkKey, createAccess: createAccess,
     _b64encodeUtf8: b64encodeUtf8, _b64decodeUtf8: b64decodeUtf8

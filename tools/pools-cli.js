@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /* Code-level editing of the pools (same rules as the admin panel). By default it works directly on the
  * live data repo failsgamergt-arch/dpw-data through the GitHub CLI ("gh", already logged in on the owner's
- * PC), so it never conflicts with what admins publish from the panel. --file <path> works on a local copy.
+ * PC), so it never conflicts with what admins publish from the panel. Links are encrypted (pools.enc): this PC
+ * opens them with its key in ~/.dpw/cli-key.json (tools/dpw-store.js). --file <path> works on a plain local copy.
  *   node tools/pools-cli.js validate
  *   node tools/pools-cli.js months
  *   node tools/pools-cli.js list [--month 2026-08] [--date 2026-08-31]
@@ -9,16 +10,16 @@
  *   node tools/pools-cli.js edit --date D --artist A [--index 1] [--to-date D2] [--to-artist A2] [--url U] [--name N]
  *   node tools/pools-cli.js remove --date D [--artist A [--index 1]]
  *   node tools/pools-cli.js artists | artist-add NAME | artist-rename OLD NEW | artist-remove NAME
- *   node tools/pools-cli.js admins                      (lists admin accounts of access.json)
- * Options: --dry-run (preview, saves nothing) · --file dpw-data/pools.json (local file instead of GitHub) */
+ *   node tools/pools-cli.js admins                      (admin accounts of access.json)
+ *   node tools/pools-cli.js keys                        (who can open the links; subscribers, pending accesses)
+ *   node tools/pools-cli.js keys-sync --ids admins      (approves pending accesses BY NAME, e.g. the admins after the migration)
+ *   node tools/pools-cli.js migrate                     (one time: encrypt links that are still public)
+ * Options: --dry-run (preview, saves nothing) · --file dpw-data/pools.json (local plain file instead of GitHub) */
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
 const DPW = require('../js/dpw-data.js');
-
-const REPO = 'failsgamergt-arch/dpw-data';
-const GH_CANDIDATES = [process.env.DPW_GH, 'C:/Program Files/GitHub CLI/gh.exe', 'gh'].filter(Boolean);
+const store = require('./dpw-store.js');
 
 function parseArgs(argv) {
   const out = { _: [] };
@@ -34,66 +35,34 @@ function parseArgs(argv) {
   return out;
 }
 
-function gh(args, input) {
-  let lastErr;
-  for (const bin of GH_CANDIDATES) {
-    if (bin.includes('/') && !fs.existsSync(bin)) continue;
-    try {
-      return execFileSync(bin, args, { input, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['pipe', 'pipe', 'pipe'] });
-    } catch (e) {
-      if (e.code === 'ENOENT') { lastErr = e; continue; }
-      const msg = String(e.stderr || e.message).trim();
-      throw new Error('GitHub: ' + msg.split('\n').slice(-3).join(' '));
-    }
-  }
-  throw new Error('No encuentro el GitHub CLI (gh). Instalalo y haz "gh auth login", o usa --file. ' + (lastErr ? lastErr.message : ''));
-}
-
-// ---------------------------------------------------------------- storage (remote repo or local file)
+// ---------------------------------------------------------------- storage (remote encrypted repo or local file)
 function makeStore(args) {
   if (args.file) {
     const file = path.resolve(String(args.file));
     return {
       where: file,
-      read() { return { text: fs.readFileSync(file, 'utf8'), sha: null }; },
-      write(text) { const tmp = file + '.tmp'; fs.writeFileSync(tmp, text); fs.renameSync(tmp, file); },
-      readAccess() { const f = path.join(path.dirname(file), 'access.json'); return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : null; }
+      async open() {
+        const data = DPW.parse(fs.readFileSync(file, 'utf8'));
+        return { data, save: async next => { const tmp = file + '.tmp'; fs.writeFileSync(tmp, DPW.serialize(next)); fs.renameSync(tmp, file); } };
+      }
     };
   }
-  return {
-    where: REPO + '/pools.json (GitHub)',
-    read() {
-      const meta = JSON.parse(gh(['api', 'repos/' + REPO + '/contents/pools.json', '-H', 'Accept: application/vnd.github.object']));
-      const text = meta.content && meta.encoding === 'base64'
-        ? Buffer.from(meta.content, 'base64').toString('utf8')
-        : gh(['api', 'repos/' + REPO + '/contents/pools.json', '-H', 'Accept: application/vnd.github.raw']);
-      return { text, sha: meta.sha };
-    },
-    write(text, sha, message) {
-      const body = JSON.stringify({ message, content: Buffer.from(text, 'utf8').toString('base64'), sha, branch: 'main' });
-      gh(['api', '-X', 'PUT', 'repos/' + REPO + '/contents/pools.json', '--input', '-'], body);
-    },
-    readAccess() {
-      try { return JSON.parse(gh(['api', 'repos/' + REPO + '/contents/access.json', '-H', 'Accept: application/vnd.github.raw'])); }
-      catch (e) { if (/404|Not Found/i.test(e.message)) return null; throw e; }
-    }
-  };
+  return { where: store.REPO + ' (GitHub, enlaces cifrados)', open: () => store.open() };
 }
 
 let STORE = null;
-let LOADED = null;
+let OPENED = null;
 
-function load() {
-  const r = STORE.read();
-  LOADED = r;
-  return DPW.parse(r.text);
+async function load() {
+  OPENED = await STORE.open();
+  return OPENED.data;
 }
 
-function save(data, args, summary) {
+async function save(data, args, summary) {
   const next = DPW.touch(data);
   DPW.assertValid(next);
   if (args['dry-run']) { console.log('[dry-run] ' + summary + ' (no se ha guardado)'); return; }
-  STORE.write(DPW.serialize(next), LOADED && LOADED.sha, 'cli: ' + summary);
+  await OPENED.save(next, 'cli: ' + summary);
   console.log('OK: ' + summary + '  →  ' + STORE.where + (args.file ? '' : '  (visible en la web en ~1 min)'));
 }
 
@@ -113,20 +82,26 @@ function index(args) {
   return i - 1;
 }
 
+function countFiles(d) {
+  return Object.values(d.days).reduce((n, day) => n + Object.values(day).reduce((m, f) => m + f.length, 0), 0);
+}
+
 const commands = {
-  validate() {
-    const r = DPW.validate(JSON.parse(STORE.read().text));
+  async validate(args) {
+    if (!args.file) {
+      const s = store.snapshot();
+      if (s.poolsText && /mega\.nz/i.test(s.poolsText)) { console.error('ERROR: pools.json publico contiene enlaces. Arreglo: node tools/pools-cli.js repair-public'); process.exitCode = 1; }
+    }
+    const d = await load();
+    const r = DPW.validate(d);
     r.warnings.forEach(w => console.log('AVISO: ' + w));
-    if (!r.ok) { r.errors.forEach(e => console.error('ERROR: ' + e)); process.exitCode = 1; return; }
-    const d = load();
-    const files = Object.values(d.days).reduce((n, day) => n + Object.values(day).reduce((m, f) => m + f.length, 0), 0);
-    console.log(`Valido (${STORE.where}): ${Object.keys(d.days).length} dias, ${d.artists.length} artistas, ${files} enlaces`);
+    console.log(`Valido (${STORE.where}): ${Object.keys(d.days).length} dias, ${d.artists.length} artistas, ${countFiles(d)} enlaces`);
   },
-  months() {
-    DPW.listMonths(load()).forEach(m => console.log(`${m.id}  ${m.label.padEnd(16)} ${String(m.days).padStart(2)} dias  ${String(m.files).padStart(4)} enlaces  ${m.poolCount} pools`));
+  async months() {
+    DPW.listMonths(await load()).forEach(m => console.log(`${m.id}  ${m.label.padEnd(16)} ${String(m.days).padStart(2)} dias  ${String(m.files).padStart(4)} enlaces  ${m.poolCount} pools`));
   },
-  list(args) {
-    const d = load();
+  async list(args) {
+    const d = await load();
     let dates = Object.keys(d.days).sort().reverse();
     if (args.month) dates = dates.filter(x => x.startsWith(String(args.month)));
     if (args.date) dates = dates.filter(x => x === String(args.date));
@@ -135,63 +110,95 @@ const commands = {
       Object.keys(d.days[date]).sort().forEach(a => d.days[date][a].forEach((f, i) => console.log(`  ${a} #${i + 1}  ${f.name}  ${f.url}`)));
     });
   },
-  add(args) {
-    let d = load();
+  async add(args) {
+    let d = await load();
     const artist = DPW.normalizeArtistName(need(args, 'artist'));
     if (args['new-artist'] && !d.artists.includes(artist)) d = DPW.addArtist(d, artist);
     const r = DPW.addEntries(d, [{ date: need(args, 'date'), artist, url: need(args, 'url'), name: args.name === true ? '' : args.name }]);
     if (r.skipped.length) throw new Error(r.skipped[0].reason);
-    save(r.data, args, `anadir ${artist} ${args.date}`);
+    await save(r.data, args, `anadir ${artist} ${args.date}`);
   },
-  edit(args) {
+  async edit(args) {
     const ref = { date: need(args, 'date'), artist: DPW.normalizeArtistName(need(args, 'artist')), index: index(args) };
     const changes = {};
     if (args['to-date']) changes.date = String(args['to-date']);
     if (args['to-artist']) changes.artist = String(args['to-artist']);
     if (args.url) changes.url = String(args.url);
     if (args.name) changes.name = String(args.name);
-    save(DPW.updateFile(load(), ref, changes), args, `editar ${ref.artist} ${ref.date} #${ref.index + 1}`);
+    await save(DPW.updateFile(await load(), ref, changes), args, `editar ${ref.artist} ${ref.date} #${ref.index + 1}`);
   },
-  remove(args) {
+  async remove(args) {
     const date = need(args, 'date');
-    const d = load();
+    const d = await load();
     if (!args.artist) return save(DPW.removeDay(d, date), args, `borrar dia ${date}`);
     const artist = DPW.normalizeArtistName(args.artist);
     if (args.index === undefined) return save(DPW.removeEntry(d, date, artist), args, `borrar ${artist} ${date}`);
-    save(DPW.removeFile(d, { date, artist, index: index(args) }), args, `borrar ${artist} ${date} #${args.index}`);
+    await save(DPW.removeFile(d, { date, artist, index: index(args) }), args, `borrar ${artist} ${date} #${args.index}`);
   },
-  artists() {
-    const d = load(), u = DPW.artistUsage(d);
+  async artists() {
+    const d = await load(), u = DPW.artistUsage(d);
     d.artists.forEach(a => console.log(`${a.padEnd(22)} ${u[a]} publicaciones`));
   },
-  'artist-add'(args) { save(DPW.addArtist(load(), positional(args, 1, 'NOMBRE')), args, 'anadir artista ' + DPW.normalizeArtistName(args._[1])); },
-  'artist-rename'(args) {
+  async 'artist-add'(args) { await save(DPW.addArtist(await load(), positional(args, 1, 'NOMBRE')), args, 'anadir artista ' + DPW.normalizeArtistName(args._[1])); },
+  async 'artist-rename'(args) {
     if (!args._[1] || !args._[2]) throw new Error('Uso: artist-rename VIEJO NUEVO');
-    save(DPW.renameArtist(load(), DPW.normalizeArtistName(args._[1]), args._[2]), args, 'renombrar artista ' + args._[1] + ' -> ' + args._[2]);
+    await save(DPW.renameArtist(await load(), DPW.normalizeArtistName(args._[1]), args._[2]), args, 'renombrar artista ' + args._[1] + ' -> ' + args._[2]);
   },
-  'artist-remove'(args) { save(DPW.removeArtist(load(), DPW.normalizeArtistName(positional(args, 1, 'NOMBRE'))), args, 'borrar artista ' + args._[1]); },
-  admins() {
-    const a = STORE.readAccess();
+  async 'artist-remove'(args) { await save(DPW.removeArtist(await load(), DPW.normalizeArtistName(positional(args, 1, 'NOMBRE'))), args, 'borrar artista ' + args._[1]); },
+  async admins() {
+    const a = store.readAccess();
     if (!a) { console.log('Publicacion sin activar (no hay access.json): abre admin.html y sigue "ACTIVAR PUBLICACION".'); return; }
     console.log('Admins: ' + (a.admins || []).map(s => s.user).join(', '));
+  },
+  async keys() {
+    const snap = store.snapshot();
+    if (!snap.keys) { console.log('Los enlaces todavia NO estan cifrados (falta "migrate").'); return; }
+    const today = DPW.todayISO();
+    const mine = store.readCliKey();
+    snap.keys.principals.forEach(p => {
+      const state = p.wrap && p.wrap.kid === snap.keys.kid ? 'con acceso' : 'PENDIENTE (keys-sync)';
+      const extra = p.kind === 'member' ? (p.exp < today ? '  caducada ' : '  hasta ') + DPW.formatDate(p.exp) : '';
+      console.log(`${p.kind.padEnd(7)} ${p.id.padEnd(36)} ${state}${extra}${mine && mine.id === p.id ? '  (este PC)' : ''}`);
+    });
+    console.log('Suscriptores: ' + snap.keys.principals.filter(p => p.kind === 'member').length + ' (sus nombres solo se ven en el panel admin)');
+  },
+  async 'keys-sync'(args) {
+    const ids = args.ids && args.ids !== true ? String(args.ids).split(',').map(x => x.trim()).filter(Boolean) : [];
+    if (args['dry-run'] || !ids.length) {
+      const s = store.snapshot();
+      const waiting = s.keys ? require('../js/dpw-keys.js').pending(s.keys).map(p => p.kind + ' ' + p.id) : [];
+      console.log('Pendientes: ' + (waiting.join(', ') || 'ninguno') + (ids.length ? '' : '\nPara activarlos: keys-sync --ids <id>[,<id>] (solo los que reconozcas: "admins" aparece cuando un admin entra la primera vez).'));
+      return;
+    }
+    const r = await store.syncKeys(ids);
+    console.log(r.granted.length ? 'OK: acceso activado para ' + r.granted.join(', ') + ' (que vuelvan a entrar)' : 'Nada que activar.');
+  },
+  async 'repair-public'(args) {
+    if (args['dry-run']) { console.log('[dry-run] se reescribiria pools.json a partir de pools.enc'); return; }
+    await store.repairPublic();
+    console.log('OK: pools.json rehecho sin enlaces');
+  },
+  async migrate(args) {
+    const r = await store.migrate(!!args['dry-run']);
+    console.log((r.written ? 'OK: enlaces cifrados (' : '[dry-run] se cifrarian (') + countFiles(r.data) + ' enlaces). pools.json queda solo con el catalogo.');
+    if (r.written) console.log('Llave de este PC: ' + store.KEY_FILE + ' (no la subas a ningun sitio). Ahora un admin debe entrar en admin.html y despues: node tools/pools-cli.js keys-sync');
   }
 };
 
-function main() {
+async function main() {
   const args = parseArgs(process.argv.slice(2));
   const cmd = commands[args._[0]];
   if (!cmd) {
-    console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(1, 15).join('\n'));
+    console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(1, 19).join('\n'));
     process.exitCode = args._[0] ? 1 : 0;
     return;
   }
-  try {
-    STORE = makeStore(args);
-    cmd(args);
-  } catch (e) {
-    console.error('ERROR: ' + e.message);
-    process.exitCode = 1;
-  }
+  if (args.file && ['admins', 'keys', 'keys-sync', 'migrate', 'repair-public'].includes(args._[0])) throw new Error(args._[0] + ' solo funciona contra GitHub (sin --file).');
+  STORE = makeStore(args);
+  await cmd(args);
 }
 
-main();
+main().catch(e => {
+  console.error('ERROR: ' + e.message);
+  process.exitCode = 1;
+});

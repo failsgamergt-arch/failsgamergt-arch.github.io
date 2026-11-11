@@ -1,4 +1,4 @@
-/* Tests for js/dpw-data.js, js/dpw-vault.js and the real dpw-data/pools.json.  Run: node tools/test-dpw.js */
+/* Tests for js/dpw-data.js, js/dpw-vault.js, js/dpw-keys.js and the real dpw-data/pools.json.  Run: node tools/test-dpw.js */
 'use strict';
 const assert = require('assert');
 const fs = require('fs');
@@ -24,9 +24,21 @@ function base() {
   ]).data;
 }
 
-test('real data/pools.json is valid', () => {
-  const r = DPW.validate(JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'dpw-data', 'pools.json'), 'utf8')));
+test('real data/pools.json is a valid public catalogue WITHOUT links', () => {
+  const text = fs.readFileSync(path.join(__dirname, '..', 'dpw-data', 'pools.json'), 'utf8');
+  assert(!/mega\.nz/i.test(text), 'pools.json must never contain MEGA links (they go encrypted in pools.enc)');
+  const r = DPW.validate(JSON.parse(text), { public: true });
   assert.deepStrictEqual(r.errors, []);
+});
+
+test('publicView strips links; public validation refuses them', () => {
+  const pub = DPW.publicView(base());
+  assert.deepStrictEqual(pub.days['2026-09-01']['BPM SUPREME'], [{ name: 'Bpm Supreme 01 09 2026 - Dj Pool World [DPW]' }]);
+  assert(!/mega/.test(DPW.serialize(pub)), 'no link left in the public file');
+  assert.deepStrictEqual(DPW.validate(pub, { public: true }).errors, []);
+  assert(!DPW.validate(pub).ok, 'a catalogue without links is not valid full data');
+  assert(DPW.validate(base(), { public: true }).errors.some(e => /no puede llevar enlaces/.test(e)), 'links in the public file are an error');
+  assert.deepStrictEqual(DPW.sanitize(base(), { public: true }), JSON.parse(JSON.stringify(DPW.sanitize(pub, { public: true }))));
 });
 
 test('real data round-trips through serialize unchanged', () => {
@@ -280,7 +292,102 @@ async function vaultTests() {
   passed += 1;
 }
 
-vaultTests().then(() => {
+// ---------------------------------------------------------------- protected links (async)
+const K = require('../js/dpw-keys.js');
+
+async function keysTests() {
+  const mk = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('base64');
+  const T = '2026-11-11';
+  const cli = await K.newCli('cli-test');
+  let { keys, ck } = await K.create([cli.principal]);
+  assert.deepStrictEqual(K.validateKeys(keys), []);
+  assert.strictEqual(await K.unlockCli(keys, 'cli-test', cli.priv), ck);
+  assert(!JSON.stringify(keys).includes(ck), 'content key never stored in clear');
+
+  // admins: registered pending, activated by someone holding the key
+  keys = await K.registerAdmin(keys, mk);
+  assert.strictEqual((await K.unlockAdmin(keys, mk)).status, 'pending');
+  assert.deepStrictEqual(K.pending(keys).map(p => p.id), ['admins']);
+  assert.strictEqual((await K.unlockAdmin(await K.syncWraps(keys, ck), mk)).status, 'pending', 'a pending access is not granted unless named');
+  keys = await K.syncWraps(keys, ck, ['admins']);
+  assert.strictEqual((await K.unlockAdmin(keys, mk)).ck, ck);
+  const otherMk = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('base64');
+  assert.strictEqual((await K.unlockAdmin(keys, otherMk)).status, 'foreign');
+
+  // subscribers
+  keys = (await K.putMember(keys, ck, 'DJPepe', 'Pepe-Pass-2026x', '2027-11-11')).keys;
+  keys = (await K.putMember(keys, ck, 'ana', 'Ana-Pass-2026yy', '2026-10-01')).keys;
+  await assert.rejects(K.putMember(keys, ck, 'djpepe', 'Otra-Pass-2026z', '2027-01-01'), /Ya existe/);
+  await assert.rejects(K.putMember(keys, ck, 'x', 'Otra-Pass-2026z', '2027-01-01'), /Usuario/);
+  const pepe = await K.unlockMember(keys, 'djpepe', 'Pepe-Pass-2026x', T);
+  assert.strictEqual(pepe.status, 'ok');
+  assert.strictEqual(pepe.ck, ck);
+  assert.strictEqual((await K.unlockMember(keys, 'djpepe', 'mala', T)).status, 'wrong');
+  assert.strictEqual((await K.unlockMember(keys, 'nadie', 'Pepe-Pass-2026x', T)).status, 'wrong');
+  assert.strictEqual((await K.unlockMember(keys, 'ana', 'Ana-Pass-2026yy', T)).status, 'expired');
+  assert(!JSON.stringify(keys).includes('djpepe'), 'user names are not public');
+  const pepeId = await K.memberId('djpepe');
+  const swapped = JSON.parse(JSON.stringify(keys));
+  const anaSlot = swapped.principals.find(p => p.id === pepeId);
+  anaSlot.id = await K.memberId('impostor');
+  assert.strictEqual((await K.unlockMember(swapped, 'impostor', 'Pepe-Pass-2026x', T)).status, 'wrong', 'slot bound to its user');
+
+  // renew + new password
+  keys = K.setMemberExp(keys, await K.memberId('ana'), '2027-10-01');
+  assert.strictEqual((await K.unlockMember(keys, 'ana', 'Ana-Pass-2026yy', T)).status, 'ok');
+  const oldSlots = JSON.parse(JSON.stringify(keys));
+  const np = await K.putMember(keys, ck, 'ana', 'Ana-Nueva-2027q', '2027-10-01', true);
+  assert.notStrictEqual(np.ck, ck, 'a new password changes the content key');
+  keys = np.keys; ck = np.ck;
+  assert.strictEqual((await K.unlockMember(keys, 'ana', 'Ana-Pass-2026yy', T)).status, 'wrong');
+  assert.strictEqual((await K.unlockMember(keys, 'ana', 'Ana-Nueva-2027q', T)).ck, ck);
+  assert.notStrictEqual((await K.unlockMember(oldSlots, 'ana', 'Ana-Pass-2026yy', T)).ck, ck, 'the old slot (repo history) does not open the new key');
+  assert.strictEqual((await K.unlockMember(keys, 'djpepe', 'Pepe-Pass-2026x', T)).ck, ck, 'others keep access after the change');
+
+  // a principal slipped into keys.json by someone with write access only never gets the key
+  const evil = await K.newCli('cli-intruso');
+  let injected = K.addPrincipal(keys, evil.principal);
+  injected = await K.syncWraps(injected, ck);
+  assert.strictEqual(await K.unlockCli(injected, 'cli-intruso', evil.priv), null, 'not granted on sync');
+  const rotInj = await K.rotate(injected, ck);
+  assert.strictEqual(await K.unlockCli(rotInj.keys, 'cli-intruso', evil.priv), null, 'not granted on rotation');
+  const stolen = JSON.parse(JSON.stringify(keys));
+  stolen.principals.find(p => p.id === pepeId).pub = evil.principal.pub;
+  const rotSt = await K.rotate(stolen, ck);
+  assert(!K.find(rotSt.keys, pepeId).wrap, 'a slot whose public key was swapped loses access on rotation');
+  assert(!DPW.isValidFileName('pack https://mega.nz/file/abc'), 'a link inside a name is rejected');
+
+  // details for admins only
+  keys = await K.writeMeta(keys, mk, { [pepeId]: { user: 'djpepe', email: 'pepe@example.com' } });
+  assert(!JSON.stringify(keys).includes('pepe@example.com'), 'e-mails are encrypted');
+  assert.strictEqual((await K.readMeta(keys, mk))[pepeId].email, 'pepe@example.com');
+
+  // links: encrypted; tampering detected
+  const full = DPW.serialize(base());
+  const box = await K.encryptPools(keys, ck, full);
+  assert(!JSON.stringify(box).includes('mega.nz'));
+  assert.strictEqual(await K.decryptPools(keys, ck, box), full);
+  await assert.rejects(K.decryptPools(keys, ck, Object.assign({}, box, { ct: box.ct.replace(/^./, c => (c === 'A' ? 'B' : 'A')) })));
+
+  // removing a subscriber changes the key: they lose access, the rest keep it, old versions still open
+  const oldCk = ck;
+  const r = await K.removeMembers(keys, ck, [pepeId]);
+  keys = r.keys; ck = r.ck;
+  assert.notStrictEqual(ck, oldCk);
+  assert.strictEqual((await K.unlockMember(keys, 'djpepe', 'Pepe-Pass-2026x', T)).status, 'wrong');
+  assert.strictEqual((await K.unlockMember(keys, 'ana', 'Ana-Nueva-2027q', T)).ck, ck);
+  assert.strictEqual((await K.unlockAdmin(keys, mk)).ck, ck);
+  assert.strictEqual(await K.unlockCli(keys, 'cli-test', cli.priv), ck);
+  const box2 = await K.encryptPools(keys, ck, full);
+  await assert.rejects(K.decryptPools(keys, oldCk, box2), 'old key cannot read new links');
+  assert.strictEqual(await K.decryptPools(keys, ck, box), full, 'old versions open through history');
+  const r2 = await K.rotate(keys, ck);
+  assert.strictEqual(await K.decryptPools(r2.keys, r2.ck, box), full, 'history survives several rotations');
+  assert.deepStrictEqual(K.validateKeys(r2.keys), []);
+  passed += 1;
+}
+
+Promise.all([vaultTests(), keysTests()]).then(() => {
   console.log(passed + ' tests OK' + (process.exitCode ? ' (con fallos)' : ''));
 }, e => {
   console.error('FAIL vault\n  ' + (e && e.stack || e));
