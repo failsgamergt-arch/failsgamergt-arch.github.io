@@ -1005,24 +1005,24 @@ function renderSections(dates) {
           '<span>' + dt.day + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.monthName + '</span><span class="mx-2 text-zinc-500 font-normal">|</span><span>' + dt.year.slice(2) + '</span>' +
         '</div>' +
       '</div>' +
-      '<div class="relative rounded-3xl border border-brand-neon bg-[#0c0c14]/85 backdrop-blur-sm p-3 sm:p-5 lg:p-6 shadow-[0_0_25px_rgba(37,99,235,0.15),0_0_40px_rgba(236,72,153,0.06)] card-hover overflow-hidden">' +
+      '<div class="relative rounded-3xl border border-brand-neon bg-[#0c0c14]/35 p-3 sm:p-5 lg:p-6 shadow-[0_0_25px_rgba(37,99,235,0.15),0_0_40px_rgba(236,72,153,0.06)] card-hover overflow-hidden">' +
         '<div class="relative group/tabs">' +
-          '<button onclick="scrollTabs(\'' + idx + '\',-1)" class="tab-arrow tab-arrow-left absolute left-0 top-0 bottom-0 z-10 w-10 flex items-center justify-center bg-gradient-to-r from-[#0c0c10] via-[#0c0c10]/90 to-transparent opacity-0 pointer-events-none transition-opacity duration-200" aria-label="Anterior">' +
+          '<button onclick="scrollTabs(\'' + idx + '\',-1)" class="tab-arrow tab-arrow-left absolute left-0 top-0 bottom-0 z-10 w-10 flex items-center justify-center bg-gradient-to-r from-[#050510]/90 via-[#050510]/60 to-transparent opacity-0 pointer-events-none transition-opacity duration-200" aria-label="Anterior">' +
             '<svg class="w-5 h-5 text-brand-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>' +
           '</button>' +
           '<div class="overflow-x-auto no-scrollbar border-b border-zinc-800/80 pb-3" id="tabs-scroll-' + idx + '" onscroll="updateTabArrows(\'' + idx + '\')">' +
             '<div class="flex items-stretch gap-1.5 min-w-max" id="tabs-' + idx + '">' + tabs + '</div>' +
           '</div>' +
-          '<button onclick="scrollTabs(\'' + idx + '\',1)" class="tab-arrow tab-arrow-right absolute right-0 top-0 bottom-0 z-10 w-10 flex items-center justify-center bg-gradient-to-l from-[#0c0c10] via-[#0c0c10]/90 to-transparent opacity-0 pointer-events-none transition-opacity duration-200" aria-label="Siguiente">' +
+          '<button onclick="scrollTabs(\'' + idx + '\',1)" class="tab-arrow tab-arrow-right absolute right-0 top-0 bottom-0 z-10 w-10 flex items-center justify-center bg-gradient-to-l from-[#050510]/90 via-[#050510]/60 to-transparent opacity-0 pointer-events-none transition-opacity duration-200" aria-label="Siguiente">' +
             '<svg class="w-5 h-5 text-brand-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>' +
           '</button>' +
         '</div>' +
-        '<div class="mt-4 rounded-2xl border border-brand-neon/60 bg-[#101014] py-14 px-6 flex flex-col items-center justify-center min-h-[340px]" id="display-' + idx + '">' +
+        '<div class="mt-4 py-6 sm:py-8 px-4 flex flex-col items-center justify-center" id="display-' + idx + '">' +
           '<div class="pool-card-wrapper">' +
             '<div class="w-48 h-48 sm:w-56 sm:h-56 ' + card.bg + ' rounded-lg shadow-2xl flex flex-col items-center justify-center p-4 pool-card-inner hover:scale-105 transition-transform duration-300 fade-scale" id="card-' + idx + '">' + card.html + '</div>' +
           '</div>' +
           '<div class="mt-7">' +
-            '<button type="button" data-action="download" data-pool="' + esc(first) + '" data-date="' + dt.date + '" class="download-btn inline-flex items-center gap-2.5 text-sm sm:text-base font-black tracking-widest uppercase text-white px-6 py-3 rounded-lg border border-zinc-700 hover:border-brand-neon/50 group transition-all duration-300" id="dlbtn-' + idx + '">' +
+            '<button type="button" data-action="download" data-pool="' + esc(first) + '" data-date="' + dt.date + '" class="download-btn inline-flex items-center gap-2.5 text-sm sm:text-base font-black tracking-widest uppercase text-white px-6 py-3 rounded-lg border border-zinc-600 bg-black/40 backdrop-blur-sm hover:border-brand-neon/50 group transition-all duration-300" id="dlbtn-' + idx + '">' +
               '<span>DESCARGAR</span>' +
               '<svg class="w-4 h-4 text-brand-neon group-hover:translate-y-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>' +
             '</button>' +
