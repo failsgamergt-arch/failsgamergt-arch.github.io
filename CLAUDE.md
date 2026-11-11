@@ -82,7 +82,8 @@ Plataforma de descargas de DJ pools con sistema de usuarios y enlaces MEGA. Aloj
 - **Contenido actual:** septiembre 2026 (27 fechas, 375 enlaces, 27 artistas) + agosto 2026 en ARCHIVO (26 fechas, 365 enlaces; enlaces MEGA borrados). Canciones en `pools-tracks.js`: 34.938 (agosto + septiembre)
 - **Tabs por fecha:** click cambia card visual + boton descarga con flip 3D
 - **Flechas de tabs:** `scrollTabs(idx, dir)` desplaza 250px, `updateTabArrows(idx)` muestra/oculta flechas segun scroll position (gradiente fade con bg del card container)
-- **28 pool cards visuales:** definidos en `POOL_CARDS` con bg/html unicos por pool
+- **Caratulas reales (nov 2026):** `img/pools/<artista-en-minusculas-con-guiones>.jpg` (cuadradas 320px, origen `OneDriveDesktopLOGOS ARTISTAS`). Lista en `POOL_LOGOS` (pools.html); `cardFor()` las usa antes que `POOL_CARDS`. Artista nuevo con logo: guardar la imagen con ese nombre y añadirlo a `POOL_LOGOS`; si se cambia una imagen, subir `POOL_LOGOS_VERSION`. Sin logo → card de `POOL_CARDS` o la automatica
+- **28 pool cards de texto (respaldo):** definidos en `POOL_CARDS` con bg/html unicos por pool
 - **Descarga:** modal con tracklist accordion + enlaces MEGA (requiere login) o prompt de login
 - **Tracklist en modal:** boton "VER CONTENIDO (N tracks)" despliega lista con nombre de cada track (accordion con `max-height` transition)
 - **Stats en hero:** archivos, pools, fechas y tracks DEL MES mostrado (de `dpw-data/pools.json` + `TRACK_LIST`)
@@ -167,6 +168,7 @@ tools/pools-cli.js  -- CLI para editar pools por codigo (remoto via gh, o --file
 tools/test-dpw.js   -- Tests del modelo, del cifrado y de los datos reales (node tools/test-dpw.js)
 .gitignore          -- ignora dpw-data/
 pools-tracks.js     -- 34.938 tracks (agosto 17.131 + septiembre 17.807) (const TRACK_LIST, claves "YYYY-MM-DD" -> artista -> [tracks])
+img/pools/          -- Caratulas de cada pool/artista (27 jpg)
 logo-dpw.png        -- LOGO FINAL circular con fondo transparente (header + hero)
 logo-dpw.jpg        -- Logo antiguo (altavoces + mesa, no usado)
 logodpw.png         -- Logo antiguo recortado (no usado)

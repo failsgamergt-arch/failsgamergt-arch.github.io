@@ -468,8 +468,23 @@ function loadData() {
     });
 }
 
+// Caratulas reales (img/pools/<artista-en-minusculas-con-guiones>.jpg, cuadradas). Tienen prioridad sobre POOL_CARDS.
+const POOL_LOGOS = new Set(['AREYOUKIDY', 'BEATFREAKZ', 'BEEZO BEEHIVE', 'BPM LATINO', 'BPM SUPREME', 'CLUB KILLERS', 'CRACK 4 DJS',
+  'CROOKLYN CLAN', 'DA ZONE', 'DIGITAL MUSIC', 'DIRTY SOUNDS', 'DJ CITY', 'DJ CITY LATINO', 'ELITE REMIX', 'EUROPA REMIX',
+  'EXTENDED LATINO', 'HEADLINER', 'INTENSA MUSIC', 'LATIN BOX', 'LATIN REMIXES', 'MP3 MIXES POOL', 'PRO LATIN', 'REMIX PLANET',
+  'ROMPE DISCOTECA', 'THEMASHUP', 'UNLIMITED LATIN', 'URBAN ZONE']);
+const POOL_LOGOS_VERSION = 1; // subir si se cambia alguna imagen
+function logoCard(pool) {
+  const src = 'img/pools/' + pool.toLowerCase().replace(/ /g, '-') + '.jpg?v=' + POOL_LOGOS_VERSION;
+  return {
+    bg: 'relative overflow-hidden bg-black ring-1 ring-white/10',
+    html: '<img src="' + esc(src) + '" alt="' + esc(pool) + '" class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async">'
+  };
+}
+
 const FALLBACK_HUES = ['from-sky-800', 'from-fuchsia-800', 'from-indigo-800', 'from-cyan-800', 'from-violet-800', 'from-blue-800', 'from-pink-800'];
 function cardFor(pool) {
+  if (POOL_LOGOS.has(pool)) return logoCard(pool);
   if (POOL_CARDS[pool]) return POOL_CARDS[pool];
   const words = pool.split(' ');
   const half = Math.ceil(words.length / 2);
